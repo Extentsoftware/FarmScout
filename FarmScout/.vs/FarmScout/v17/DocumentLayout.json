@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Data\\Extent\\FarmScout\\FarmScout\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|c:\\data\\extent\\farmscout\\farmscout\\views\\dashboardpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|solutionrelative:views\\dashboardpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|c:\\data\\extent\\farmscout\\farmscout\\appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|solutionrelative:appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|c:\\data\\extent\\farmscout\\farmscout\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8985204F-B885-B428-BC3B-EDF1B47FD189}|FarmScout.csproj|solutionrelative:mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MauiProgram.cs",
+              "DocumentMoniker": "C:\\Data\\Extent\\FarmScout\\FarmScout\\MauiProgram.cs",
+              "RelativeDocumentMoniker": "MauiProgram.cs",
+              "ToolTip": "C:\\Data\\Extent\\FarmScout\\FarmScout\\MauiProgram.cs",
+              "RelativeToolTip": "MauiProgram.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAAwDAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-21T19:34:27.276Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppShell.xaml",
+              "DocumentMoniker": "C:\\Data\\Extent\\FarmScout\\FarmScout\\AppShell.xaml",
+              "RelativeDocumentMoniker": "AppShell.xaml",
+              "ToolTip": "C:\\Data\\Extent\\FarmScout\\FarmScout\\AppShell.xaml",
+              "RelativeToolTip": "AppShell.xaml",
+              "ViewState": "AgIAAA4AAAAAAAAAAAArwBkAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-21T19:29:18.069Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DashboardPage.xaml.cs",
+              "DocumentMoniker": "C:\\Data\\Extent\\FarmScout\\FarmScout\\Views\\DashboardPage.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\DashboardPage.xaml.cs",
+              "ToolTip": "C:\\Data\\Extent\\FarmScout\\FarmScout\\Views\\DashboardPage.xaml.cs",
+              "RelativeToolTip": "Views\\DashboardPage.xaml.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAAAYAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-21T15:49:38.118Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

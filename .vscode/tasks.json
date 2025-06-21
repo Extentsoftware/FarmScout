@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/FarmScout/FarmScout.csproj",
+                "--configuration",
+                "Debug",
+                "--framework",
+                "net9.0-windows10.0.19041.0"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/FarmScout/FarmScout.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--framework",
+                "net9.0-windows10.0.19041.0"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/FarmScout"
+            },
+            "group": "build"
+        }
+    ]
+} 

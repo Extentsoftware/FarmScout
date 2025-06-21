@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="FarmScout.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:FarmScout.Views"
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="#2E7D32">
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="#2E7D32" HeightRequest="100">
+            <Label Text="🌾 FarmScout" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   TextColor="White"
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <ShellContent
+        Title="🏠 Dashboard"
+        Route="Dashboard">
+        <ShellContent.ContentTemplate>
+            <DataTemplate>
+                <views:DashboardPage />
+            </DataTemplate>
+        </ShellContent.ContentTemplate>
+    </ShellContent>
+    
+    <!-- Menu Items for Navigation -->
+    <MenuItem Text="📝 Add Observation" 
+              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=AddObservationCommand}"/>
+    
+    <MenuItem Text="📋 All Observations" 
+              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=ViewObservationsCommand}"/>
+    
+    <MenuItem Text="✅ Tasks" 
+              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=ViewTasksCommand}"/>
+
+</Shell>
