@@ -36,6 +36,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationsViewModel>();
 		builder.Services.AddTransient<TasksViewModel>();
 		builder.Services.AddTransient<ObservationDetailViewModel>();
+		builder.Services.AddTransient<EditObservationViewModel>();
 
 		// Register pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -43,6 +44,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationsPage>();
 		builder.Services.AddTransient<TasksPage>();
 		builder.Services.AddTransient<ObservationDetailPage>();
+		builder.Services.AddTransient<EditObservationPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

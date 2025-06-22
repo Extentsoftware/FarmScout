@@ -17,11 +17,12 @@ public partial class AppShell : Shell
 			
 			// Register routes for navigation
 			App.Log("Registering routes");
-			Routing.RegisterRoute("Dashboard", typeof(Views.DashboardPage));
+
 			Routing.RegisterRoute("AddObservation", typeof(Views.AddObservationPage));
 			Routing.RegisterRoute("Observations", typeof(Views.ObservationsPage));
 			Routing.RegisterRoute("Tasks", typeof(Views.TasksPage));
 			Routing.RegisterRoute("ObservationDetail", typeof(Views.ObservationDetailPage));
+			Routing.RegisterRoute("EditObservation", typeof(Views.EditObservationPage));
 			
 			// Set the binding context for menu commands
 			BindingContext = this;

@@ -23,6 +23,7 @@ public class ObservationsViewModel : BaseViewModel
         DeleteCommand = new Command<ObservationViewModel>(async (obs) => await DeleteObservation(obs));
         RefreshCommand = new Command(async () => await LoadObservations());
         AddObservationCommand = new Command(async () => await AddObservation());
+        GoBackCommand = new Command(async () => await GoBack());
     }
 
     public ObservableCollection<ObservationViewModel> Observations { get; }
@@ -32,6 +33,7 @@ public class ObservationsViewModel : BaseViewModel
     public ICommand DeleteCommand { get; }
     public ICommand RefreshCommand { get; }
     public ICommand AddObservationCommand { get; }
+    public ICommand GoBackCommand { get; }
 
     public async Task LoadObservations()
     {
@@ -78,7 +80,7 @@ public class ObservationsViewModel : BaseViewModel
         {
             var parameters = new Dictionary<string, object>
             {
-                { "Observation", obs.Observation }
+                { "ObservationId", obs.Observation.Id }
             };
             await _navigationService.NavigateToAsync("ObservationDetail", parameters);
         }
@@ -122,6 +124,11 @@ public class ObservationsViewModel : BaseViewModel
     private async Task AddObservation()
     {
         await _navigationService.NavigateToAsync("AddObservation");
+    }
+
+    private async Task GoBack()
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }
 

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using FarmScout.Models;
 using FarmScout.Services;
 
@@ -14,7 +15,11 @@ public class ObservationDetailViewModel : BaseViewModel
         _database = database;
         _navigationService = navigationService;
         Title = "Observation Details";
+        
+        EditObservationCommand = new Command(async () => await EditObservation());
     }
+
+    public ICommand EditObservationCommand { get; }
 
     public Observation? Observation { get; set; }
     public string ObservationTypesText 
@@ -106,6 +111,18 @@ public class ObservationDetailViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    private async Task EditObservation()
+    {
+        if (Observation != null)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "ObservationId", Observation.Id }
+            };
+            await _navigationService.NavigateToAsync("EditObservation", parameters);
         }
     }
 }

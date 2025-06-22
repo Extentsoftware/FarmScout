@@ -95,6 +95,16 @@
                 </VerticalStackLayout>
             </Frame>
             
+            <!-- Edit Button -->
+            <Button Text="✏️ Edit Observation" 
+                    Command="{Binding EditObservationCommand}"
+                    BackgroundColor="#FF9800"
+                    TextColor="White"
+                    CornerRadius="8"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Fill"/>
+            
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage> 
