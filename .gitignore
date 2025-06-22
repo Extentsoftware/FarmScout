@@ -1,1 +1,14 @@
 /AspireApp1
+.vs
+.vscode
+/FarmScout/.vs/*
+**/obj
+
+/FarmScout/.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+/FarmScout/.vs/FarmScout/v17/.suo
