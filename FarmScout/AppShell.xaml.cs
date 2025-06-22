@@ -40,32 +40,6 @@ public partial class AppShell : Shell
 	public ICommand ViewObservationsCommand => new Command(async () => await GoToAsync("Observations"));
 	public ICommand ViewTasksCommand => new Command(async () => await GoToAsync("Tasks"));
 
-	// Factory method for creating DashboardPage with DI
-	public Views.DashboardPage CreateDashboardPage()
-	{
-		return Handler?.MauiContext?.Services?.GetRequiredService<Views.DashboardPage>() 
-			?? throw new InvalidOperationException("Services not available");
-	}
-
-	// Factory method for creating other pages with DI
-	public Views.AddObservationPage CreateAddObservationPage()
-	{
-		return Handler?.MauiContext?.Services?.GetRequiredService<Views.AddObservationPage>() 
-			?? throw new InvalidOperationException("Services not available");
-	}
-
-	public Views.ObservationsPage CreateObservationsPage()
-	{
-		return Handler?.MauiContext?.Services?.GetRequiredService<Views.ObservationsPage>() 
-			?? throw new InvalidOperationException("Services not available");
-	}
-
-	public Views.TasksPage CreateTasksPage()
-	{
-		return Handler?.MauiContext?.Services?.GetRequiredService<Views.TasksPage>() 
-			?? throw new InvalidOperationException("Services not available");
-	}
-
 	private static void Log(string message)
 	{
 		try

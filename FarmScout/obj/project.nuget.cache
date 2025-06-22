@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "v0GWYcVjw44=",
+  "dgSpecHash": "8qzpiJWpufY=",
   "success": true,
-  "projectFilePath": "C:\\Data\\Extent\\FarmScout\\FarmScout\\FarmScout.csproj",
+  "projectFilePath": "C:\\Data\\Bongo\\FarmScout\\FarmScout\\FarmScout.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\marcu\\.nuget\\packages\\geoapi.coordinatesystems\\1.7.5\\geoapi.coordinatesystems.1.7.5.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\geoapi.core\\1.7.5\\geoapi.core.1.7.5.nupkg.sha512",
@@ -28,7 +28,7 @@
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.maui.graphics\\9.0.0\\microsoft.maui.graphics.9.0.0.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.maui.graphics.win2d.winui.desktop\\9.0.0\\microsoft.maui.graphics.win2d.winui.desktop.9.0.0.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.maui.resizetizer\\9.0.0\\microsoft.maui.resizetizer.9.0.0.nupkg.sha512",
-    "C:\\Users\\marcu\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.6\\microsoft.net.illink.tasks.9.0.6.nupkg.sha512",
+    "C:\\Users\\marcu\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.4\\microsoft.net.illink.tasks.9.0.4.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.netcore.platforms\\2.1.2\\microsoft.netcore.platforms.2.1.2.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.web.webview2\\1.0.2792.45\\microsoft.web.webview2.1.0.2792.45.nupkg.sha512",
     "C:\\Users\\marcu\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",

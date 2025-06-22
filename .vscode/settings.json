@@ -1,7 +1,6 @@
 {
     "dotnet.defaultSolution": "FarmScout/FarmScout.csproj",
     "omnisharp.enableEditorConfigSupport": true,
-    "omnisharp.enableImportCompletion": true,
     "omnisharp.enableRoslynAnalyzers": true,
     "csharp.format.enable": true,
     "csharp.semanticHighlighting.enabled": true,
@@ -9,5 +8,6 @@
         "*.xaml": "xml"
     },
     "debug.console.fontSize": 12,
-    "debug.internalConsoleOptions": "openOnSessionStart"
+    "debug.internalConsoleOptions": "openOnSessionStart",
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true
 } 

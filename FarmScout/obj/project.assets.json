@@ -471,7 +471,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -3082,7 +3082,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -5687,7 +5687,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -8292,7 +8292,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -10897,7 +10897,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -13502,7 +13502,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -15637,7 +15637,7 @@
         }
       }
     },
-    "net9.0-ios18.5": {
+    "net9.0-ios18.2": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -16080,7 +16080,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -16264,7 +16264,7 @@
         }
       }
     },
-    "net9.0-ios18.5/android-arm64": {
+    "net9.0-ios18.2/android-arm64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -16707,7 +16707,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -16885,7 +16885,7 @@
         }
       }
     },
-    "net9.0-ios18.5/android-x64": {
+    "net9.0-ios18.2/android-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -17328,7 +17328,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -17506,7 +17506,7 @@
         }
       }
     },
-    "net9.0-ios18.5/iossimulator-x64": {
+    "net9.0-ios18.2/iossimulator-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -17949,7 +17949,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -18127,7 +18127,7 @@
         }
       }
     },
-    "net9.0-ios18.5/maccatalyst-x64": {
+    "net9.0-ios18.2/maccatalyst-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -18570,7 +18570,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -18748,7 +18748,7 @@
         }
       }
     },
-    "net9.0-ios18.5/win10-x64": {
+    "net9.0-ios18.2/win10-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -19191,7 +19191,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -19369,7 +19369,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5": {
+    "net9.0-maccatalyst18.2": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -19812,7 +19812,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -20086,7 +20086,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5/android-arm64": {
+    "net9.0-maccatalyst18.2/android-arm64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -20529,7 +20529,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -20714,7 +20714,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5/android-x64": {
+    "net9.0-maccatalyst18.2/android-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -21157,7 +21157,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -21342,7 +21342,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5/iossimulator-x64": {
+    "net9.0-maccatalyst18.2/iossimulator-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -21785,7 +21785,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -21967,7 +21967,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5/maccatalyst-x64": {
+    "net9.0-maccatalyst18.2/maccatalyst-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -22410,7 +22410,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -22595,7 +22595,7 @@
         }
       }
     },
-    "net9.0-maccatalyst18.5/win10-x64": {
+    "net9.0-maccatalyst18.2/win10-x64": {
       "GeoAPI.CoordinateSystems/1.7.5": {
         "type": "package",
         "dependencies": {
@@ -23038,7 +23038,7 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.6": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -29507,10 +29507,10 @@
         "microsoft.maui.resizetizer.nuspec"
       ]
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.6": {
-      "sha512": "TXy3SbJzGXQbxxIxCjdrp8bwEyTDImyYNpTpd6v7P3JL2Y7dno8EYG7dPezfYTa5SoWKdhbH9cbnwHHs3BR5gA==",
+    "Microsoft.NET.ILLink.Tasks/9.0.4": {
+      "sha512": "xUdlUxiFwXhTYhB4VxKg/IA0+jlZXJPo70LYuMryWbJHdonIpZjw+7DO2B0pWwpXIOs6MlH5WVXPEtfrGEcVZA==",
       "type": "package",
-      "path": "microsoft.net.illink.tasks/9.0.6",
+      "path": "microsoft.net.illink.tasks/9.0.4",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -29524,7 +29524,7 @@
         "build/Microsoft.NET.ILLink.Analyzers.props",
         "build/Microsoft.NET.ILLink.Tasks.props",
         "build/Microsoft.NET.ILLink.targets",
-        "microsoft.net.illink.tasks.9.0.6.nupkg.sha512",
+        "microsoft.net.illink.tasks.9.0.4.nupkg.sha512",
         "microsoft.net.illink.tasks.nuspec",
         "tools/net472/ILLink.Tasks.dll",
         "tools/net472/ILLink.Tasks.dll.config",
@@ -32538,29 +32538,29 @@
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.0",
       "Microsoft.Maui.Controls.Compatibility >= 9.0.0",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.6",
+      "Microsoft.NET.ILLink.Tasks >= 9.0.4",
       "NetTopologySuite >= 2.1.0",
       "NetTopologySuite.IO.ShapeFile >= 2.1.0",
       "ProjNet4GeoAPI >= 1.4.1",
       "SQLitePCLRaw.bundle_green >= 2.1.8",
       "sqlite-net-pcl >= 1.8.116"
     ],
-    "net9.0-ios18.5": [
+    "net9.0-ios18.2": [
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.0",
       "Microsoft.Maui.Controls.Compatibility >= 9.0.0",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.6",
+      "Microsoft.NET.ILLink.Tasks >= 9.0.4",
       "NetTopologySuite >= 2.1.0",
       "NetTopologySuite.IO.ShapeFile >= 2.1.0",
       "ProjNet4GeoAPI >= 1.4.1",
       "SQLitePCLRaw.bundle_green >= 2.1.8",
       "sqlite-net-pcl >= 1.8.116"
     ],
-    "net9.0-maccatalyst18.5": [
+    "net9.0-maccatalyst18.2": [
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.0",
       "Microsoft.Maui.Controls.Compatibility >= 9.0.0",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.6",
+      "Microsoft.NET.ILLink.Tasks >= 9.0.4",
       "NetTopologySuite >= 2.1.0",
       "NetTopologySuite.IO.ShapeFile >= 2.1.0",
       "ProjNet4GeoAPI >= 1.4.1",
@@ -32580,20 +32580,22 @@
   },
   "packageFolders": {
     "C:\\Users\\marcu\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Data\\Extent\\FarmScout\\FarmScout\\FarmScout.csproj",
+      "projectUniqueName": "C:\\Data\\Bongo\\FarmScout\\FarmScout\\FarmScout.csproj",
       "projectName": "FarmScout",
-      "projectPath": "C:\\Data\\Extent\\FarmScout\\FarmScout\\FarmScout.csproj",
+      "projectPath": "C:\\Data\\Bongo\\FarmScout\\FarmScout\\FarmScout.csproj",
       "packagesPath": "C:\\Users\\marcu\\.nuget\\packages\\",
-      "outputPath": "C:\\Data\\Extent\\FarmScout\\FarmScout\\obj\\",
+      "outputPath": "C:\\Data\\Bongo\\FarmScout\\FarmScout\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
         "C:\\Users\\marcu\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -32616,11 +32618,11 @@
           "targetAlias": "net9.0-android",
           "projectReferences": {}
         },
-        "net9.0-ios18.5": {
+        "net9.0-ios18.2": {
           "targetAlias": "net9.0-ios",
           "projectReferences": {}
         },
-        "net9.0-maccatalyst18.5": {
+        "net9.0-maccatalyst18.2": {
           "targetAlias": "net9.0-maccatalyst",
           "projectReferences": {}
         },
@@ -32634,7 +32636,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net9.0-android35.0": {
@@ -32655,7 +32657,7 @@
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[9.0.6, )",
+            "version": "[9.0.4, )",
             "autoReferenced": true
           },
           "NetTopologySuite": {
@@ -32698,9 +32700,9 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
       },
-      "net9.0-ios18.5": {
+      "net9.0-ios18.2": {
         "targetAlias": "net9.0-ios",
         "dependencies": {
           "Microsoft.Extensions.Logging.Debug": {
@@ -32718,7 +32720,7 @@
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[9.0.6, )",
+            "version": "[9.0.4, )",
             "autoReferenced": true
           },
           "NetTopologySuite": {
@@ -32761,9 +32763,9 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
       },
-      "net9.0-maccatalyst18.5": {
+      "net9.0-maccatalyst18.2": {
         "targetAlias": "net9.0-maccatalyst",
         "dependencies": {
           "Microsoft.Extensions.Logging.Debug": {
@@ -32781,7 +32783,7 @@
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[9.0.6, )",
+            "version": "[9.0.4, )",
             "autoReferenced": true
           },
           "NetTopologySuite": {
@@ -32825,7 +32827,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
       },
       "net9.0-windows10.0.19041": {
         "targetAlias": "net9.0-windows10.0.19041.0",
@@ -32888,7 +32890,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
       }
     },
     "runtimes": {

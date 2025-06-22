@@ -3,12 +3,15 @@ using FarmScout.Services;
 using FarmScout.ViewModels;
 using FarmScout.Views;
 using System.IO;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FarmScout;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+	public static ServiceProvider Services { get; private set; } = default!;
+
+    public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
@@ -45,6 +48,9 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-		return builder.Build();
+
+        Services = builder.Services.BuildServiceProvider();
+
+        return builder.Build();
 	}
 }
