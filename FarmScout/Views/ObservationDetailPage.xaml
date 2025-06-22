@@ -29,6 +29,20 @@
                 </VerticalStackLayout>
             </Frame>
             
+            <!-- Soil Moisture -->
+            <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="🌍 Soil Moisture" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="#2E7D32"/>
+                    <Label Text="{Binding SoilMoistureText}" 
+                           FontSize="16" 
+                           TextColor="#666"/>
+                </VerticalStackLayout>
+            </Frame>
+
+
             <!-- Severity -->
             <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
                 <VerticalStackLayout Spacing="10">
@@ -42,20 +56,7 @@
                            FontAttributes="Bold"/>
                 </VerticalStackLayout>
             </Frame>
-            
-            <!-- Soil Moisture -->
-            <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🌍 Soil Moisture" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    <Label Text="{Binding SoilMoistureText}" 
-                           FontSize="16" 
-                           TextColor="#666"/>
-                </VerticalStackLayout>
-            </Frame>
-            
+
             <!-- Location -->
             <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
                 <VerticalStackLayout Spacing="10">
@@ -95,15 +96,28 @@
                 </VerticalStackLayout>
             </Frame>
             
-            <!-- Edit Button -->
-            <Button Text="✏️ Edit Observation" 
-                    Command="{Binding EditObservationCommand}"
-                    BackgroundColor="#FF9800"
-                    TextColor="White"
-                    CornerRadius="8"
-                    FontSize="18"
-                    FontAttributes="Bold"
-                    HorizontalOptions="Fill"/>
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="← Back"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="#666"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Fill"/>
+                
+                <Button Grid.Column="1"
+                        Text="✏️ Edit"
+                        Command="{Binding EditObservationCommand}"
+                        BackgroundColor="#FF9800"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Fill"/>
+            </Grid>
             
         </VerticalStackLayout>
     </ScrollView>

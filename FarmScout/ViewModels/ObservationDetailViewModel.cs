@@ -17,9 +17,11 @@ public class ObservationDetailViewModel : BaseViewModel
         Title = "Observation Details";
         
         EditObservationCommand = new Command(async () => await EditObservation());
+        GoBackCommand = new Command(async () => await GoBack());
     }
 
     public ICommand EditObservationCommand { get; }
+    public ICommand GoBackCommand { get; }
 
     public Observation? Observation { get; set; }
     public string ObservationTypesText 
@@ -124,6 +126,11 @@ public class ObservationDetailViewModel : BaseViewModel
             };
             await _navigationService.NavigateToAsync("EditObservation", parameters);
         }
+    }
+
+    private async Task GoBack()
+    {
+        await _navigationService.GoBackAsync();
     }
 }
 
