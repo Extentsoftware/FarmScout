@@ -3,6 +3,11 @@ build_property.EnableAotAnalyzer =
 build_property.EnableSingleFileAnalyzer = true
 build_property.EnableTrimAnalyzer = false
 build_property.IncludeAllContentForSelfExtract = 
+build_property.MvvmToolkitEnableINotifyPropertyChangingSupport = true
+build_property._MvvmToolkitIsUsingWindowsRuntimePack = false
+build_property.CsWinRTComponent = 
+build_property.CsWinRTAotOptimizerEnabled = 
+build_property.CsWinRTAotWarningLevel = 
 build_property.TargetFramework = net9.0-android
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = 
@@ -48,29 +53,17 @@ build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Resources.Styles
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
 build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
 
-[C:/Data/Bongo/FarmScout/FarmScout/Views/AddObservationPage.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Views.AddObservationPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\AddObservationPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\AddObservationPage.xaml
-
 [C:/Data/Bongo/FarmScout/FarmScout/Views/DashboardPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Views.DashboardPage.xaml
 build_metadata.AdditionalFiles.TargetPath = Views\DashboardPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\DashboardPage.xaml
 
-[C:/Data/Bongo/FarmScout/FarmScout/Views/EditObservationPage.xaml]
+[C:/Data/Bongo/FarmScout/FarmScout/Views/ObservationPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Views.EditObservationPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\EditObservationPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\EditObservationPage.xaml
-
-[C:/Data/Bongo/FarmScout/FarmScout/Views/ObservationDetailPage.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Views.ObservationDetailPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\ObservationDetailPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\ObservationDetailPage.xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Views.ObservationPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ObservationPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ObservationPage.xaml
 
 [C:/Data/Bongo/FarmScout/FarmScout/Views/ObservationsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml

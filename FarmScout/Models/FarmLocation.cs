@@ -1,4 +1,5 @@
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 
 namespace FarmScout.Models;
 
@@ -7,7 +8,7 @@ public class FarmLocation
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
-    public Geometry Geometry { get; set; } = null!;
+    public string Geometry { get; set; } = null!;
     public string FieldType { get; set; } = ""; // e.g., "Corn", "Soybeans", "Wheat"
     public double Area { get; set; } // in acres or hectares
     public string Owner { get; set; } = "";
@@ -18,7 +19,9 @@ public class FarmLocation
         try
         {
             var point = new NetTopologySuite.Geometries.Point(longitude, latitude);
-            return Geometry.Contains(point);
+            WKTReader wktr = new();
+            var wkt = wktr.Read(Geometry);
+            return wkt!.Contains(point);
         }
         catch
         {
@@ -31,7 +34,9 @@ public class FarmLocation
         try
         {
             var point = new NetTopologySuite.Geometries.Point(longitude, latitude);
-            return Geometry.Distance(point);
+            WKTReader wktr = new();
+            var wkt = wktr.Read(Geometry);
+            return wkt.Distance(point);
         }
         catch
         {

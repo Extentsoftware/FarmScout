@@ -32,19 +32,15 @@ public static class MauiProgram
 
 		// Register ViewModels
 		builder.Services.AddTransient<DashboardViewModel>();
-		builder.Services.AddTransient<AddObservationViewModel>();
 		builder.Services.AddTransient<ObservationsViewModel>();
 		builder.Services.AddTransient<TasksViewModel>();
-		builder.Services.AddTransient<ObservationDetailViewModel>();
-		builder.Services.AddTransient<EditObservationViewModel>();
+		builder.Services.AddTransient<ObservationViewModel>();
 
 		// Register pages
 		builder.Services.AddTransient<DashboardPage>();
-		builder.Services.AddTransient<AddObservationPage>();
 		builder.Services.AddTransient<ObservationsPage>();
 		builder.Services.AddTransient<TasksPage>();
-		builder.Services.AddTransient<ObservationDetailPage>();
-		builder.Services.AddTransient<EditObservationPage>();
+		builder.Services.AddTransient<ObservationPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

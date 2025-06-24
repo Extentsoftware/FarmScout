@@ -18,11 +18,9 @@ public partial class AppShell : Shell
 			// Register routes for navigation
 			App.Log("Registering routes");
 
-			Routing.RegisterRoute("AddObservation", typeof(Views.AddObservationPage));
 			Routing.RegisterRoute("Observations", typeof(Views.ObservationsPage));
 			Routing.RegisterRoute("Tasks", typeof(Views.TasksPage));
-			Routing.RegisterRoute("ObservationDetail", typeof(Views.ObservationDetailPage));
-			Routing.RegisterRoute("EditObservation", typeof(Views.EditObservationPage));
+			Routing.RegisterRoute("Observation", typeof(Views.ObservationPage));
 			
 			// Set the binding context for menu commands
 			BindingContext = this;
@@ -37,8 +35,8 @@ public partial class AppShell : Shell
 	}
 
 	// Navigation commands for menu items
-	public ICommand AddObservationCommand => new Command(async () => await GoToAsync("AddObservation"));
-	public ICommand ViewObservationsCommand => new Command(async () => await GoToAsync("Observations"));
+	public ICommand AddObservationCommand => new Command(async () => await GoToAsync("Observation", new Dictionary<string, object> { { "Mode", "add" } }));
+    public ICommand ViewObservationsCommand => new Command(async () => await GoToAsync("Observations"));
 	public ICommand ViewTasksCommand => new Command(async () => await GoToAsync("Tasks"));
 
 	private static void Log(string message)

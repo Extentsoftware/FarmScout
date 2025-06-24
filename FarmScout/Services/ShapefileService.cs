@@ -6,7 +6,7 @@ namespace FarmScout.Services;
 
 public class ShapefileService
 {
-    private List<FarmLocation> _farmLocations = new();
+    private List<FarmLocation> _farmLocations = [];
     
     public List<FarmLocation> FarmLocations => _farmLocations;
     
@@ -59,7 +59,7 @@ public class ShapefileService
                 Id = id++,
                 Name = sample.Name,
                 Description = $"Sample {sample.Type} field",
-                Geometry = polygon,
+                Geometry = polygon.ToText(),
                 FieldType = sample.Type,
                 Area = 100.0, // Sample area
                 Owner = "Sample Farm",
@@ -89,6 +89,6 @@ public class ShapefileService
     
     public List<FarmLocation> GetFarmLocations()
     {
-        return _farmLocations.ToList();
+        return [.. _farmLocations];
     }
 } 

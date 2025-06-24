@@ -1,11 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public class TasksViewModel : BaseViewModel
+public partial class TasksViewModel : BaseViewModel
 {
     private readonly FarmScoutDatabase _database;
 
@@ -14,27 +16,12 @@ public class TasksViewModel : BaseViewModel
         _database = database;
         Title = "Tasks";
 
-        Tasks = new ObservableCollection<TaskViewModel>();
-        
-        LoadTasksCommand = new Command(async () => await LoadTasks());
-        UpdateTaskStatusCommand = new Command<TaskViewModel>(async (task) => await UpdateTaskStatus(task));
-        DeleteTaskCommand = new Command<TaskViewModel>(async (task) => await DeleteTask(task));
-        RefreshCommand = new Command(async () => await LoadTasks());
-        
-        // Additional commands for the new UI
-        CompleteTaskCommand = UpdateTaskStatusCommand;
+        Tasks = [];
     }
 
     public ObservableCollection<TaskViewModel> Tasks { get; }
 
-    public ICommand LoadTasksCommand { get; }
-    public ICommand UpdateTaskStatusCommand { get; }
-    public ICommand DeleteTaskCommand { get; }
-    public ICommand RefreshCommand { get; }
-    
-    // Additional commands for the new UI
-    public ICommand CompleteTaskCommand { get; }
-
+    [RelayCommand]
     public async Task LoadTasks()
     {
         if (IsBusy) return;
@@ -71,6 +58,7 @@ public class TasksViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     public async Task UpdateTaskStatus(TaskViewModel? taskVM)
     {
         if (taskVM == null) return;
@@ -86,6 +74,7 @@ public class TasksViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task DeleteTask(TaskViewModel? taskVM)
     {
         if (taskVM == null) return;
@@ -111,6 +100,15 @@ public class TasksViewModel : BaseViewModel
             }
         }
     }
+
+    [RelayCommand]
+    private async Task Refresh()
+    {
+        await LoadTasks();
+    }
+
+    // Additional commands for the new UI
+    public ICommand CompleteTaskCommand => UpdateTaskStatusCommand;
 }
 
 public class TaskViewModel

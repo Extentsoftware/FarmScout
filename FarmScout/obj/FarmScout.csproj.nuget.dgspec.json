@@ -63,17 +63,21 @@
         "net9.0-android35.0": {
           "targetAlias": "net9.0-android",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.Extensions.Logging.Debug": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.Maui.Controls.Compatibility": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -83,7 +87,7 @@
             },
             "NetTopologySuite": {
               "target": "Package",
-              "version": "[2.1.0, )"
+              "version": "[2.6.0, )"
             },
             "NetTopologySuite.IO.ShapeFile": {
               "target": "Package",
@@ -95,11 +99,11 @@
             },
             "SQLitePCLRaw.bundle_green": {
               "target": "Package",
-              "version": "[2.1.8, )"
+              "version": "[2.1.11, )"
             },
             "sqlite-net-pcl": {
               "target": "Package",
-              "version": "[1.8.116, )"
+              "version": "[1.9.172, )"
             }
           },
           "imports": [
@@ -126,17 +130,21 @@
         "net9.0-ios18.2": {
           "targetAlias": "net9.0-ios",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.Extensions.Logging.Debug": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.Maui.Controls.Compatibility": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -146,7 +154,7 @@
             },
             "NetTopologySuite": {
               "target": "Package",
-              "version": "[2.1.0, )"
+              "version": "[2.6.0, )"
             },
             "NetTopologySuite.IO.ShapeFile": {
               "target": "Package",
@@ -158,11 +166,11 @@
             },
             "SQLitePCLRaw.bundle_green": {
               "target": "Package",
-              "version": "[2.1.8, )"
+              "version": "[2.1.11, )"
             },
             "sqlite-net-pcl": {
               "target": "Package",
-              "version": "[1.8.116, )"
+              "version": "[1.9.172, )"
             }
           },
           "imports": [
@@ -189,17 +197,21 @@
         "net9.0-maccatalyst18.2": {
           "targetAlias": "net9.0-maccatalyst",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.Extensions.Logging.Debug": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.Maui.Controls.Compatibility": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -209,7 +221,7 @@
             },
             "NetTopologySuite": {
               "target": "Package",
-              "version": "[2.1.0, )"
+              "version": "[2.6.0, )"
             },
             "NetTopologySuite.IO.ShapeFile": {
               "target": "Package",
@@ -221,11 +233,11 @@
             },
             "SQLitePCLRaw.bundle_green": {
               "target": "Package",
-              "version": "[2.1.8, )"
+              "version": "[2.1.11, )"
             },
             "sqlite-net-pcl": {
               "target": "Package",
-              "version": "[1.8.116, )"
+              "version": "[1.9.172, )"
             }
           },
           "imports": [
@@ -253,21 +265,25 @@
         "net9.0-windows10.0.19041": {
           "targetAlias": "net9.0-windows10.0.19041.0",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.Extensions.Logging.Debug": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "Microsoft.Maui.Controls.Compatibility": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.80, )"
             },
             "NetTopologySuite": {
               "target": "Package",
-              "version": "[2.1.0, )"
+              "version": "[2.6.0, )"
             },
             "NetTopologySuite.IO.ShapeFile": {
               "target": "Package",
@@ -279,11 +295,11 @@
             },
             "SQLitePCLRaw.bundle_green": {
               "target": "Package",
-              "version": "[2.1.8, )"
+              "version": "[2.1.11, )"
             },
             "sqlite-net-pcl": {
               "target": "Package",
-              "version": "[1.8.116, )"
+              "version": "[1.9.172, )"
             }
           },
           "imports": [

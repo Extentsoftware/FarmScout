@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Collections.Generic;
 
 namespace FarmScout.ViewModels;
 
-public class DashboardViewModel : BaseViewModel
+public partial class DashboardViewModel : BaseViewModel
 {
     private readonly FarmScoutDatabase _database;
     private readonly INavigationService _navigationService;
@@ -19,39 +21,19 @@ public class DashboardViewModel : BaseViewModel
         _navigationService = navigationService;
         Title = "Farm Scout Dashboard";
         
-        RecentActivity = new ObservableCollection<ActivityItem>();
-        
-        AddObservationCommand = new Command(async () => await AddObservation());
-        ViewObservationsCommand = new Command(async () => await ViewObservations());
-        ViewTasksCommand = new Command(async () => await ViewTasks());
-        RefreshCommand = new Command(async () => await LoadDashboardData());
+        RecentActivity = [];
+        RecentObservations = [];
     }
 
     public ObservableCollection<ActivityItem> RecentActivity { get; }
 
-    public ICommand AddObservationCommand { get; }
-    public ICommand ViewObservationsCommand { get; }
-    public ICommand ViewTasksCommand { get; }
-    public ICommand RefreshCommand { get; }
-    
-    // Additional commands for the new UI
-    public ICommand NavigateToAddObservationCommand => AddObservationCommand;
-    public ICommand NavigateToObservationsCommand => ViewObservationsCommand;
-    public ICommand NavigateToTasksCommand => ViewTasksCommand;
-
+    [ObservableProperty]
     private int _observationCount;
-    public int ObservationCount
-    {
-        get => _observationCount;
-        set => SetProperty(ref _observationCount, value);
-    }
 
+    [ObservableProperty]
     private int _taskCount;
-    public int TaskCount
-    {
-        get => _taskCount;
-        set => SetProperty(ref _taskCount, value);
-    }
+
+    public ObservableCollection<SimpleObservationViewModel> RecentObservations { get; }
 
     // Additional properties for the new UI
     public int TotalObservations => ObservationCount;
@@ -65,8 +47,33 @@ public class DashboardViewModel : BaseViewModel
             return total / RecentObservations.Count;
         }
     }
-    public ObservableCollection<ObservationViewModel> RecentObservations { get; } = new ObservableCollection<ObservationViewModel>();
-    public ICommand ViewObservationCommand { get; } = new Command<ObservationViewModel>(async (obs) => 
+
+    [RelayCommand]
+    private async Task AddObservation()
+    {
+        await _navigationService.NavigateToAsync("Observation", new Dictionary<string, object> { { "Mode", "add" } });
+    }
+
+    [RelayCommand]
+    private async Task ViewObservations()
+    {
+        await _navigationService.NavigateToAsync("Observations");
+    }
+
+    [RelayCommand]
+    private async Task ViewTasks()
+    {
+        await _navigationService.NavigateToAsync("Tasks");
+    }
+
+    [RelayCommand]
+    private async Task Refresh()
+    {
+        await LoadDashboardData();
+    }
+
+    [RelayCommand]
+    private async Task ViewObservation(SimpleObservationViewModel obs)
     {
         try
         {
@@ -79,7 +86,12 @@ public class DashboardViewModel : BaseViewModel
         {
             App.Log($"Error showing observation details: {ex.Message}");
         }
-    });
+    }
+
+    // Additional commands for the new UI
+    public ICommand NavigateToAddObservationCommand => AddObservationCommand;
+    public ICommand NavigateToObservationsCommand => ViewObservationsCommand;
+    public ICommand NavigateToTasksCommand => ViewTasksCommand;
 
     public async Task LoadDashboardData()
     {
@@ -120,7 +132,7 @@ public class DashboardViewModel : BaseViewModel
             RecentObservations.Clear();
             foreach (var obs in recentObservations)
             {
-                RecentObservations.Add(new ObservationViewModel(obs));
+                RecentObservations.Add(new SimpleObservationViewModel(obs));
             }
             App.Log($"DashboardViewModel: Added {RecentObservations.Count} recent observations to UI");
             
@@ -154,21 +166,6 @@ public class DashboardViewModel : BaseViewModel
             IsBusy = false;
             App.Log("DashboardViewModel: LoadDashboardData end");
         }
-    }
-
-    private async Task AddObservation()
-    {
-        await _navigationService.NavigateToAsync("AddObservation");
-    }
-
-    private async Task ViewObservations()
-    {
-        await _navigationService.NavigateToAsync("Observations");
-    }
-
-    private async Task ViewTasks()
-    {
-        await _navigationService.NavigateToAsync("Tasks");
     }
 }
 

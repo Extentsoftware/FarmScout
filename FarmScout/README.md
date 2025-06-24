@@ -83,10 +83,8 @@ FarmScout/
 │   └── LocationService.cs      # GPS location service
 ├── Views/
 │   ├── DashboardPage.xaml      # Main dashboard
-│   ├── AddObservationPage.xaml # Add new observation form
 │   ├── ObservationsPage.xaml   # List all observations
 │   ├── TasksPage.xaml          # Manage tasks
-│   └── ObservationDetailPage.xaml # View observation details
 ├── Platforms/
 │   └── Android/
 │       └── AndroidManifest.xml # Android permissions

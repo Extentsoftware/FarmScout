@@ -53,16 +53,16 @@ public static class ObservationTypes
     {
         return observationType switch
         {
-            "Disease" => new List<string> { "Disease Name", "Affected Area %", "Plant Count", "Symptoms" },
-            "Dead Plant" => new List<string> { "Plant Count", "Area Affected", "Cause" },
-            "Pest" => new List<string> { "Pest Name", "Pest Count", "Damage Level", "Infestation Area" },
-            "Damage" => new List<string> { "Damage Type", "Severity", "Area Affected", "Cause" },
-            "Growth" => new List<string> { "Growth Stage", "Height (cm)", "Plant Count", "Health Score" },
-            "Harvest" => new List<string> { "Crop Type", "Weight (kg)", "Quality", "Yield per Area" },
-            "Weather" => new List<string> { "Temperature (°C)", "Humidity (%)", "Wind Speed", "Precipitation" },
-            "Soil" => new List<string> { "pH Level", "Moisture %", "Temperature (°C)", "Nutrient Level" },
-            "Soil Moisture" => new List<string> { "Moisture Level", "Area Affected", "Last Measured" },
-            _ => new List<string>()
+            "Disease" => ["Disease Name", "Affected Area %", "Plant Count", "Symptoms"],
+            "Dead Plant" => ["Plant Count", "Area Affected", "Cause"],
+            "Pest" => ["Pest Name", "Pest Count", "Damage Level", "Infestation Area"],
+            "Damage" => ["Damage Type", "Severity", "Area Affected", "Cause"],
+            "Growth" => ["Growth Stage", "Height (cm)", "Plant Count", "Health Score"],
+            "Harvest" => ["Crop Type", "Weight (kg)", "Quality", "Yield per Area"],
+            "Weather" => ["Temperature (°C)", "Humidity (%)", "Wind Speed", "Precipitation"],
+            "Soil" => ["pH Level", "Moisture %", "Temperature (°C)", "Nutrient Level"],
+            "Soil Moisture" => ["Moisture Level", "Area Affected", "Last Measured"],
+            _ => []
         };
     }
 
@@ -74,11 +74,9 @@ public static class ObservationTypes
     public static List<string> SplitTypes(string typesString)
     {
         if (string.IsNullOrWhiteSpace(typesString))
-            return new List<string>();
+            return [];
         
-        return typesString.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                         .Select(t => t.Trim())
-                         .ToList();
+        return [.. typesString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim())];
     }
 }
 

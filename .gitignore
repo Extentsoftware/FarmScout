@@ -133,8 +133,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
-FarmScout/obj/Debug/
-FarmScout/obj/Debug/net9.0-android/FarmScout.AssemblyInfo.cs
 
-# MAUI build artifacts
-FarmScout/obj/

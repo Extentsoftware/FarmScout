@@ -1,11 +1,11 @@
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public class ObservationsViewModel : BaseViewModel
+public partial class ObservationsViewModel : BaseViewModel
 {
     private readonly FarmScoutDatabase _database;
     private readonly INavigationService _navigationService;
@@ -16,25 +16,13 @@ public class ObservationsViewModel : BaseViewModel
         _navigationService = navigationService;
         Title = "Observations";
 
-        Observations = new ObservableCollection<ObservationViewModel>();
-        
-        LoadObservationsCommand = new Command(async () => await LoadObservations());
-        ViewDetailsCommand = new Command<ObservationViewModel>(async (obs) => await ViewDetails(obs));
-        DeleteCommand = new Command<ObservationViewModel>(async (obs) => await DeleteObservation(obs));
-        RefreshCommand = new Command(async () => await LoadObservations());
-        AddObservationCommand = new Command(async () => await AddObservation());
-        GoBackCommand = new Command(async () => await GoBack());
+        Observations = [];
     }
 
-    public ObservableCollection<ObservationViewModel> Observations { get; }
+    [ObservableProperty]
+    public partial List<SimpleObservationViewModel> Observations { get; set; }
 
-    public ICommand LoadObservationsCommand { get; }
-    public ICommand ViewDetailsCommand { get; }
-    public ICommand DeleteCommand { get; }
-    public ICommand RefreshCommand { get; }
-    public ICommand AddObservationCommand { get; }
-    public ICommand GoBackCommand { get; }
-
+    [RelayCommand]
     public async Task LoadObservations()
     {
         if (IsBusy) return;
@@ -47,12 +35,12 @@ public class ObservationsViewModel : BaseViewModel
             var observations = await _database.GetObservationsAsync();
             App.Log($"Retrieved {observations.Count} observations from database");
             
-            var observationViewModels = new List<ObservationViewModel>();
+            var observationViewModels = new List<SimpleObservationViewModel>();
 
             foreach (var obs in observations.OrderByDescending(o => o.Timestamp))
             {
                 App.Log($"Processing observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}");
-                observationViewModels.Add(new ObservationViewModel(obs));
+                observationViewModels.Add(new SimpleObservationViewModel(obs));
             }
 
             Observations.Clear();
@@ -74,19 +62,22 @@ public class ObservationsViewModel : BaseViewModel
         }
     }
 
-    private async Task ViewDetails(ObservationViewModel? obs)
+    [RelayCommand]
+    private async Task ViewDetails(SimpleObservationViewModel? obs)
     {
         if (obs != null)
         {
             var parameters = new Dictionary<string, object>
             {
-                { "ObservationId", obs.Observation.Id }
+                { "ObservationId", obs.Observation.Id },
+                { "Mode", "view" }
             };
-            await _navigationService.NavigateToAsync("ObservationDetail", parameters);
+            await _navigationService.NavigateToAsync("Observation", parameters);
         }
     }
 
-    private async Task DeleteObservation(ObservationViewModel? obs)
+    [RelayCommand]
+    private async Task DeleteObservation(SimpleObservationViewModel? obs)
     {
         if (obs == null) return;
 
@@ -121,18 +112,30 @@ public class ObservationsViewModel : BaseViewModel
         }
     }
 
+    [RelayCommand]
     private async Task AddObservation()
     {
-        await _navigationService.NavigateToAsync("AddObservation");
+        var parameters = new Dictionary<string, object>
+        {
+            { "Mode", "add" }
+        };
+        await _navigationService.NavigateToAsync("Observation", parameters);
     }
 
+    [RelayCommand]
     private async Task GoBack()
     {
         await Shell.Current.GoToAsync("..");
     }
+
+    [RelayCommand]
+    private async Task Refresh()
+    {
+        await LoadObservations();
+    }
 }
 
-public class ObservationViewModel
+public partial class SimpleObservationViewModel: ObservableObject
 {
     public Observation Observation { get; }
     public string SoilMoistureText => $"Soil: {Observation.SoilMoisture:F0}%";
@@ -150,8 +153,8 @@ public class ObservationViewModel
     public string SeverityColor => SeverityLevels.GetSeverityColor(Observation.Severity);
     public bool HasPhoto => false; // Will be updated when we load photos
     public bool NoPhoto => true; // Will be updated when we load photos
-
-    public ObservationViewModel(Observation observation)
+ 
+    public SimpleObservationViewModel(Observation observation)
     {
         Observation = observation;
     }

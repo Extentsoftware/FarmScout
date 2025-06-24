@@ -13,6 +13,8 @@
             <!-- Converters -->
             <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:StringContainsConverter x:Key="StringContainsConverter"/>
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
