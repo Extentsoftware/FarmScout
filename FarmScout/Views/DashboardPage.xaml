@@ -18,7 +18,10 @@
                        TextColor="#2E7D32"/>
                 
                 <!-- Quick Stats -->
-                <Frame BackgroundColor="#E8F5E8" CornerRadius="10" Padding="15">
+                <Border BackgroundColor="#E8F5E8" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                             <Label Text="{Binding TotalObservations}" 
@@ -50,10 +53,13 @@
                                    TextColor="#666"/>
                         </VerticalStackLayout>
                     </Grid>
-                </Frame>
+                </Border>
                 
                 <!-- Quick Actions -->
-                <Frame BackgroundColor="#F5F5F5" CornerRadius="10" Padding="15">
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
                     <VerticalStackLayout Spacing="15">
                         <Label Text="🚀 Quick Actions" 
                                FontSize="18" 
@@ -92,7 +98,7 @@
                                     HeightRequest="50"/>
                         </Grid>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
                 
                 <!-- Recent Observations -->
                 <Border BackgroundColor="#F5F5F5" Padding="15">
@@ -131,7 +137,7 @@
                                                     CornerRadius="15"
                                                     WidthRequest="30"
                                                     HeightRequest="30"
-                                                    Command="{Binding x:DataType=viewmodels:ObservationsViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewObservationCommand}"
+                                                    Command="{Binding x:DataType=viewmodels:DashboardViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewObservationCommand}"
                                                     CommandParameter="{Binding}"/>
                                         </Grid>
                                     </Border>

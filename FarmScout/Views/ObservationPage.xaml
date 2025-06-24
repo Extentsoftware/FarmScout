@@ -5,6 +5,7 @@
              xmlns:converters="clr-namespace:FarmScout.Converters"
              x:Class="FarmScout.Views.ObservationPage"
              x:DataType="viewmodels:ObservationViewModel"
+             x:Name="ObservationPageRoot"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
              Title="{Binding Title}">
     
@@ -12,14 +13,17 @@
         <VerticalStackLayout Spacing="20" Padding="20">
             
             <!-- Header -->
-            <Label Text="{Binding Title}" 
+            <Label Text="{Binding Title}" x:Name="Header"
                    FontSize="24" 
                    FontAttributes="Bold" 
                    HorizontalOptions="Center"
                    TextColor="#2E7D32"/>
             
             <!-- Observation Types -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"><Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
+            <Border BackgroundColor="#F5F5F5" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📝 Observation Types" 
                            FontSize="18" 
@@ -81,7 +85,7 @@
                     
                     <!-- Edit/Add Mode -->
                     <Button Text="{Binding SeverityDisplay}"
-                            Command="{Binding ShowSeverityCommand}"
+                            Command="{Binding ShowSeverityPopupCommand}"
                             BackgroundColor="{Binding SeverityColor}"
                             TextColor="White"
                             CornerRadius="8"
@@ -110,7 +114,7 @@
                     
                     <!-- Edit/Add Mode -->
                     <Button Text="{Binding SelectedFarmLocation, StringFormat='Location: {0}'}"
-                            Command="{Binding ShowFarmLocationCommand}"
+                            Command="{Binding SelectFarmLocationCommand}"
                             BackgroundColor="#E8F5E8"
                             TextColor="#2E7D32"
                             CornerRadius="8"
@@ -300,8 +304,11 @@
             </Border>
             
             <!-- Photos -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"><Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
-                
+            <Border BackgroundColor="#F5F5F5" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📷 Photos" 
                            FontSize="18" 
@@ -310,7 +317,7 @@
                     
                     <!-- Edit/Add Mode -->
                     <Button Text="Add Photo" 
-                            Command="{Binding AddPhotoCommand}"
+                            Command="{Binding TakePhotoCommand}"
                             BackgroundColor="#2196F3"
                             TextColor="White"
                             CornerRadius="8"
@@ -336,13 +343,13 @@
                                         <!-- Edit/Add Mode -->
                                         <Button Grid.Row="1" 
                                                 Text="❌ Remove" 
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemovePhotoCommand}"
+                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemovePhotoCommand}"
                                                 CommandParameter="{Binding}"
                                                 BackgroundColor="#FF5722"
                                                 TextColor="White"
                                                 CornerRadius="5"
                                                 Margin="0,5,0,0"
-                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsEditable}"/>
+                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=IsEditable}"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -393,13 +400,13 @@
                                                FontSize="12"/>
                                         <!-- Edit/Add Mode -->
                                         <Button Text="❌ Remove" 
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveLocationCommand}"
+                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemoveLocationCommand}"
                                                 CommandParameter="{Binding}"
                                                 BackgroundColor="#FF5722"
                                                 TextColor="White"
                                                 CornerRadius="5"
                                                 Margin="0,5,0,0"
-                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsEditable}"/>
+                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
@@ -409,7 +416,10 @@
             </Border>
             
             <!-- Notes -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"><Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
+            <Border BackgroundColor="#F5F5F5" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📝 Notes" 
                            FontSize="18" 
@@ -447,7 +457,6 @@
                         FontAttributes="Bold"
                         HorizontalOptions="Fill"/>
                 
-                
                 <Button Grid.Column="1"
                         Text="{Binding IsAddMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='💾 Save|💾 Update'}"
                         Command="{Binding SaveObservationCommand}"
@@ -458,6 +467,7 @@
                         FontAttributes="Bold"
                         HorizontalOptions="Fill"
                         IsVisible="{Binding IsEditable}"/>
+
                 <!-- Edit Button (View Mode) -->
                 <Button Grid.Column="2"
                         Text="✏️ Edit"

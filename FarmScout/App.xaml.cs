@@ -27,9 +27,12 @@ public partial class App : Application
 				Log($"DispatcherUnhandledException: {e.Exception}");
 			};
 		}
-		catch { }
+        catch 
+        {
+            // do nothing
+        }
 #endif
-		InitializeComponent();
+        InitializeComponent();
 		Log("App InitializeComponent complete");
 		Log("App constructor complete");
 	}
@@ -81,21 +84,11 @@ public partial class App : Application
 	{
 		try
 		{
-			File.AppendAllText(LogFilePath, $"[{DateTime.Now:O}] {message}\n");
+            File.AppendAllText(LogFilePath, $"[{DateTime.Now:O}] {message}\n");
 		}
-		catch { }
-	}
-}
-
-public class TracedWindow : Window
-{
-	public TracedWindow(Page page) : base(page)
-	{
-		App.Log("TracedWindow constructor");
-		this.Created += (s, e) => App.Log("TracedWindow Created event");
-		this.Stopped += (s, e) => App.Log("TracedWindow Stopped event");
-		this.Destroying += (s, e) => App.Log("TracedWindow Destroying event");
-		this.Resumed += (s, e) => App.Log("TracedWindow Resumed event");
-		this.Activated += (s, e) => App.Log("TracedWindow Activated event");
+        catch 
+		{
+			// do nothing
+		}
 	}
 }

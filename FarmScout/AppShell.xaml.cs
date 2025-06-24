@@ -5,8 +5,6 @@ namespace FarmScout;
 
 public partial class AppShell : Shell
 {
-	private static readonly string LogFilePath = Path.Combine(FileSystem.AppDataDirectory, "startup.log");
-
 	public AppShell()
 	{
 		App.Log("AppShell constructor start");
@@ -39,12 +37,4 @@ public partial class AppShell : Shell
     public ICommand ViewObservationsCommand => new Command(async () => await GoToAsync("Observations"));
 	public ICommand ViewTasksCommand => new Command(async () => await GoToAsync("Tasks"));
 
-	private static void Log(string message)
-	{
-		try
-		{
-			File.AppendAllText(LogFilePath, $"[{DateTime.Now:O}] {message}\n");
-		}
-		catch { }
-	}
 }

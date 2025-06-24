@@ -7,19 +7,15 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class TasksViewModel : BaseViewModel
+public partial class TasksViewModel(FarmScoutDatabase database) : ObservableObject
 {
-    private readonly FarmScoutDatabase _database;
+    public ObservableCollection<TaskViewModel> Tasks { get; } = [];
 
-    public TasksViewModel(FarmScoutDatabase database)
-    {
-        _database = database;
-        Title = "Tasks";
+    [ObservableProperty]
+    public partial bool IsBusy { get; set; }
 
-        Tasks = [];
-    }
-
-    public ObservableCollection<TaskViewModel> Tasks { get; }
+    [ObservableProperty]
+    public partial string Title { get; set; } = "Tasks";
 
     [RelayCommand]
     public async Task LoadTasks()
@@ -30,12 +26,12 @@ public partial class TasksViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            var observations = await _database.GetObservationsAsync();
+            var observations = await database.GetObservationsAsync();
             var allTasks = new List<TaskViewModel>();
 
             foreach (var obs in observations)
             {
-                var tasks = await _database.GetTasksForObservationAsync(obs.Id);
+                var tasks = await database.GetTasksForObservationAsync(obs.Id);
                 foreach (var task in tasks)
                 {
                     allTasks.Add(new TaskViewModel(task, obs));
@@ -65,7 +61,7 @@ public partial class TasksViewModel : BaseViewModel
 
         try
         {
-            await _database.UpdateTaskAsync(taskVM.TaskItem);
+            await database.UpdateTaskAsync(taskVM.TaskItem);
             await LoadTasks(); // Refresh to update visual state
         }
         catch (Exception)
@@ -87,7 +83,7 @@ public partial class TasksViewModel : BaseViewModel
             try
             {
                 IsBusy = true;
-                await _database.DeleteTaskAsync(taskVM.TaskItem);
+                await database.DeleteTaskAsync(taskVM.TaskItem);
                 await LoadTasks();
             }
             catch (Exception)
@@ -111,10 +107,10 @@ public partial class TasksViewModel : BaseViewModel
     public ICommand CompleteTaskCommand => UpdateTaskStatusCommand;
 }
 
-public class TaskViewModel
+public class TaskViewModel(TaskItem taskItem, Observation observation)
 {
-    public TaskItem TaskItem { get; }
-    public Observation Observation { get; }
+    public TaskItem TaskItem { get; } = taskItem;
+    public Observation Observation { get; } = observation;
     public string ObservationInfo 
     {
         get
@@ -126,10 +122,4 @@ public class TaskViewModel
     }
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy");
     public TextDecorations TextDecoration => TaskItem.IsCompleted ? TextDecorations.Strikethrough : TextDecorations.None;
-
-    public TaskViewModel(TaskItem taskItem, Observation observation)
-    {
-        TaskItem = taskItem;
-        Observation = observation;
-    }
 } 

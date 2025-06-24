@@ -4,36 +4,26 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace FarmScout.ViewModels;
 
-public partial class DashboardViewModel : BaseViewModel
+public partial class DashboardViewModel(FarmScoutDatabase database, INavigationService navigationService) : ObservableObject
 {
-    private readonly FarmScoutDatabase _database;
-    private readonly INavigationService _navigationService;
-    private static readonly string LogFilePath = Path.Combine(FileSystem.AppDataDirectory, "startup.log");
-
-    public DashboardViewModel(FarmScoutDatabase database, INavigationService navigationService)
-    {
-        _database = database;
-        _navigationService = navigationService;
-        Title = "Farm Scout Dashboard";
-        
-        RecentActivity = [];
-        RecentObservations = [];
-    }
-
-    public ObservableCollection<ActivityItem> RecentActivity { get; }
+    [ObservableProperty]
+    public partial bool IsBusy { get; set; }
 
     [ObservableProperty]
-    private int _observationCount;
+    public partial string Title { get; set; } = "Farm Scout Dashboard";
+
+    public ObservableCollection<ActivityItem> RecentActivity { get; } = [];
 
     [ObservableProperty]
-    private int _taskCount;
+    public partial int ObservationCount { get; set; }
 
-    public ObservableCollection<SimpleObservationViewModel> RecentObservations { get; }
+    [ObservableProperty]
+    public partial int TaskCount { get; set; }
+
+    public ObservableCollection<SimpleObservationViewModel> RecentObservations { get; } = [];
 
     // Additional properties for the new UI
     public int TotalObservations => ObservationCount;
@@ -51,19 +41,19 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddObservation()
     {
-        await _navigationService.NavigateToAsync("Observation", new Dictionary<string, object> { { "Mode", "add" } });
+        await navigationService.NavigateToAsync("Observation", new Dictionary<string, object> { { "Mode", "add" } });
     }
 
     [RelayCommand]
     private async Task ViewObservations()
     {
-        await _navigationService.NavigateToAsync("Observations");
+        await navigationService.NavigateToAsync("Observations");
     }
 
     [RelayCommand]
     private async Task ViewTasks()
     {
-        await _navigationService.NavigateToAsync("Tasks");
+        await navigationService.NavigateToAsync("Tasks");
     }
 
     [RelayCommand]
@@ -73,7 +63,7 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task ViewObservation(SimpleObservationViewModel obs)
+    private static async Task ViewObservation(SimpleObservationViewModel obs)
     {
         try
         {
@@ -102,7 +92,7 @@ public partial class DashboardViewModel : BaseViewModel
         {
             IsBusy = true;
             App.Log("DashboardViewModel: Getting observations");
-            var observations = await _database.GetObservationsAsync();
+            var observations = await database.GetObservationsAsync();
             App.Log($"DashboardViewModel: Retrieved {observations.Count} observations from database");
             
             ObservationCount = observations.Count;
@@ -117,7 +107,7 @@ public partial class DashboardViewModel : BaseViewModel
             int totalTasks = 0;
             foreach (var obs in observations)
             {
-                var tasks = await _database.GetTasksForObservationAsync(obs.Id);
+                var tasks = await database.GetTasksForObservationAsync(obs.Id);
                 totalTasks += tasks.Count;
             }
             TaskCount = totalTasks;
@@ -159,7 +149,14 @@ public partial class DashboardViewModel : BaseViewModel
         catch (Exception ex)
         {
             App.Log($"DashboardViewModel: Exception: {ex}");
-            try { await Shell.Current.DisplayAlert("Error", $"Failed to load dashboard data: {ex.Message}", "OK"); } catch { }
+            try 
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to load dashboard data: {ex.Message}", "OK"); 
+            }
+            catch
+            {
+                // do nothing
+            }
         }
         finally
         {

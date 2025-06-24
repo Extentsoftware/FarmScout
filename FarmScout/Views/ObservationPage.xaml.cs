@@ -13,14 +13,14 @@ public partial class ObservationPage : ContentPage
     public ObservationPage(ObservationViewModel viewModel)
     {
         InitializeComponent();
+        
         BindingContext = viewModel;
         App.Log("ObservationPage ViewModel set from constructor injection");
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
+
         if (BindingContext is ObservationViewModel viewModel)
         {
             // Set the mode based on navigation parameters

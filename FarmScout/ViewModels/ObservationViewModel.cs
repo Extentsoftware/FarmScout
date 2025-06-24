@@ -8,14 +8,13 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationViewModel : BaseViewModel
+public partial class ObservationViewModel(
+    FarmScoutDatabase database,
+    PhotoService photoService,
+    LocationService locationService,
+    ShapefileService shapefileService,
+    INavigationService navigationService) : ObservableObject
 {
-    private readonly FarmScoutDatabase _database;
-    private readonly PhotoService _photoService;
-    private readonly LocationService _locationService;
-    private readonly ShapefileService _shapefileService;
-    private readonly INavigationService _navigationService;
-
     private Observation? _originalObservation;
 
     public enum ObservationMode
@@ -26,27 +25,33 @@ public partial class ObservationViewModel : BaseViewModel
         View
     }
 
-    public ObservationViewModel(
-        FarmScoutDatabase database, 
-        PhotoService photoService, 
-        LocationService locationService,
-        ShapefileService shapefileService,
-        INavigationService navigationService)
-    {
-        _database = database;
-        _photoService = photoService;
-        _locationService = locationService;
-        _shapefileService = shapefileService;
-        _navigationService = navigationService;
-        
-        _ = LoadFarmLocationsAsync();
+    // Properties
+    [ObservableProperty]
+    public partial bool IsBusy { get; set; }
 
-        SoilMoisture = 0;
-        Notes = "";
-        NewTaskDescription = "";
-        SelectedSeverity = "Information";
-        SelectedTypesDisplay = "None";
-    }
+    [ObservableProperty]
+    public partial string Title { get; set; } = "Loading..";
+
+
+#if false
+    public ICommand ShowObservationTypesCommand => ShowObservationTypesPopupCommand;
+    public ICommand ShowSeverityCommand => ShowSeverityPopupCommand;
+    public ICommand ShowFarmLocationCommand => SelectFarmLocationCommand;
+    public ICommand AddPhotoCommand => TakePhotoCommand;
+#endif
+
+    // Mode properties
+    [ObservableProperty]
+    public partial bool IsAddMode { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsEditMode { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsViewMode { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsEditable { get; set; }
 
     public ObservableCollection<TaskItem> Tasks { get; set; } = [];
 
@@ -58,7 +63,6 @@ public partial class ObservationViewModel : BaseViewModel
     
     public ObservableCollection<FarmLocation> FarmLocations { get; set; } = [];
 
-    // Properties
     [ObservableProperty]
     public partial double SoilMoisture { get; set; }
 
@@ -77,7 +81,6 @@ public partial class ObservationViewModel : BaseViewModel
     [ObservableProperty]
     public partial ObservationMode Mode { get; set; }
 
-    // Additional metrics properties
     [ObservableProperty]
     public partial string DiseaseName { get; set; } = string.Empty;
 
@@ -175,171 +178,23 @@ public partial class ObservationViewModel : BaseViewModel
     public partial string InfestationArea { get; set; } = string.Empty;
 
     // Computed properties
-    public bool HasPhotos => Photos.Count > 0;
-    public bool HasLocations => Locations.Count > 0;
-    public bool HasObservationTypes => SelectedObservationTypes.Count > 0;
+    [ObservableProperty]
+    public partial bool HasPhotos { get; set; }
 
     [ObservableProperty]
-    public partial string SelectedTypesDisplay { get; set; }    
+    public partial bool HasLocations { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasObservationTypes { get; set; }
+
+    [ObservableProperty]
+    public partial string SelectedTypesDisplay { get; set; }
 
     public string SeverityDisplay => $"{SeverityLevels.GetSeverityIcon(SelectedSeverity)} {SelectedSeverity}";
     public string SeverityColor => SeverityLevels.GetSeverityColor(SelectedSeverity);
 
-    // Mode properties
-    [ObservableProperty]
-    public partial bool IsAddMode { get; set; }
-    
-    [ObservableProperty]
-    public partial bool IsEditMode { get; set; }
-    
-    [ObservableProperty]
-    public partial bool IsViewMode { get; set; }
-    
-    [ObservableProperty]
-    public partial bool IsEditable { get; set; }
-
-    partial void OnModeChanged(ObservationMode value)
-    {
-        UpdateTitle();
-        IsAddMode = value == ObservationMode.Add;
-        IsEditMode = value == ObservationMode.Edit;
-        IsViewMode = value == ObservationMode.View;
-        IsEditable = IsAddMode || IsEditMode;
-    }
-
-    private void UpdateTitle()
-    {
-        Title = Mode switch
-        {
-            ObservationMode.Add => "Add Observation",
-            ObservationMode.Edit => "Edit Observation",
-            ObservationMode.View => "View Observation",
-            _ => "Observation"
-        };
-    }
-
-    // Commands
     [RelayCommand]
-    private async Task TakePhoto()
-    {
-        if (IsBusy) return;
-
-        try
-        {
-            IsBusy = true;
-            App.Log("TakePhoto: Starting photo capture...");
-
-            var photoPath = await _photoService.CapturePhotoAsync();
-            App.Log($"TakePhoto: Photo service returned path: {photoPath}");
-
-            if (!string.IsNullOrEmpty(photoPath))
-            {
-                var photo = new ObservationPhoto
-                {
-                    PhotoPath = photoPath,
-                    Timestamp = DateTime.Now,
-                    Description = $"Photo {Photos.Count + 1}"
-                };
-                Photos.Add(photo);
-                App.Log($"TakePhoto: Added photo to collection. Total photos: {Photos.Count}");
-                OnPropertyChanged(nameof(HasPhotos));
-            }
-            else
-            {
-                App.Log("TakePhoto: No photo path returned from service");
-            }
-        }
-        catch (Exception ex)
-        {
-            App.Log($"TakePhoto: Exception occurred: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to take photo", "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private void RemovePhoto(ObservationPhoto? photo)
-    {
-        if (photo != null && IsEditable)
-        {
-            Photos.Remove(photo);
-            OnPropertyChanged(nameof(HasPhotos));
-        }
-    }
-
-    [RelayCommand]
-    private async Task GetLocation()
-    {
-        if (IsBusy) return;
-
-        try
-        {
-            IsBusy = true;
-            App.Log("GetLocation: Starting location capture...");
-
-            var location = await _locationService.GetCurrentLocationAsync();
-            App.Log($"GetLocation: Location service returned: {location}");
-
-            if (location.HasValue)
-            {
-                var obsLocation = new ObservationLocation
-                {
-                    Latitude = location.Value.Latitude,
-                    Longitude = location.Value.Longitude,
-                    Timestamp = DateTime.Now,
-                    Description = $"Location {Locations.Count + 1}"
-                };
-                Locations.Add(obsLocation);
-                App.Log($"GetLocation: Added location to collection. Total locations: {Locations.Count}");
-                OnPropertyChanged(nameof(HasLocations));
-
-                // Try to suggest farm location based on GPS
-                var suggestedFarm = _shapefileService.FindNearestFarmLocation(location.Value.Latitude, location.Value.Longitude);
-                if (suggestedFarm != null)
-                {
-                    var result = await Shell.Current.DisplayAlert(
-                        "Farm Location Found",
-                        $"GPS location is near '{suggestedFarm.Name}' ({suggestedFarm.FieldType}). Would you like to select this farm location?",
-                        "Yes", "No");
-
-                    if (result)
-                    {
-                        SelectedFarmLocation = suggestedFarm;
-                    }
-                }
-            }
-            else
-            {
-                App.Log("GetLocation: No location returned from service");
-                await Shell.Current.DisplayAlert("Error", "Could not get location", "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            App.Log($"GetLocation: Exception occurred: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to get location", "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private void RemoveLocation(ObservationLocation? location)
-    {
-        if (location != null && IsEditable)
-        {
-            Locations.Remove(location);
-            OnPropertyChanged(nameof(HasLocations));
-        }
-    }
-
-    [RelayCommand]
-    private async void ShowObservationTypesPopup()
+    private async Task ShowObservationTypes()
     {
         var availableTypes = ObservationTypes.AvailableTypes.ToList();
         var selectedTypes = SelectedObservationTypes.ToList();
@@ -380,31 +235,152 @@ public partial class ObservationViewModel : BaseViewModel
 
                 App.Log($"ShowObservationTypesPopup: Final selected types: {string.Join(", ", SelectedObservationTypes)}");
 
-                OnPropertyChanged(nameof(HasObservationTypes));
-                OnPropertyChanged(nameof(SelectedTypesDisplay));
+                HasObservationTypes = SelectedObservationTypes.Count > 0;
 
                 // Force UI refresh for conditional fields
-                OnPropertyChanged(nameof(SelectedObservationTypes));
+                SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
             }
         }
     }
+
+    // Commands
+    [RelayCommand]
+    private async Task TakePhoto()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+            App.Log("TakePhoto: Starting photo capture...");
+
+            var photoPath = await photoService.CapturePhotoAsync();
+            App.Log($"TakePhoto: Photo service returned path: {photoPath}");
+
+            if (!string.IsNullOrEmpty(photoPath))
+            {
+                var photo = new ObservationPhoto
+                {
+                    PhotoPath = photoPath,
+                    Timestamp = DateTime.Now,
+                    Description = $"Photo {Photos.Count + 1}"
+                };
+                Photos.Add(photo);
+                App.Log($"TakePhoto: Added photo to collection. Total photos: {Photos.Count}");
+                HasPhotos = Photos.Count > 0;
+            }
+            else
+            {
+                App.Log("TakePhoto: No photo path returned from service");
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"TakePhoto: Exception occurred: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Failed to take photo", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private void RemovePhoto(ObservationPhoto? photo)
+    {
+        if (photo != null && IsEditable)
+        {
+            Photos.Remove(photo);
+            HasPhotos = Photos.Count > 0;
+        }
+    }
+
+    [RelayCommand]
+    private async Task GetLocation()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+            App.Log("GetLocation: Starting location capture...");
+
+            var location = await locationService.GetCurrentLocationAsync();
+            App.Log($"GetLocation: Location service returned: {location}");
+
+            if (location.HasValue)
+            {
+                var obsLocation = new ObservationLocation
+                {
+                    Latitude = location.Value.Latitude,
+                    Longitude = location.Value.Longitude,
+                    Timestamp = DateTime.Now,
+                    Description = $"Location {Locations.Count + 1}"
+                };
+                Locations.Add(obsLocation);
+                App.Log($"GetLocation: Added location to collection. Total locations: {Locations.Count}");
+                HasLocations = Locations.Count > 0;
+
+                // Try to suggest farm location based on GPS
+                var suggestedFarm = shapefileService.FindNearestFarmLocation(location.Value.Latitude, location.Value.Longitude);
+                if (suggestedFarm != null)
+                {
+                    var result = await Shell.Current.DisplayAlert(
+                        "Farm Location Found",
+                        $"GPS location is near '{suggestedFarm.Name}' ({suggestedFarm.FieldType}). Would you like to select this farm location?",
+                        "Yes", "No");
+
+                    if (result)
+                    {
+                        SelectedFarmLocation = suggestedFarm;
+                    }
+                }
+            }
+            else
+            {
+                App.Log("GetLocation: No location returned from service");
+                await Shell.Current.DisplayAlert("Error", "Could not get location", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"GetLocation: Exception occurred: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error", "Failed to get location", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveLocation(ObservationLocation? location)
+    {
+        if (location != null && IsEditable)
+        {
+            Locations.Remove(location);
+            HasLocations = Locations.Count > 0;
+        }
+    }
+
+#if false
+    
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
-            case nameof(SelectedTypesDisplay):
+            case nameof(SelectedObservationTypes):
                 SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
                 break;
         }
     }
-
+#endif
 
     [RelayCommand]
-    private async void ShowSeverityPopup()
+    private async Task ShowSeverityPopup()
     {
         var availableSeverities = SeverityLevels.AvailableSeverities.ToList();
-        var selectedSeverity = SelectedSeverity;
 
         var result = await Shell.Current.DisplayActionSheet(
             "Select Severity",
@@ -485,25 +461,19 @@ public partial class ObservationViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task GoBack()
+    private static async Task GoBack()
     {
         await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
-    private async Task EditObservation()
+    private void EditObservation()
     {
         if (Mode == ObservationMode.View)
         {
             SetEditMode();
         }
     }
-
-    // Additional commands for the UI
-    public ICommand ShowObservationTypesCommand => ShowObservationTypesPopupCommand;
-    public ICommand ShowSeverityCommand => ShowSeverityPopupCommand;
-    public ICommand ShowFarmLocationCommand => SelectFarmLocationCommand;
-    public ICommand AddPhotoCommand => TakePhotoCommand;
 
     // Public methods
     public async Task LoadObservationAsync(int observationId)
@@ -513,7 +483,7 @@ public partial class ObservationViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            var observations = await _database.GetObservationsAsync();
+            var observations = await database.GetObservationsAsync();
             var observation = observations.FirstOrDefault(o => o.Id == observationId);
             
             if (observation != null)
@@ -533,20 +503,48 @@ public partial class ObservationViewModel : BaseViewModel
         }
     }
 
-    public void SetViewMode()
+    private void UpdateIndicators()
     {
-        Mode = ObservationMode.View;
+        IsAddMode = Mode == ObservationMode.Add;
+        IsEditMode = Mode == ObservationMode.Edit;
+        IsViewMode = Mode == ObservationMode.View;
+        IsEditable = IsAddMode || IsEditMode;
     }
 
-    public void SetAddMode()
+    private void UpdateTitle()
+    {
+        Title = Mode switch
+        {
+            ObservationMode.Add => "Add New Observation",
+            ObservationMode.Edit => "Edit Observation",
+            ObservationMode.View => "View Observation",
+            _ => "Observation"
+        };
+    }
+
+    public async Task SetViewMode()
+    {
+        Mode = ObservationMode.View;
+        UpdateIndicators();
+        UpdateTitle();
+        await LoadFarmLocationsAsync();
+    }
+
+    public async Task SetAddMode()
     {
         Mode = ObservationMode.Add;
         ClearForm();
+        UpdateIndicators();
+        UpdateTitle();
+        await LoadFarmLocationsAsync();
     }
 
-    public void SetEditMode()
+    public async Task SetEditMode()
     {
         Mode = ObservationMode.Edit;
+        UpdateIndicators();
+        UpdateTitle();
+        await LoadFarmLocationsAsync();
     }
 
     private void ClearForm()
@@ -559,6 +557,11 @@ public partial class ObservationViewModel : BaseViewModel
         Photos.Clear();
         Locations.Clear();
         Tasks.Clear();
+        
+        // Update observable properties
+        HasPhotos = false;
+        HasLocations = false;
+        HasObservationTypes = false;
         
         // Clear additional metrics
         DiseaseName = string.Empty;
@@ -591,6 +594,104 @@ public partial class ObservationViewModel : BaseViewModel
         InfestationArea = string.Empty;
     }
 
+    private async Task CreateNewObservation()
+    {
+        var observation = new Observation
+        {
+            ObservationTypes = string.Join(",", SelectedObservationTypes),
+            Severity = SelectedSeverity,
+            SoilMoisture = SoilMoisture,
+            Notes = Notes,
+            FarmLocationId = SelectedFarmLocation?.Id,
+            Timestamp = DateTime.Now,
+            Latitude = Locations.FirstOrDefault()?.Latitude ?? 0,
+            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
+        };
+
+        var observationId = await database.AddObservationAsync(observation);
+
+        // Add locations
+        foreach (var location in Locations)
+        {
+            location.ObservationId = observationId;
+            await database.AddLocationAsync(location);
+        }
+
+        // Add photos
+        foreach (var photo in Photos)
+        {
+            photo.ObservationId = observationId;
+            await database.AddPhotoAsync(photo);
+        }
+
+        App.Log($"Created new observation with ID: {observationId}");
+        await Shell.Current.DisplayAlert("Success", "Observation created successfully", "OK");
+        await navigationService.GoBackAsync();
+    }
+
+    private async Task UpdateExistingObservation()
+    {
+        if (_originalObservation == null) return;
+
+        // Update the original observation with new values
+        _originalObservation.ObservationTypes = string.Join(",", SelectedObservationTypes);
+        _originalObservation.Severity = SelectedSeverity;
+        _originalObservation.SoilMoisture = SoilMoisture;
+        _originalObservation.Notes = Notes;
+        _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
+        _originalObservation.Timestamp = DateTime.Now; // Update timestamp to reflect edit
+
+        // Save the updated observation
+        await database.UpdateObservationAsync(_originalObservation);
+
+        // Update locations
+        await UpdateLocations();
+
+        // Update photos
+        await UpdatePhotos();
+
+        App.Log($"Updated observation {_originalObservation.Id}");
+        await Shell.Current.DisplayAlert("Success", "Observation updated successfully", "OK");
+        await navigationService.GoBackAsync();
+    }
+    private async Task UpdateLocations()
+    {
+        if (_originalObservation == null) return;
+
+        // Remove old locations
+        var oldLocations = await database.GetLocationsForObservationAsync(_originalObservation.Id);
+        foreach (var location in oldLocations)
+        {
+            await database.DeleteLocationAsync(location);
+        }
+
+        // Add new locations
+        foreach (var location in Locations)
+        {
+            location.ObservationId = _originalObservation.Id;
+            await database.AddLocationAsync(location);
+        }
+    }
+
+    private async Task UpdatePhotos()
+    {
+        if (_originalObservation == null) return;
+
+        // Remove old photos
+        var oldPhotos = await database.GetPhotosForObservationAsync(_originalObservation.Id);
+        foreach (var photo in oldPhotos)
+        {
+            await database.DeletePhotoAsync(photo);
+        }
+
+        // Add new photos
+        foreach (var photo in Photos)
+        {
+            photo.ObservationId = _originalObservation.Id;
+            await database.AddPhotoAsync(photo);
+        }
+    }
+
     private async Task LoadObservationForEditing(Observation observation)
     {
         _originalObservation = observation;
@@ -607,23 +708,10 @@ public partial class ObservationViewModel : BaseViewModel
         {
             SelectedObservationTypes.Add(type);
         }
-
-        // Load farm location if available
-        // TODO: Add GetFarmLocationsAsync method to FarmScoutDatabase
-        /*
-        if (observation.FarmLocationId.HasValue)
-        {
-            var farmLocations = await _database.GetFarmLocationsAsync();
-            var farmLocation = farmLocations.FirstOrDefault(fl => fl.Id == observation.FarmLocationId.Value);
-            if (farmLocation != null)
-            {
-                SelectedFarmLocation = farmLocation;
-            }
-        }
-        */
+        SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
 
         // Load locations
-        var locations = await _database.GetLocationsForObservationAsync(observation.Id);
+        var locations = await database.GetLocationsForObservationAsync(observation.Id);
         Locations.Clear();
         foreach (var location in locations)
         {
@@ -631,152 +719,19 @@ public partial class ObservationViewModel : BaseViewModel
         }
 
         // Load photos
-        var photos = await _database.GetPhotosForObservationAsync(observation.Id);
+        var photos = await database.GetPhotosForObservationAsync(observation.Id);
         Photos.Clear();
         foreach (var photo in photos)
         {
             Photos.Add(photo);
         }
 
-        // Load additional metrics from observation data
-        LoadAdditionalMetrics(observation);
-        //OnPropertyChanged(nameof(SelectedTypesDisplay));
+        // Update observable properties
+        HasPhotos = Photos.Count > 0;
+        HasLocations = Locations.Count > 0;
+        HasObservationTypes = SelectedObservationTypes.Count > 0;
+        
         App.Log($"Loaded observation {observation.Id} for editing");
-    }
-
-    private void LoadAdditionalMetrics(Observation observation)
-    {
-        // Parse additional metrics from the observation data
-        // This would need to be implemented based on how you store additional metrics
-        // For now, we'll set basic properties that we know exist
-        
-        // You can extend this method to load disease, pest, harvest, weather, and soil data
-        // based on your data structure
-    }
-
-    private async Task CreateNewObservation()
-    {
-        var observation = new Observation
-        {
-            ObservationTypes = string.Join(",", SelectedObservationTypes),
-            Severity = SelectedSeverity,
-            SoilMoisture = SoilMoisture,
-            Notes = Notes,
-            FarmLocationId = SelectedFarmLocation?.Id,
-            Timestamp = DateTime.Now,
-            Latitude = Locations.FirstOrDefault()?.Latitude ?? 0,
-            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
-        };
-
-        // Add additional metrics
-        AddAdditionalMetrics(observation);
-
-        var observationId = await _database.AddObservationAsync(observation);
-
-        // Add locations
-        foreach (var location in Locations)
-        {
-            location.ObservationId = observationId;
-            await _database.AddLocationAsync(location);
-        }
-
-        // Add photos
-        foreach (var photo in Photos)
-        {
-            photo.ObservationId = observationId;
-            await _database.AddPhotoAsync(photo);
-        }
-
-        App.Log($"Created new observation with ID: {observationId}");
-        await Shell.Current.DisplayAlert("Success", "Observation created successfully", "OK");
-        await _navigationService.GoBackAsync();
-    }
-
-    private async Task UpdateExistingObservation()
-    {
-        if (_originalObservation == null) return;
-
-        // Update the original observation with new values
-        _originalObservation.ObservationTypes = string.Join(",", SelectedObservationTypes);
-        _originalObservation.Severity = SelectedSeverity;
-        _originalObservation.SoilMoisture = SoilMoisture;
-        _originalObservation.Notes = Notes;
-        _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
-        _originalObservation.Timestamp = DateTime.Now; // Update timestamp to reflect edit
-
-        // Update additional metrics
-        UpdateAdditionalMetrics(_originalObservation);
-
-        // Save the updated observation
-        await _database.UpdateObservationAsync(_originalObservation);
-
-        // Update locations
-        await UpdateLocations();
-
-        // Update photos
-        await UpdatePhotos();
-
-        App.Log($"Updated observation {_originalObservation.Id}");
-        await Shell.Current.DisplayAlert("Success", "Observation updated successfully", "OK");
-        await _navigationService.GoBackAsync();
-    }
-
-    private void AddAdditionalMetrics(Observation observation)
-    {
-        // Add additional metrics to the observation
-        // This would need to be implemented based on how you store additional metrics
-        // For now, we'll update basic properties that we know exist
-        
-        // You can extend this method to save disease, pest, harvest, weather, and soil data
-        // based on your data structure
-    }
-
-    private void UpdateAdditionalMetrics(Observation observation)
-    {
-        // Update additional metrics in the observation
-        // This would need to be implemented based on how you store additional metrics
-        // For now, we'll update basic properties that we know exist
-        
-        // You can extend this method to save disease, pest, harvest, weather, and soil data
-        // based on your data structure
-    }
-
-    private async Task UpdateLocations()
-    {
-        if (_originalObservation == null) return;
-
-        // Remove old locations
-        var oldLocations = await _database.GetLocationsForObservationAsync(_originalObservation.Id);
-        foreach (var location in oldLocations)
-        {
-            await _database.DeleteLocationAsync(location);
-        }
-
-        // Add new locations
-        foreach (var location in Locations)
-        {
-            location.ObservationId = _originalObservation.Id;
-            await _database.AddLocationAsync(location);
-        }
-    }
-
-    private async Task UpdatePhotos()
-    {
-        if (_originalObservation == null) return;
-
-        // Remove old photos
-        var oldPhotos = await _database.GetPhotosForObservationAsync(_originalObservation.Id);
-        foreach (var photo in oldPhotos)
-        {
-            await _database.DeletePhotoAsync(photo);
-        }
-
-        // Add new photos
-        foreach (var photo in Photos)
-        {
-            photo.ObservationId = _originalObservation.Id;
-            await _database.AddPhotoAsync(photo);
-        }
     }
 
     private async Task LoadFarmLocationsAsync()
@@ -784,10 +739,10 @@ public partial class ObservationViewModel : BaseViewModel
         try
         {
             // Load shapefile or create sample data
-            await _shapefileService.LoadShapefileAsync("farm_locations.shp");
+            await shapefileService.LoadShapefileAsync("farm_locations.shp");
 
             FarmLocations.Clear();
-            foreach (var location in _shapefileService.GetFarmLocations())
+            foreach (var location in shapefileService.GetFarmLocations())
             {
                 FarmLocations.Add(location);
             }
@@ -808,7 +763,7 @@ public partial class ObservationViewModel : BaseViewModel
         return [.. metrics.Distinct()];
     }
 
-    private List<string> GetMetricsForType(string type)
+    private static List<string> GetMetricsForType(string type)
     {
         return type.ToLower() switch
         {
@@ -821,4 +776,4 @@ public partial class ObservationViewModel : BaseViewModel
             _ => []
         };
     }
-} 
+}

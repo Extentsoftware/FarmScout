@@ -5,22 +5,16 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationsViewModel : BaseViewModel
+public partial class ObservationsViewModel(FarmScoutDatabase database, INavigationService navigationService) : ObservableObject
 {
-    private readonly FarmScoutDatabase _database;
-    private readonly INavigationService _navigationService;
-
-    public ObservationsViewModel(FarmScoutDatabase database, INavigationService navigationService)
-    {
-        _database = database;
-        _navigationService = navigationService;
-        Title = "Observations";
-
-        Observations = [];
-    }
+    [ObservableProperty]
+    public partial bool IsBusy { get; set; }
 
     [ObservableProperty]
-    public partial List<SimpleObservationViewModel> Observations { get; set; }
+    public partial string Title { get; set; } = "Observations";
+
+    [ObservableProperty]
+    public partial List<SimpleObservationViewModel> Observations { get; set; } = [];
 
     [RelayCommand]
     public async Task LoadObservations()
@@ -32,7 +26,7 @@ public partial class ObservationsViewModel : BaseViewModel
             IsBusy = true;
             App.Log("Loading observations...");
 
-            var observations = await _database.GetObservationsAsync();
+            var observations = await database.GetObservationsAsync();
             App.Log($"Retrieved {observations.Count} observations from database");
             
             var observationViewModels = new List<SimpleObservationViewModel>();
@@ -72,7 +66,7 @@ public partial class ObservationsViewModel : BaseViewModel
                 { "ObservationId", obs.Observation.Id },
                 { "Mode", "view" }
             };
-            await _navigationService.NavigateToAsync("Observation", parameters);
+            await navigationService.NavigateToAsync("Observation", parameters);
         }
     }
 
@@ -91,14 +85,14 @@ public partial class ObservationsViewModel : BaseViewModel
                 IsBusy = true;
 
                 // Delete associated tasks first
-                var tasks = await _database.GetTasksForObservationAsync(obs.Observation.Id);
+                var tasks = await database.GetTasksForObservationAsync(obs.Observation.Id);
                 foreach (var task in tasks)
                 {
-                    await _database.DeleteTaskAsync(task);
+                    await database.DeleteTaskAsync(task);
                 }
                 
                 // Delete observation
-                await _database.DeleteObservationAsync(obs.Observation);
+                await database.DeleteObservationAsync(obs.Observation);
                 await LoadObservations();
             }
             catch (Exception)
@@ -119,11 +113,11 @@ public partial class ObservationsViewModel : BaseViewModel
         {
             { "Mode", "add" }
         };
-        await _navigationService.NavigateToAsync("Observation", parameters);
+        await navigationService.NavigateToAsync("Observation", parameters);
     }
 
     [RelayCommand]
-    private async Task GoBack()
+    private static async Task GoBack()
     {
         await Shell.Current.GoToAsync("..");
     }
@@ -135,9 +129,9 @@ public partial class ObservationsViewModel : BaseViewModel
     }
 }
 
-public partial class SimpleObservationViewModel: ObservableObject
+public partial class SimpleObservationViewModel(Observation observation) : ObservableObject
 {
-    public Observation Observation { get; }
+    public Observation Observation { get; } = observation;
     public string SoilMoistureText => $"Soil: {Observation.SoilMoisture:F0}%";
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy HH:mm");
     public string LocationText => $"📍 {Observation.Latitude:F4}, {Observation.Longitude:F4}";
@@ -151,11 +145,10 @@ public partial class SimpleObservationViewModel: ObservableObject
     }
     public string SeverityText => $"{SeverityLevels.GetSeverityIcon(Observation.Severity)} {Observation.Severity}";
     public string SeverityColor => SeverityLevels.GetSeverityColor(Observation.Severity);
-    public bool HasPhoto => false; // Will be updated when we load photos
-    public bool NoPhoto => true; // Will be updated when we load photos
- 
-    public SimpleObservationViewModel(Observation observation)
-    {
-        Observation = observation;
-    }
+
+    [ObservableProperty] 
+    public partial bool HasPhoto { get; set; } = false; // Will be updated when we load photos
+
+    [ObservableProperty]
+    public partial bool NoPhoto { get; set; } = true; // Will be updated when we load photos
 } 

@@ -6,11 +6,11 @@ namespace FarmScout.Services;
 
 public class ShapefileService
 {
-    private List<FarmLocation> _farmLocations = [];
+    private readonly List<FarmLocation> _farmLocations = [];
     
     public List<FarmLocation> FarmLocations => _farmLocations;
     
-    public async Task LoadShapefileAsync(string shapefilePath)
+    public async Task LoadShapefileAsync(string _)
     {
         try
         {
