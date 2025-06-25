@@ -9,7 +9,7 @@
              x:Name="ObservationPageRoot"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels" 
              Title="{Binding Title}"
-             
+             Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"
              
              >
     <!--Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"-->
@@ -18,7 +18,7 @@
         <!-- Header -->
             <Border Grid.Row="0" 
                BackgroundColor="#E8F5E8" 
-               Padding="20,10">
+               Padding="5,5">
                 <Grid ColumnDefinitions="Auto,*,Auto">
                     <Button Grid.Column="0"
                         Text="← Back"
@@ -26,12 +26,12 @@
                         BackgroundColor="#666"
                         TextColor="White"
                         CornerRadius="8"
-                        Padding="15,8"/>
+                        Padding="10,8"/>
                     
                     <Label 
                         Grid.Column="1"
                         Text="{Binding Title}" x:Name="Header"
-                        FontSize="24" 
+                        FontSize="14" 
                         FontAttributes="Bold" 
                         HorizontalOptions="Center"
                         TextColor="#2E7D32"/>

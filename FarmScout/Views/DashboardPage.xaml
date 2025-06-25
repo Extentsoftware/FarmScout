@@ -29,7 +29,7 @@
                                    FontAttributes="Bold"
                                    TextColor="#2E7D32"/>
                             <Label Text="Observations" 
-                                   FontSize="12" 
+                                   FontSize="10" 
                                    TextColor="#666"/>
                         </VerticalStackLayout>
                         
@@ -39,7 +39,7 @@
                                    FontAttributes="Bold"
                                    TextColor="#1976D2"/>
                             <Label Text="Tasks" 
-                                   FontSize="12" 
+                                   FontSize="10" 
                                    TextColor="#666"/>
                         </VerticalStackLayout>
                         
@@ -49,7 +49,7 @@
                                    FontAttributes="Bold"
                                    TextColor="#FF9800"/>
                             <Label Text="Avg Soil" 
-                                   FontSize="12" 
+                                   FontSize="10" 
                                    TextColor="#666"/>
                         </VerticalStackLayout>
                     </Grid>
