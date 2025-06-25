@@ -618,7 +618,31 @@ public partial class ObservationViewModel : ObservableObject
             FarmLocationId = SelectedFarmLocation?.Id,
             Timestamp = DateTime.Now,
             Latitude = Locations.FirstOrDefault()?.Latitude ?? 0,
-            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
+            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0,
+            
+            // Disease Information
+            DiseaseName = DiseaseName,
+            Disease = DiseaseType, // Using Disease property for DiseaseType
+            
+            // Pest Information
+            PestCount = PestCount,
+            PestName = PestName,
+            
+            // Harvest Information
+            CropType = CropType,
+            WeightKg = HarvestWeight,
+            PlantCount = HarvestQuantity, // Using PlantCount for HarvestQuantity
+            
+            // Weather Information
+            TemperatureCelsius = Temperature,
+            HumidityPercentage = Humidity,
+            WindSpeed = WindSpeed,
+            
+            // Soil Information
+            PhLevel = SoilPH,
+            NutrientLevel = SoilNitrogen, // Using NutrientLevel for Nitrogen
+            SoilPhosphorus = SoilPhosphorus,
+            SoilPotassium = SoilPotassium
         };
 
         var observationId = await database.AddObservationAsync(observation);
@@ -653,6 +677,30 @@ public partial class ObservationViewModel : ObservableObject
         _originalObservation.Notes = Notes;
         _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
         _originalObservation.Timestamp = DateTime.Now; // Update timestamp to reflect edit
+
+        // Disease Information
+        _originalObservation.DiseaseName = DiseaseName;
+        _originalObservation.Disease = DiseaseType; // Using Disease property for DiseaseType
+
+        // Pest Information
+        _originalObservation.PestCount = PestCount;
+        _originalObservation.PestName = PestName;
+
+        // Harvest Information
+        _originalObservation.CropType = CropType;
+        _originalObservation.WeightKg = HarvestWeight;
+        _originalObservation.PlantCount = HarvestQuantity; // Using PlantCount for HarvestQuantity
+
+        // Weather Information
+        _originalObservation.TemperatureCelsius = Temperature;
+        _originalObservation.HumidityPercentage = Humidity;
+        _originalObservation.WindSpeed = WindSpeed;
+
+        // Soil Information
+        _originalObservation.PhLevel = SoilPH;
+        _originalObservation.NutrientLevel = SoilNitrogen; // Using NutrientLevel for Nitrogen
+        _originalObservation.SoilPhosphorus = SoilPhosphorus;
+        _originalObservation.SoilPotassium = SoilPotassium;
 
         // Save the updated observation
         await database.UpdateObservationAsync(_originalObservation);
@@ -713,6 +761,30 @@ public partial class ObservationViewModel : ObservableObject
         SoilMoisture = observation.SoilMoisture;
         Notes = observation.Notes ?? string.Empty;
         SelectedSeverity = observation.Severity;
+
+        // Load Disease Information
+        DiseaseName = observation.DiseaseName ?? string.Empty;
+        DiseaseType = observation.Disease ?? string.Empty; // Using Disease property for DiseaseType
+
+        // Load Pest Information
+        PestCount = observation.PestCount;
+        PestName = observation.PestName ?? string.Empty;
+
+        // Load Harvest Information
+        CropType = observation.CropType ?? string.Empty;
+        HarvestWeight = observation.WeightKg;
+        HarvestQuantity = observation.PlantCount; // Using PlantCount for HarvestQuantity
+
+        // Load Weather Information
+        Temperature = observation.TemperatureCelsius;
+        Humidity = observation.HumidityPercentage;
+        WindSpeed = observation.WindSpeed;
+
+        // Load Soil Information
+        SoilPH = observation.PhLevel;
+        SoilNitrogen = observation.NutrientLevel; // Using NutrientLevel for Nitrogen
+        SoilPhosphorus = observation.SoilPhosphorus;
+        SoilPotassium = observation.SoilPotassium;
 
         // Load observation types
         var types = ObservationTypes.SplitTypes(observation.ObservationTypes);

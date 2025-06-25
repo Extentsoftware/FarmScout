@@ -37,6 +37,8 @@ namespace FarmScout.Models
         public double? Precipitation { get; set; }
         public double? PhLevel { get; set; }
         public double? NutrientLevel { get; set; }
+        public double? SoilPhosphorus { get; set; }
+        public double? SoilPotassium { get; set; }
         public string Symptoms { get; set; } = string.Empty;
         public string Cause { get; set; } = string.Empty;
         public string Quality { get; set; } = string.Empty;

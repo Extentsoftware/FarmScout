@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FarmScout.Controls.WeatherControl">
+    
+    <Border BackgroundColor="#F5F5F5" Padding="15">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10" />
+        </Border.StrokeShape>
+        <VerticalStackLayout Spacing="10">
+            <Label Text="🌤️ Weather Information" 
+                   FontSize="18" 
+                   FontAttributes="Bold"
+                   TextColor="#2E7D32"/>
+            
+            <Entry Placeholder="Temperature (°C)" 
+                   Text="{Binding Temperature}"
+                   TextColor="Black"
+                   BackgroundColor="White"
+                   PlaceholderColor="#999"
+                   Keyboard="Numeric"
+                   IsReadOnly="{Binding IsViewMode}"/>
+            
+            <Entry Placeholder="Humidity (%)" 
+                   Text="{Binding Humidity}"
+                   TextColor="Black"
+                   BackgroundColor="White"
+                   PlaceholderColor="#999"
+                   Keyboard="Numeric"
+                   IsReadOnly="{Binding IsViewMode}"/>
+            
+            <Entry Placeholder="Wind Speed (km/h)" 
+                   Text="{Binding WindSpeed}"
+                   TextColor="Black"
+                   BackgroundColor="White"
+                   PlaceholderColor="#999"
+                   Keyboard="Numeric"
+                   IsReadOnly="{Binding IsViewMode}"/>
+        </VerticalStackLayout>
+    </Border>
+    
+</ContentView> 

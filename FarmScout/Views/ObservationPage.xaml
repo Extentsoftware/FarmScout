@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:FarmScout.Models"
              xmlns:converters="clr-namespace:FarmScout.Converters"
+             xmlns:controls="clr-namespace:FarmScout.Controls"
              x:Class="FarmScout.Views.ObservationPage"
              x:DataType="viewmodels:ObservationViewModel"
              x:Name="ObservationPageRoot"
@@ -47,34 +48,7 @@
                 </VerticalStackLayout>
             </Border>
             
-            <!-- Soil Moisture -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil Moisture}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🌍 Soil Moisture" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Slider Value="{Binding SoilMoisture}" 
-                            Minimum="0" 
-                            Maximum="100"
-                            ThumbColor="#2E7D32"
-                            MinimumTrackColor="#4CAF50"
-                            MaximumTrackColor="#E0E0E0"
-                            IsVisible="{Binding IsEditable}"/>
-                    
-                    <Label Text="{Binding SoilMoisture, StringFormat='{0:F0}%'}" 
-                           FontSize="16" 
-                           HorizontalOptions="Center"
-                           TextColor="#2E7D32"/>
-                </VerticalStackLayout>
-            </Border>
-            
+           
             <!-- Severity -->
             <Border BackgroundColor="#F5F5F5" Padding="15"><Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
@@ -130,178 +104,29 @@
             </Border>
             
             <!-- Additional Metrics -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🦠 Disease Information" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <Entry Placeholder="Disease Name" 
-                           Text="{Binding DiseaseName}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Disease Type" 
-                           Text="{Binding DiseaseType}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
+            <!-- Soil Moisture -->
+            <controls:SoilMoistureControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil Moisture}"/>
+            
+            <!-- Disease Information -->
+            <controls:DiseaseControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}"/>
 
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Pest}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🐛 Pest Information" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <Entry Placeholder="Pest Name" 
-                           Text="{Binding PestName}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Pest Count" 
-                           Text="{Binding PestCount}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
+            <!-- Pest Information -->
+            <controls:PestControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Pest}"/>
 
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Harvest}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🌾 Harvest Information" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <Entry Placeholder="Crop Type" 
-                           Text="{Binding CropType}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Weight (kg)" 
-                           Text="{Binding HarvestWeight}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Quantity" 
-                           Text="{Binding HarvestQuantity}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
+            <!-- Harvest Information -->
+            <controls:HarvestControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Harvest}"/>
 
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Weather}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🌤️ Weather Information" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <Entry Placeholder="Temperature (°C)" 
-                           Text="{Binding Temperature}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Humidity (%)" 
-                           Text="{Binding Humidity}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Wind Speed (km/h)" 
-                           Text="{Binding WindSpeed}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
+            <!-- Weather Information -->
+            <controls:WeatherControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Weather}"/>
 
-            <Border BackgroundColor="#F5F5F5" Padding="15"
-                   IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🌍 Soil Information" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <Entry Placeholder="pH Level" 
-                           Text="{Binding SoilPH}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Nitrogen (N)" 
-                           Text="{Binding SoilNitrogen}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Phosphorus (P)" 
-                           Text="{Binding SoilPhosphorus}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <Entry Placeholder="Potassium (K)" 
-                           Text="{Binding SoilPotassium}"
-                           TextColor="Black"
-                           BackgroundColor="White"
-                           PlaceholderColor="#999"
-                           Keyboard="Numeric"
-                           IsReadOnly="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
+            <!-- Soil Information -->
+            <controls:SoilControl 
+                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil}"/>
             
             <!-- Photos -->
             <Border BackgroundColor="#F5F5F5" Padding="15">
@@ -349,7 +174,7 @@
                                                 TextColor="White"
                                                 CornerRadius="5"
                                                 Margin="0,5,0,0"
-                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=IsEditable}"/>
+                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

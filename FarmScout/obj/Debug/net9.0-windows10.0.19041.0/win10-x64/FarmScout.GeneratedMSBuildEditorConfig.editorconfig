@@ -45,6 +45,42 @@ build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.AppShell.xaml
 build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
 build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
 
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/DiseaseControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.DiseaseControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\DiseaseControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\DiseaseControl.xaml
+
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/HarvestControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.HarvestControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\HarvestControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\HarvestControl.xaml
+
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/PestControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.PestControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\PestControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\PestControl.xaml
+
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/SoilControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.SoilControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\SoilControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\SoilControl.xaml
+
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/SoilMoistureControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.SoilMoistureControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\SoilMoistureControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\SoilMoistureControl.xaml
+
+[C:/Data/Bongo/FarmScout/FarmScout/Controls/WeatherControl.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.Controls.WeatherControl.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls\WeatherControl.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls\WeatherControl.xaml
+
 [C:/Data/Bongo/FarmScout/FarmScout/MainPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = FarmScout.MainPage.xaml
