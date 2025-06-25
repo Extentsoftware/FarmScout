@@ -23,8 +23,8 @@ public static class MauiProgram
 			});
 
 		// Register services
-		string dbPath = Path.Combine(FileSystem.AppDataDirectory, "farmscout.db3");
-		builder.Services.AddSingleton(s => new FarmScoutDatabase(dbPath));
+
+		builder.Services.AddSingleton<FarmScoutDatabase>();
 		builder.Services.AddSingleton<PhotoService>();
 		builder.Services.AddSingleton<LocationService>();
 		builder.Services.AddSingleton<ShapefileService>();

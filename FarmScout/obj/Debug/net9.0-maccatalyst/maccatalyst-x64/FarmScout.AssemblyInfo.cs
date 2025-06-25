@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+063212db300acb1f9c261a9c22206c2c775adb20")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+37a46671ab5cbbadfd4c8312f4870ea669cd4e64")]
 [assembly: System.Reflection.AssemblyProductAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

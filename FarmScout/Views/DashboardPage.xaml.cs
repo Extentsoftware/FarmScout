@@ -4,36 +4,18 @@ namespace FarmScout.Views;
 
 public partial class DashboardPage : ContentPage
 {
-    public DashboardPage()
+    public DashboardPage(DashboardViewModel viewModel)
     {
-        App.Log("DashboardPage constructor start");
-        try
-        {
-            InitializeComponent();
-            App.Log("DashboardPage constructor complete");
-        }
-        catch (Exception ex)
-        {
-            App.Log($"DashboardPage constructor exception: {ex}");
-            throw;
-        }
+        InitializeComponent();
+        BindingContext = viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        App.Log("DashboardPage OnAppearing");
-        
-       var dashboardViewModel = MauiProgram.Services.GetRequiredService<DashboardViewModel>();
-       if (dashboardViewModel != null)
-       {
-            BindingContext = dashboardViewModel;
-            await dashboardViewModel.LoadDashboardData();
-            App.Log("DashboardPage ViewModel set from DI in OnAppearing");
-       }
-       else
-       {
-            App.Log("DashboardPage ViewModel NOT resolved from DI in OnAppearing");
-       }
+        if (BindingContext is DashboardViewModel viewModel)
+        {
+            await viewModel.LoadDashboardData();
+        }
     }
 } 

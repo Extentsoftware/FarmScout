@@ -363,20 +363,6 @@ public partial class ObservationViewModel(
         }
     }
 
-#if false
-    
-
-    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case nameof(SelectedObservationTypes):
-                SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
-                break;
-        }
-    }
-#endif
-
     [RelayCommand]
     private async Task ShowSeverityPopup()
     {
@@ -397,11 +383,21 @@ public partial class ObservationViewModel(
     }
 
     [RelayCommand]
-    private void SelectFarmLocation(FarmLocation? farmLocation)
+    private async Task SelectFarmLocation(FarmLocation? farmLocation)
     {
-        if (IsEditable)
+        var locations = FarmLocations.Select(x=>x.Name).ToArray();
+
+        var result = await Shell.Current.DisplayActionSheet(
+            "Select Location",
+            "Cancel",
+            null,
+            [..locations]);
+
+        if (result != null && result != "Cancel")
         {
-            SelectedFarmLocation = farmLocation;
+            SelectedFarmLocation = FarmLocations.FirstOrDefault(x => x.Name == result);
+            OnPropertyChanged(nameof(SeverityDisplay));
+            OnPropertyChanged(nameof(SeverityColor));
         }
     }
 

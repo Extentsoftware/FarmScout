@@ -20,12 +20,8 @@
 
     <ShellContent
         Title="🏠 Dashboard"
-        Route="Dashboard">
-        <ShellContent.ContentTemplate>
-            <DataTemplate>
-                <views:DashboardPage />
-            </DataTemplate>
-        </ShellContent.ContentTemplate>
+        Route="Dashboard"
+        ContentTemplate="{DataTemplate views:DashboardPage}">
     </ShellContent>
     
     <!-- Menu Items for Navigation -->

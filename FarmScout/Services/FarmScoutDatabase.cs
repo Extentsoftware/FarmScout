@@ -10,16 +10,23 @@ namespace FarmScout.Services
     public class FarmScoutDatabase
     {
         private readonly SQLiteAsyncConnection _database;
-
-        public FarmScoutDatabase(string dbPath)
+        public const SQLite.SQLiteOpenFlags Flags =
+                   // open the database in read/write mode
+                   SQLite.SQLiteOpenFlags.ReadWrite |
+                   // create the database if it doesn't exist
+                   SQLite.SQLiteOpenFlags.Create |
+                   // enable multi-threaded database access
+                   SQLite.SQLiteOpenFlags.SharedCache;
+        public FarmScoutDatabase()
         {
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "farmscout.db3");
             App.Log($"Initializing database at path: {dbPath}");
             
             // Initialize SQLite
             SQLitePCL.Batteries_V2.Init();
             
-            _database = new SQLiteAsyncConnection(dbPath);
-            
+            _database = new SQLiteAsyncConnection(dbPath, Flags);
+
             // Initialize database synchronously to avoid hanging
             try
             {
@@ -37,9 +44,11 @@ namespace FarmScout.Services
             try
             {
                 App.Log("Creating database tables...");
-                
+                await _database.EnableWriteAheadLoggingAsync();
+
                 App.Log("Creating Observation table...");
                 var syncConnection = new SQLiteConnection(_database.DatabasePath);
+                
                 syncConnection.CreateTable<Observation>();
                 App.Log("Observation table created successfully using sync method");
                 
@@ -58,19 +67,13 @@ namespace FarmScout.Services
                 App.Log("Creating FarmLocation table...");
                 syncConnection.CreateTable<FarmLocation>();
                 App.Log("FarmLocation table created successfully");
-                
+
                 App.Log("Database initialization completed successfully");
                 
                 // Log the number of observations in the database
                 var count = await _database.Table<Observation>().CountAsync();
                 App.Log($"Database initialized. Current observation count: {count}");
-                
-                // List all observations for debugging
-                var allObservations = await _database.Table<Observation>().ToListAsync();
-                foreach (var obs in allObservations)
-                {
-                    App.Log($"Existing observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}");
-                }
+
             }
             catch (Exception ex)
             {

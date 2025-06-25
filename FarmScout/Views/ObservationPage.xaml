@@ -6,7 +6,7 @@
              x:Class="FarmScout.Views.ObservationPage"
              x:DataType="viewmodels:ObservationViewModel"
              x:Name="ObservationPageRoot"
-             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels" 
              Title="{Binding Title}">
     
     <ScrollView>
@@ -122,7 +122,7 @@
                             IsVisible="{Binding IsEditable}"/>
                     
                     <!-- View Mode -->
-                    <Label Text="{Binding SelectedFarmLocation, StringFormat='Location: {0}'}" 
+                    <Label Text="{Binding SelectedFarmLocation.Name, StringFormat='Location: {0}'}" 
                            FontSize="16" 
                            TextColor="#666"
                            IsVisible="{Binding IsViewMode}"/>

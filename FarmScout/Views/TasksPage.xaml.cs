@@ -14,7 +14,7 @@ public partial class TasksPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
+
         if (BindingContext is TasksViewModel viewModel)
         {
             await viewModel.LoadTasks();
