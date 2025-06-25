@@ -113,7 +113,7 @@
                            TextColor="#2E7D32"/>
                     
                     <!-- Edit/Add Mode -->
-                    <Button Text="{Binding SelectedFarmLocation, StringFormat='Location: {0}'}"
+                    <Button Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}"
                             Command="{Binding SelectFarmLocationCommand}"
                             BackgroundColor="#E8F5E8"
                             TextColor="#2E7D32"
@@ -122,7 +122,7 @@
                             IsVisible="{Binding IsEditable}"/>
                     
                     <!-- View Mode -->
-                    <Label Text="{Binding SelectedFarmLocation.Name, StringFormat='Location: {0}'}" 
+                    <Label Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}" 
                            FontSize="16" 
                            TextColor="#666"
                            IsVisible="{Binding IsViewMode}"/>

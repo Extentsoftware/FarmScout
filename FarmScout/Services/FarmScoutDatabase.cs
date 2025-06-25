@@ -21,10 +21,11 @@ namespace FarmScout.Services
         {
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "farmscout.db3");
             App.Log($"Initializing database at path: {dbPath}");
-            
+
             // Initialize SQLite
             SQLitePCL.Batteries_V2.Init();
             
+
             _database = new SQLiteAsyncConnection(dbPath, Flags);
 
             // Initialize database synchronously to avoid hanging
@@ -44,28 +45,28 @@ namespace FarmScout.Services
             try
             {
                 App.Log("Creating database tables...");
+                
                 await _database.EnableWriteAheadLoggingAsync();
 
                 App.Log("Creating Observation table...");
-                var syncConnection = new SQLiteConnection(_database.DatabasePath);
-                
-                syncConnection.CreateTable<Observation>();
+
+                await _database.CreateTableAsync<Observation>();
                 App.Log("Observation table created successfully using sync method");
                 
                 App.Log("Creating TaskItem table...");
-                syncConnection.CreateTable<TaskItem>();
+                await _database.CreateTableAsync<TaskItem>();
                 App.Log("TaskItem table created successfully");
                 
                 App.Log("Creating ObservationPhoto table...");
-                syncConnection.CreateTable<ObservationPhoto>();
+                await _database.CreateTableAsync<ObservationPhoto>();
                 App.Log("ObservationPhoto table created successfully");
                 
                 App.Log("Creating ObservationLocation table...");
-                syncConnection.CreateTable<ObservationLocation>();
+                await _database.CreateTableAsync<ObservationLocation>();
                 App.Log("ObservationLocation table created successfully");
                 
                 App.Log("Creating FarmLocation table...");
-                syncConnection.CreateTable<FarmLocation>();
+                await _database.CreateTableAsync<FarmLocation>();
                 App.Log("FarmLocation table created successfully");
 
                 App.Log("Database initialization completed successfully");

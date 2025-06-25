@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
@@ -8,14 +6,30 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationViewModel(
-    FarmScoutDatabase database,
-    PhotoService photoService,
-    LocationService locationService,
-    ShapefileService shapefileService,
-    INavigationService navigationService) : ObservableObject
+public partial class ObservationViewModel : ObservableObject
 {
     private Observation? _originalObservation;
+    private readonly FarmScoutDatabase database;
+    private readonly PhotoService photoService;
+    private readonly LocationService locationService;
+    private readonly ShapefileService shapefileService;
+    private readonly INavigationService navigationService;
+
+    public ObservationViewModel(
+        FarmScoutDatabase database,
+        PhotoService photoService,
+        LocationService locationService,
+        ShapefileService shapefileService,
+        INavigationService navigationService)
+    {
+        this.database = database;
+        this.photoService = photoService;
+        this.locationService = locationService;
+        this.shapefileService = shapefileService;
+        this.navigationService = navigationService;
+
+        LoadFarmLocationsAsync().GetAwaiter().GetResult();
+    }
 
     public enum ObservationMode
     {
@@ -31,14 +45,6 @@ public partial class ObservationViewModel(
 
     [ObservableProperty]
     public partial string Title { get; set; } = "Loading..";
-
-
-#if false
-    public ICommand ShowObservationTypesCommand => ShowObservationTypesPopupCommand;
-    public ICommand ShowSeverityCommand => ShowSeverityPopupCommand;
-    public ICommand ShowFarmLocationCommand => SelectFarmLocationCommand;
-    public ICommand AddPhotoCommand => TakePhotoCommand;
-#endif
 
     // Mode properties
     [ObservableProperty]
@@ -67,16 +73,19 @@ public partial class ObservationViewModel(
     public partial double SoilMoisture { get; set; }
 
     [ObservableProperty]
-    public partial string Notes { get; set; }
+    public partial string Notes { get; set; } = "";
 
     [ObservableProperty]
-    public partial string NewTaskDescription { get; set; }
+    public partial string NewTaskDescription { get; set; } = "";
 
     [ObservableProperty]
-    public partial string SelectedSeverity { get; set; }
+    public partial string SelectedSeverity { get; set; } = "";
 
     [ObservableProperty]
     public partial FarmLocation? SelectedFarmLocation { get; set; }
+
+    [ObservableProperty]
+    public partial string SelectedFarmLocationText { get; set; } = "";
 
     [ObservableProperty]
     public partial ObservationMode Mode { get; set; }
@@ -188,10 +197,24 @@ public partial class ObservationViewModel(
     public partial bool HasObservationTypes { get; set; }
 
     [ObservableProperty]
-    public partial string SelectedTypesDisplay { get; set; }
+    public partial string SelectedTypesDisplay { get; set; } = "";
 
-    public string SeverityDisplay => $"{SeverityLevels.GetSeverityIcon(SelectedSeverity)} {SelectedSeverity}";
-    public string SeverityColor => SeverityLevels.GetSeverityColor(SelectedSeverity);
+    [ObservableProperty]
+    public partial string SeverityDisplay { get; set; } = "";
+    
+    [ObservableProperty]
+    public partial string SeverityColor { get; set; } = "";
+
+    partial void OnSelectedFarmLocationChanged(FarmLocation? value)
+    {
+        SelectedFarmLocationText = value!.Name;
+    }
+
+    partial void OnSelectedSeverityChanged(string value)
+    {
+        SeverityDisplay = $"{SeverityLevels.GetSeverityIcon(SelectedSeverity)} {SelectedSeverity}";
+        SeverityColor = SeverityLevels.GetSeverityColor(SelectedSeverity);
+    }
 
     [RelayCommand]
     private async Task ShowObservationTypes()
@@ -239,6 +262,7 @@ public partial class ObservationViewModel(
 
                 // Force UI refresh for conditional fields
                 SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
+                OnPropertyChanged(nameof(SelectedObservationTypes));
             }
         }
     }
@@ -377,8 +401,6 @@ public partial class ObservationViewModel(
         if (result != null && result != "Cancel")
         {
             SelectedSeverity = result;
-            OnPropertyChanged(nameof(SeverityDisplay));
-            OnPropertyChanged(nameof(SeverityColor));
         }
     }
 
@@ -396,8 +418,6 @@ public partial class ObservationViewModel(
         if (result != null && result != "Cancel")
         {
             SelectedFarmLocation = FarmLocations.FirstOrDefault(x => x.Name == result);
-            OnPropertyChanged(nameof(SeverityDisplay));
-            OnPropertyChanged(nameof(SeverityColor));
         }
     }
 
@@ -523,7 +543,6 @@ public partial class ObservationViewModel(
         Mode = ObservationMode.View;
         UpdateIndicators();
         UpdateTitle();
-        await LoadFarmLocationsAsync();
     }
 
     public async Task SetAddMode()
@@ -532,7 +551,6 @@ public partial class ObservationViewModel(
         ClearForm();
         UpdateIndicators();
         UpdateTitle();
-        await LoadFarmLocationsAsync();
     }
 
     public async Task SetEditMode()
@@ -540,7 +558,6 @@ public partial class ObservationViewModel(
         Mode = ObservationMode.Edit;
         UpdateIndicators();
         UpdateTitle();
-        await LoadFarmLocationsAsync();
     }
 
     private void ClearForm()
@@ -705,6 +722,7 @@ public partial class ObservationViewModel(
             SelectedObservationTypes.Add(type);
         }
         SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
+        OnPropertyChanged(nameof(SelectedObservationTypes));
 
         // Load locations
         var locations = await database.GetLocationsForObservationAsync(observation.Id);
@@ -713,6 +731,8 @@ public partial class ObservationViewModel(
         {
             Locations.Add(location);
         }
+
+        SelectedFarmLocation = FarmLocations.FirstOrDefault(x => x.Id == observation.FarmLocationId);
 
         // Load photos
         var photos = await database.GetPhotosForObservationAsync(observation.Id);

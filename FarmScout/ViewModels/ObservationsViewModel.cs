@@ -132,7 +132,7 @@ public partial class ObservationsViewModel(FarmScoutDatabase database, INavigati
 public partial class SimpleObservationViewModel(Observation observation) : ObservableObject
 {
     public Observation Observation { get; } = observation;
-    public string SoilMoistureText => $"Soil: {Observation.SoilMoisture:F0}%";
+    public string Notes => Observation.Notes;
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy HH:mm");
     public string LocationText => $"📍 {Observation.Latitude:F4}, {Observation.Longitude:F4}";
     public string ObservationTypesText 

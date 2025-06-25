@@ -74,7 +74,7 @@
                                            FontSize="14" 
                                            TextColor="{Binding SeverityColor}"
                                            FontAttributes="Bold"/>
-                                    <Label Text="{Binding SoilMoistureText}" 
+                                    <Label Text="{Binding Notes}" 
                                            FontSize="14" 
                                            TextColor="#666"/>
                                     <Label Text="{Binding TimestampText}" 
