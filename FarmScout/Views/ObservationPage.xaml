@@ -8,19 +8,63 @@
              x:DataType="viewmodels:ObservationViewModel"
              x:Name="ObservationPageRoot"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels" 
-             Title="{Binding Title}">
-    
-    <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="20">
-            
-            <!-- Header -->
-            <Label Text="{Binding Title}" x:Name="Header"
-                   FontSize="24" 
-                   FontAttributes="Bold" 
-                   HorizontalOptions="Center"
-                   TextColor="#2E7D32"/>
-            
-            <!-- Observation Types -->
+             Title="{Binding Title}"
+             
+             
+             >
+    <!--Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"-->
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+            <Border Grid.Row="0" 
+               BackgroundColor="#E8F5E8" 
+               Padding="20,10">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Column="0"
+                        Text="← Back"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="#666"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Padding="15,8"/>
+                    
+                    <Label 
+                        Grid.Column="1"
+                        Text="{Binding Title}" x:Name="Header"
+                        FontSize="24" 
+                        FontAttributes="Bold" 
+                        HorizontalOptions="Center"
+                        TextColor="#2E7D32"/>
+
+                    <HorizontalStackLayout Grid.Column="2">
+                        <Button 
+                            Text="{Binding IsAddMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='💾 Save|💾 Update'}"
+                            Command="{Binding SaveObservationCommand}"
+                            BackgroundColor="{Binding IsAddMode, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4CAF50|#FF9800'}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            IsVisible="{Binding IsEditable}"/>
+
+                        <!-- Edit Button (View Mode) -->
+                        <Button
+                            Text="✏️ Edit"
+                            Command="{Binding EditObservationCommand}"
+                            BackgroundColor="#FF9800"
+                            TextColor="White"
+                            CornerRadius="8"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            IsVisible="{Binding IsViewMode}"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+        
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20" Padding="20">
+
+                <!-- Observation Types -->
             <Border BackgroundColor="#F5F5F5" Padding="15">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10" />
@@ -269,43 +313,8 @@
                 </VerticalStackLayout>
             </Border>
             
-            <!-- Action Buttons -->
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
-                <!-- Back Button -->
-                <Button Grid.Column="0"
-                        Text="← Back"
-                        Command="{Binding GoBackCommand}"
-                        BackgroundColor="#666"
-                        TextColor="White"
-                        CornerRadius="8"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        HorizontalOptions="Fill"/>
-                
-                <Button Grid.Column="1"
-                        Text="{Binding IsAddMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='💾 Save|💾 Update'}"
-                        Command="{Binding SaveObservationCommand}"
-                        BackgroundColor="{Binding IsAddMode, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4CAF50|#FF9800'}"
-                        TextColor="White"
-                        CornerRadius="8"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        HorizontalOptions="Fill"
-                        IsVisible="{Binding IsEditable}"/>
-
-                <!-- Edit Button (View Mode) -->
-                <Button Grid.Column="2"
-                        Text="✏️ Edit"
-                        Command="{Binding EditObservationCommand}"
-                        BackgroundColor="#FF9800"
-                        TextColor="White"
-                        CornerRadius="8"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        HorizontalOptions="Fill"
-                        IsVisible="{Binding IsViewMode}"/>
-            </Grid>
             
         </VerticalStackLayout>
     </ScrollView>
+    </Grid>
 </ContentPage> 

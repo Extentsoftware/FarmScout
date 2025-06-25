@@ -4,10 +4,9 @@
              x:Class="FarmScout.Views.ObservationsPage"
              x:DataType="viewmodels:ObservationsViewModel"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
-             Title="{Binding Title}" >
-
-    <!--Shell.NavBarIsVisible="True"
-             Shell.PresentationMode="ModalAnimated">-->
+             Title="{Binding Title}" 
+             Shell.NavBarIsVisible="True"
+             Shell.PresentationMode="ModalAnimated">
     
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->

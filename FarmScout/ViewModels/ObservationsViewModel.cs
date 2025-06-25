@@ -117,9 +117,9 @@ public partial class ObservationsViewModel(FarmScoutDatabase database, INavigati
     }
 
     [RelayCommand]
-    private static async Task GoBack()
+    private async Task GoBack()
     {
-        await Shell.Current.GoToAsync("..");
+        await navigationService.GoBackAsync();
     }
 
     [RelayCommand]

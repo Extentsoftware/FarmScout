@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+dca632c5073608b6cb88c6730614ae95468a6403")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+bcbe21f9e46a0dc1eaf1c53b19b0e52023827061")]
 [assembly: System.Reflection.AssemblyProductAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FarmScout")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
