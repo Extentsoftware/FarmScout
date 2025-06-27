@@ -100,9 +100,6 @@ public partial class ObservationViewModel : ObservableObject
     public partial string PestName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial int? PlantCount { get; set; }
-
-    [ObservableProperty]
     public partial int? PestCount { get; set; }
 
     [ObservableProperty]
@@ -128,9 +125,6 @@ public partial class ObservationViewModel : ObservableObject
 
     [ObservableProperty]
     public partial double? HarvestWeight { get; set; }
-
-    [ObservableProperty]
-    public partial int? HarvestQuantity { get; set; }
 
     [ObservableProperty]
     public partial double? TemperatureCelsius { get; set; }
@@ -580,7 +574,6 @@ public partial class ObservationViewModel : ObservableObject
         DiseaseName = string.Empty;
         DiseaseType = string.Empty;
         PestName = string.Empty;
-        PlantCount = null;
         PestCount = null;
         AffectedAreaPercentage = null;
         DamageLevel = null;
@@ -590,7 +583,6 @@ public partial class ObservationViewModel : ObservableObject
         WeightKg = null;
         CropType = string.Empty;
         HarvestWeight = null;
-        HarvestQuantity = null;
         Temperature = null;
         Humidity = null;
         WindSpeed = null;
@@ -631,7 +623,6 @@ public partial class ObservationViewModel : ObservableObject
             // Harvest Information
             CropType = CropType,
             WeightKg = HarvestWeight,
-            PlantCount = HarvestQuantity, // Using PlantCount for HarvestQuantity
             
             // Weather Information
             TemperatureCelsius = Temperature,
@@ -689,7 +680,6 @@ public partial class ObservationViewModel : ObservableObject
         // Harvest Information
         _originalObservation.CropType = CropType;
         _originalObservation.WeightKg = HarvestWeight;
-        _originalObservation.PlantCount = HarvestQuantity; // Using PlantCount for HarvestQuantity
 
         // Weather Information
         _originalObservation.TemperatureCelsius = Temperature;
@@ -773,7 +763,6 @@ public partial class ObservationViewModel : ObservableObject
         // Load Harvest Information
         CropType = observation.CropType ?? string.Empty;
         HarvestWeight = observation.WeightKg;
-        HarvestQuantity = observation.PlantCount; // Using PlantCount for HarvestQuantity
 
         // Load Weather Information
         Temperature = observation.TemperatureCelsius;

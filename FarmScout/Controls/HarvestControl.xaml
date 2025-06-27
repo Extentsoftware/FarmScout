@@ -27,14 +27,7 @@
                    PlaceholderColor="#999"
                    Keyboard="Numeric"
                    IsReadOnly="{Binding IsViewMode}"/>
-            
-            <Entry Placeholder="Quantity" 
-                   Text="{Binding HarvestQuantity}"
-                   TextColor="Black"
-                   BackgroundColor="White"
-                   PlaceholderColor="#999"
-                   Keyboard="Numeric"
-                   IsReadOnly="{Binding IsViewMode}"/>
+
         </VerticalStackLayout>
     </Border>
     

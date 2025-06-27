@@ -35,12 +35,24 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationsViewModel>();
 		builder.Services.AddTransient<TasksViewModel>();
 		builder.Services.AddTransient<ObservationViewModel>();
+		builder.Services.AddTransient<LookupViewModel>();
+		builder.Services.AddTransient<LookupItemViewModel>();
 
 		// Register pages
 		builder.Services.AddTransient<DashboardPage>();
 		builder.Services.AddTransient<ObservationsPage>();
 		builder.Services.AddTransient<TasksPage>();
 		builder.Services.AddTransient<ObservationPage>();
+		builder.Services.AddTransient<LookupPage>();
+		builder.Services.AddTransient<LookupItemPage>();
+
+		// Register converters
+		builder.Services.AddSingleton<Converters.BoolToColorConverter>();
+		builder.Services.AddSingleton<Converters.BoolToStringConverter>();
+		builder.Services.AddSingleton<Converters.NotNullConverter>();
+		builder.Services.AddSingleton<Converters.StringContainsConverter>();
+		builder.Services.AddSingleton<Converters.StringToBoolConverter>();
+		builder.Services.AddSingleton<Converters.GroupIconConverter>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

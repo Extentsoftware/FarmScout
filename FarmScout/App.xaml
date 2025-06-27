@@ -15,6 +15,7 @@
             <converters:StringContainsConverter x:Key="StringContainsConverter"/>
             <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
             <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
+            <converters:GroupIconConverter x:Key="GroupIconConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

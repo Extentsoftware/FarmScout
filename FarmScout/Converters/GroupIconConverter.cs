@@ -2,15 +2,15 @@ using System.Globalization;
 
 namespace FarmScout.Converters
 {
-    public class StringToBoolConverter : IValueConverter
+    public class GroupIconConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is string str)
+            if (value is string groupName)
             {
-                return !string.IsNullOrWhiteSpace(str);
+                return FarmScout.Models.LookupGroups.GetGroupIcon(groupName);
             }
-            return false;
+            return "📝";
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

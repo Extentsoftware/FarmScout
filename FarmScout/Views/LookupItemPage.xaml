@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="FarmScout.Views.LookupItemPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="{Binding IsNew, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Item|Edit Item'}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="16">
+            
+            <!-- Name Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Name *" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Entry Text="{Binding Name}"
+                       Placeholder="Enter item name"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Group Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Group *" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Picker Title="Select a group"
+                        SelectedItem="{Binding Group}"
+                        ItemsSource="{Binding AvailableGroups}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+            </StackLayout>
+
+            <!-- Description Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Description" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Editor Text="{Binding Description}"
+                        Placeholder="Enter description (optional)"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="100"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" 
+                         Spacing="16" 
+                         HorizontalOptions="Fill"
+                         Margin="0,16,0,0">
+                
+                <Button Text="Cancel" 
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HorizontalOptions="FillAndExpand"/>
+                
+                <Button Text="Save" 
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HorizontalOptions="FillAndExpand"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToStringConverter}, ConverterParameter='False|True'}"/>
+            </StackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              HorizontalOptions="Center"
+                              Margin="0,16,0,0"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage> 

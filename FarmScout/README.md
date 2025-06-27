@@ -10,6 +10,10 @@ A comprehensive mobile application for farm scouting observations, built with .N
 - **GPS Location**: Automatically record the location of each observation
 - **Task Management**: Create and track tasks resulting from observations
 - **Offline Support**: All data is stored locally using SQLite database
+- **Dashboard**: Overview of farm activities and recent observations
+- **Observations**: Record and track farm observations with photos and location data
+- **Tasks**: Manage farm tasks and track completion status
+- **Lookup Tables**: Comprehensive reference system for farm-related data
 
 ### 📱 User Interface
 - **Dashboard**: Overview of observations and tasks with quick action buttons
@@ -116,6 +120,36 @@ The app requires the following Android permissions:
 - `ObservationId` (Integer): Foreign key to Observation
 - `Description` (Text): Task description
 - `IsCompleted` (Boolean): Task completion status
+
+### Lookup Tables System
+
+The lookup tables feature provides a centralized reference system for various farm-related data categories:
+
+#### Supported Categories
+- **Crop Types**: Corn, Soybeans, Wheat, Cotton, Rice, etc.
+- **Diseases**: Rust, Blight, Mildew, Root Rot, Leaf Spot, etc.
+- **Pests**: Aphids, Corn Borer, Spider Mites, Cutworms, etc.
+- **Chemicals**: Glyphosate, Atrazine, 2,4-D, Paraquat, Dicamba, etc.
+- **Fertilizers**: Urea, Ammonium Nitrate, Triple Superphosphate, etc.
+- **Soil Types**: Clay, Silt, Sandy, Loam, Peat, etc.
+- **Weather Conditions**: Sunny, Cloudy, Rainy, Windy, Foggy, etc.
+- **Growth Stages**: Germination, Vegetative, Flowering, Fruiting, Maturity
+- **Damage Types**: Hail Damage, Wind Damage, Drought Stress, etc.
+- **Treatment Methods**: Chemical Treatment, Biological Control, etc.
+
+#### Features
+- **Add/Edit Items**: Users can add new items or edit existing ones
+- **Search & Filter**: Search by name or description, filter by category
+- **Data Validation**: Prevents duplicate entries within the same category
+- **Soft Delete**: Items are marked as inactive rather than permanently deleted
+- **Initial Data**: Comes pre-populated with common farm-related items
+
+#### Usage
+1. Navigate to "📚 Lookup Tables" from the main menu
+2. Use the search bar to find specific items
+3. Use the group filter to view items by category
+4. Click "Add New Item" to create new entries
+5. Use Edit/Delete buttons to modify existing items
 
 ## Usage Guide
 
