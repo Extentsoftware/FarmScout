@@ -15,6 +15,7 @@ namespace FarmScout.ViewModels
         private bool _isNew;
         private string _name = "";
         private string _group = "";
+        private string _subGroup = "";
         private string _description = "";
         private bool _isLoading;
 
@@ -37,6 +38,7 @@ namespace FarmScout.ViewModels
                 {
                     Name = value.Name;
                     Group = value.Group;
+                    SubGroup = value.SubGroup;
                     Description = value.Description;
                 }
                 OnPropertyChanged();
@@ -69,6 +71,19 @@ namespace FarmScout.ViewModels
             set
             {
                 _group = value;
+                // Reset SubGroup when Group changes
+                SubGroup = "";
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(AvailableSubGroups));
+            }
+        }
+
+        public string SubGroup
+        {
+            get => _subGroup;
+            set
+            {
+                _subGroup = value;
                 OnPropertyChanged();
             }
         }
@@ -97,6 +112,7 @@ namespace FarmScout.ViewModels
         public ICommand CancelCommand { get; }
 
         public string[] AvailableGroups => LookupGroups.AvailableGroups;
+        public string[] AvailableSubGroups => LookupGroups.GetSubGroupsForGroup(Group);
 
         private async Task SaveAsync()
         {
@@ -146,6 +162,7 @@ namespace FarmScout.ViewModels
                 // Update the item
                 Item.Name = Name.Trim();
                 Item.Group = Group;
+                Item.SubGroup = SubGroup?.Trim() ?? "";
                 Item.Description = Description?.Trim() ?? "";
 
                 if (IsNew)

@@ -2,6 +2,7 @@
 using FarmScout.Services;
 using FarmScout.ViewModels;
 using FarmScout.Views;
+using FarmScout.Controls;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -37,6 +38,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationViewModel>();
 		builder.Services.AddTransient<LookupViewModel>();
 		builder.Services.AddTransient<LookupItemViewModel>();
+		builder.Services.AddTransient<DiseaseControlViewModel>();
 
 		// Register pages
 		builder.Services.AddTransient<DashboardPage>();

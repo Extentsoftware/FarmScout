@@ -52,6 +52,18 @@ public partial class ObservationPage : ContentPage
                 // Default to add mode
                 viewModel.SetAddMode();
             }
+
+            // Update DiseaseControl after ViewModel is loaded
+            UpdateDiseaseControl();
+        }
+    }
+
+    private void UpdateDiseaseControl()
+    {
+        // Find the DiseaseControl in the visual tree and update it
+        if (this.FindByName<Controls.DiseaseControl>("DiseaseControl") is Controls.DiseaseControl diseaseControl)
+        {
+            diseaseControl.UpdateFromParent();
         }
     }
 } 

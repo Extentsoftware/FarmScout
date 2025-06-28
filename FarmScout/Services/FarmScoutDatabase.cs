@@ -313,67 +313,73 @@ namespace FarmScout.Services
                     new() { Name = "Rice", Group = "Crop Types", Description = "Staple grain crop" },
 
                     // Diseases
-                    new() { Name = "Rust", Group = "Diseases", Description = "Fungal disease affecting leaves and stems" },
-                    new() { Name = "Blight", Group = "Diseases", Description = "Rapid plant disease causing wilting" },
-                    new() { Name = "Mildew", Group = "Diseases", Description = "Fungal growth on plant surfaces" },
-                    new() { Name = "Root Rot", Group = "Diseases", Description = "Fungal disease affecting plant roots" },
-                    new() { Name = "Leaf Spot", Group = "Diseases", Description = "Fungal disease causing spots on leaves" },
+                    new() { Name = "Rust", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease affecting leaves and stems" },
+                    new() { Name = "Blight", Group = "Diseases", SubGroup = "Bacterial", Description = "Rapid plant disease causing wilting" },
+                    new() { Name = "Mildew", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal growth on plant surfaces" },
+                    new() { Name = "Root Rot", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease affecting plant roots" },
+                    new() { Name = "Leaf Spot", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease causing spots on leaves" },
 
                     // Pests
-                    new() { Name = "Aphids", Group = "Pests", Description = "Small sap-sucking insects" },
-                    new() { Name = "Corn Borer", Group = "Pests", Description = "Larva that bores into corn stalks" },
-                    new() { Name = "Spider Mites", Group = "Pests", Description = "Tiny arachnids that feed on plant sap" },
-                    new() { Name = "Cutworms", Group = "Pests", Description = "Caterpillars that cut plant stems" },
-                    new() { Name = "Wireworms", Group = "Pests", Description = "Click beetle larvae that damage roots" },
+                    new() { Name = "Aphids", Group = "Pests", SubGroup = "Insects", Description = "Small sap-sucking insects" },
+                    new() { Name = "Corn Borer", Group = "Pests", SubGroup = "Insects", Description = "Larva that bores into corn stalks" },
+                    new() { Name = "Spider Mites", Group = "Pests", SubGroup = "Mites", Description = "Tiny arachnids that feed on plant sap" },
+                    new() { Name = "Cutworms", Group = "Pests", SubGroup = "Insects", Description = "Caterpillars that cut plant stems" },
+                    new() { Name = "Wireworms", Group = "Pests", SubGroup = "Insects", Description = "Click beetle larvae that damage roots" },
 
                     // Chemicals
-                    new() { Name = "Glyphosate", Group = "Chemicals", Description = "Broad-spectrum herbicide" },
-                    new() { Name = "Atrazine", Group = "Chemicals", Description = "Selective herbicide for corn" },
-                    new() { Name = "2,4-D", Group = "Chemicals", Description = "Selective herbicide for broadleaf weeds" },
-                    new() { Name = "Paraquat", Group = "Chemicals", Description = "Contact herbicide" },
-                    new() { Name = "Dicamba", Group = "Chemicals", Description = "Selective herbicide for broadleaf weeds" },
+                    new() { Name = "Glyphosate", Group = "Chemicals", SubGroup = "Herbicide", Description = "Broad-spectrum herbicide" },
+                    new() { Name = "Atrazine", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for corn" },
+                    new() { Name = "2,4-D", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for broadleaf weeds" },
+                    new() { Name = "Paraquat", Group = "Chemicals", SubGroup = "Herbicide", Description = "Contact herbicide" },
+                    new() { Name = "Dicamba", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for broadleaf weeds" },
+                    new() { Name = "Chlorothalonil", Group = "Chemicals", SubGroup = "Fungicide", Description = "Protectant fungicide for foliar diseases" },
+                    new() { Name = "Azoxystrobin", Group = "Chemicals", SubGroup = "Fungicide", Description = "Systemic fungicide for disease control" },
+                    new() { Name = "Malathion", Group = "Chemicals", SubGroup = "Insecticide", Description = "Organophosphate insecticide" },
+                    new() { Name = "Carbaryl", Group = "Chemicals", SubGroup = "Insecticide", Description = "Carbamate insecticide for pest control" },
+                    new() { Name = "Gibberellic Acid", Group = "Chemicals", SubGroup = "Growth Regulator", Description = "Plant growth regulator" },
 
                     // Fertilizers
-                    new() { Name = "Urea", Group = "Fertilizers", Description = "Nitrogen fertilizer (46-0-0)" },
-                    new() { Name = "Ammonium Nitrate", Group = "Fertilizers", Description = "Nitrogen fertilizer (34-0-0)" },
-                    new() { Name = "Triple Superphosphate", Group = "Fertilizers", Description = "Phosphorus fertilizer (0-46-0)" },
-                    new() { Name = "Potassium Chloride", Group = "Fertilizers", Description = "Potassium fertilizer (0-0-60)" },
-                    new() { Name = "NPK 10-10-10", Group = "Fertilizers", Description = "Balanced fertilizer" },
+                    new() { Name = "Urea", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Nitrogen fertilizer (46-0-0)" },
+                    new() { Name = "Ammonium Nitrate", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Nitrogen fertilizer (34-0-0)" },
+                    new() { Name = "Triple Superphosphate", Group = "Fertilizers", SubGroup = "Phosphorus", Description = "Phosphorus fertilizer (0-46-0)" },
+                    new() { Name = "Potassium Chloride", Group = "Fertilizers", SubGroup = "Potassium", Description = "Potassium fertilizer (0-0-60)" },
+                    new() { Name = "NPK 10-10-10", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Balanced fertilizer" },
+                    new() { Name = "Compost", Group = "Fertilizers", SubGroup = "Organic", Description = "Organic soil amendment" },
 
                     // Soil Types
-                    new() { Name = "Clay", Group = "Soil Types", Description = "Fine-grained soil with high water retention" },
-                    new() { Name = "Silt", Group = "Soil Types", Description = "Medium-grained soil" },
-                    new() { Name = "Sandy", Group = "Soil Types", Description = "Coarse-grained soil with good drainage" },
-                    new() { Name = "Loam", Group = "Soil Types", Description = "Well-balanced soil mixture" },
-                    new() { Name = "Peat", Group = "Soil Types", Description = "Organic-rich soil" },
+                    new() { Name = "Clay", Group = "Soil Types", SubGroup = "Mineral", Description = "Fine-grained soil with high water retention" },
+                    new() { Name = "Silt", Group = "Soil Types", SubGroup = "Mineral", Description = "Medium-grained soil" },
+                    new() { Name = "Sandy", Group = "Soil Types", SubGroup = "Mineral", Description = "Coarse-grained soil with good drainage" },
+                    new() { Name = "Loam", Group = "Soil Types", SubGroup = "Mixed", Description = "Well-balanced soil mixture" },
+                    new() { Name = "Peat", Group = "Soil Types", SubGroup = "Organic", Description = "Organic-rich soil" },
 
                     // Weather Conditions
-                    new() { Name = "Sunny", Group = "Weather Conditions", Description = "Clear skies with full sun" },
-                    new() { Name = "Cloudy", Group = "Weather Conditions", Description = "Overcast conditions" },
-                    new() { Name = "Rainy", Group = "Weather Conditions", Description = "Precipitation occurring" },
-                    new() { Name = "Windy", Group = "Weather Conditions", Description = "High wind conditions" },
-                    new() { Name = "Foggy", Group = "Weather Conditions", Description = "Low visibility due to fog" },
+                    new() { Name = "Sunny", Group = "Weather Conditions", SubGroup = "Temperature", Description = "Clear skies with full sun" },
+                    new() { Name = "Cloudy", Group = "Weather Conditions", SubGroup = "Pressure", Description = "Overcast conditions" },
+                    new() { Name = "Rainy", Group = "Weather Conditions", SubGroup = "Precipitation", Description = "Precipitation occurring" },
+                    new() { Name = "Windy", Group = "Weather Conditions", SubGroup = "Wind", Description = "High wind conditions" },
+                    new() { Name = "Foggy", Group = "Weather Conditions", SubGroup = "Humidity", Description = "Low visibility due to fog" },
 
                     // Growth Stages
-                    new() { Name = "Germination", Group = "Growth Stages", Description = "Seed sprouting and root development" },
-                    new() { Name = "Vegetative", Group = "Growth Stages", Description = "Leaf and stem growth" },
-                    new() { Name = "Flowering", Group = "Growth Stages", Description = "Flower development and pollination" },
-                    new() { Name = "Fruiting", Group = "Growth Stages", Description = "Fruit or grain development" },
-                    new() { Name = "Maturity", Group = "Growth Stages", Description = "Full development and harvest ready" },
+                    new() { Name = "Germination", Group = "Growth Stages", SubGroup = "Vegetative", Description = "Seed sprouting and root development" },
+                    new() { Name = "Vegetative", Group = "Growth Stages", SubGroup = "Vegetative", Description = "Leaf and stem growth" },
+                    new() { Name = "Flowering", Group = "Growth Stages", SubGroup = "Reproductive", Description = "Flower development and pollination" },
+                    new() { Name = "Fruiting", Group = "Growth Stages", SubGroup = "Reproductive", Description = "Fruit or grain development" },
+                    new() { Name = "Maturity", Group = "Growth Stages", SubGroup = "Maturity", Description = "Full development and harvest ready" },
 
                     // Damage Types
-                    new() { Name = "Hail Damage", Group = "Damage Types", Description = "Physical damage from hail stones" },
-                    new() { Name = "Wind Damage", Group = "Damage Types", Description = "Damage from high winds" },
-                    new() { Name = "Drought Stress", Group = "Damage Types", Description = "Damage from lack of water" },
-                    new() { Name = "Flood Damage", Group = "Damage Types", Description = "Damage from excess water" },
-                    new() { Name = "Frost Damage", Group = "Damage Types", Description = "Damage from freezing temperatures" },
+                    new() { Name = "Hail Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Physical damage from hail stones" },
+                    new() { Name = "Wind Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from high winds" },
+                    new() { Name = "Drought Stress", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from lack of water" },
+                    new() { Name = "Flood Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from excess water" },
+                    new() { Name = "Frost Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from freezing temperatures" },
 
                     // Treatment Methods
-                    new() { Name = "Chemical Treatment", Group = "Treatment Methods", Description = "Application of pesticides or herbicides" },
-                    new() { Name = "Biological Control", Group = "Treatment Methods", Description = "Use of natural predators or beneficial organisms" },
-                    new() { Name = "Cultural Control", Group = "Treatment Methods", Description = "Management practices to prevent problems" },
-                    new() { Name = "Mechanical Control", Group = "Treatment Methods", Description = "Physical removal or barriers" },
-                    new() { Name = "Integrated Pest Management", Group = "Treatment Methods", Description = "Combined approach using multiple methods" }
+                    new() { Name = "Chemical Treatment", Group = "Treatment Methods", SubGroup = "Chemical", Description = "Application of pesticides or herbicides" },
+                    new() { Name = "Biological Control", Group = "Treatment Methods", SubGroup = "Biological", Description = "Use of natural predators or beneficial organisms" },
+                    new() { Name = "Cultural Control", Group = "Treatment Methods", SubGroup = "Cultural", Description = "Management practices to prevent problems" },
+                    new() { Name = "Mechanical Control", Group = "Treatment Methods", SubGroup = "Mechanical", Description = "Physical removal or barriers" },
+                    new() { Name = "Integrated Pest Management", Group = "Treatment Methods", SubGroup = "Integrated", Description = "Combined approach using multiple methods" }
                 };
 
                 foreach (var item in seedData)

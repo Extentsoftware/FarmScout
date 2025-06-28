@@ -49,7 +49,7 @@
                     <Grid ColumnDefinitions="*,Auto,Auto" 
                           Padding="16,8" 
                           BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
-                        <Label Grid.Column="0" Text="Name" FontAttributes="Bold"/>
+                        <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
                         <Label Grid.Column="1" Text="Group" FontAttributes="Bold" HorizontalOptions="Center"/>
                         <Label Grid.Column="2" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
                     </Grid>
@@ -62,11 +62,18 @@
                               BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                               Margin="0,1">
                             
-                            <!-- Name and Description -->
+                            <!-- Name, SubGroup and Description -->
                             <StackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                <StackLayout Orientation="Horizontal" Spacing="8" IsVisible="{Binding SubGroup, Converter={StaticResource NotNullConverter}}">
+                                    <Label Text="📋" FontSize="Small"/>
+                                    <Label Text="{Binding SubGroup}" 
+                                           FontSize="Small"
+                                           TextColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource LightBlue}}"
+                                           FontAttributes="Italic"/>
+                                </StackLayout>
                                 <Label Text="{Binding Description}" 
                                        FontSize="Small"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
