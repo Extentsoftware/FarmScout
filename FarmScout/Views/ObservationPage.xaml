@@ -154,10 +154,6 @@
             
             <!-- Disease Information -->
             <controls:DiseaseControl 
-                x:Name="DiseaseControl"
-                DiseaseName="{Binding DiseaseName}"
-                DiseaseType="{Binding DiseaseType}"
-                IsViewMode="{Binding IsViewMode}"
                 IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}"/>
 
             <!-- Pest Information -->

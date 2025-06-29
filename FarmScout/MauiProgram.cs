@@ -38,7 +38,6 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationViewModel>();
 		builder.Services.AddTransient<LookupViewModel>();
 		builder.Services.AddTransient<LookupItemViewModel>();
-		builder.Services.AddTransient<DiseaseControlViewModel>();
 
 		// Register pages
 		builder.Services.AddTransient<DashboardPage>();

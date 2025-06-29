@@ -21,49 +21,40 @@ public partial class ObservationPage : ContentPage
     {
         base.OnAppearing();
 
-        if (BindingContext is ObservationViewModel viewModel)
+        if (BindingContext != null)
         {
-            // Set the mode based on navigation parameters
-            if (!string.IsNullOrEmpty(Mode))
+            if (BindingContext is ObservationViewModel viewModel)
             {
-                switch (Mode.ToLower())
+                // Set the mode based on navigation parameters
+                if (!string.IsNullOrEmpty(Mode))
                 {
-                    case "add":
-                        viewModel.SetAddMode();
-                        break;
-                    case "edit":
-                        await viewModel.LoadObservationAsync(ObservationId);
-                        viewModel.SetEditMode();
-                        break;
-                    case "view":
-                        await viewModel.LoadObservationAsync(ObservationId);
-                        viewModel.SetViewMode();
-                        break;
+                    switch (Mode.ToLower())
+                    {
+                        case "add":
+                            await viewModel.SetAddMode();
+                            break;
+                        case "edit":
+                            await viewModel.LoadObservationAsync(ObservationId);
+                            await viewModel.SetEditMode();
+                            break;
+                        case "view":
+                            await viewModel.LoadObservationAsync(ObservationId);
+                            await viewModel.SetViewMode();
+                            break;
+                    }
+                }
+                else if (ObservationId > 0)
+                {
+                    // Default to edit mode if observation ID is provided
+                    await viewModel.LoadObservationAsync(ObservationId);
+                    await viewModel.SetEditMode();
+                }
+                else
+                {
+                    // Default to add mode
+                    await viewModel.SetAddMode();
                 }
             }
-            else if (ObservationId>0)
-            {
-                // Default to edit mode if observation ID is provided
-                await viewModel.LoadObservationAsync(ObservationId);
-                viewModel.SetEditMode();
-            }
-            else
-            {
-                // Default to add mode
-                viewModel.SetAddMode();
-            }
-
-            // Update DiseaseControl after ViewModel is loaded
-            UpdateDiseaseControl();
-        }
-    }
-
-    private void UpdateDiseaseControl()
-    {
-        // Find the DiseaseControl in the visual tree and update it
-        if (this.FindByName<Controls.DiseaseControl>("DiseaseControl") is Controls.DiseaseControl diseaseControl)
-        {
-            diseaseControl.UpdateFromParent();
         }
     }
 } 
