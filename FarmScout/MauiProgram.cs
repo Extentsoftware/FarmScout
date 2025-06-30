@@ -2,6 +2,7 @@
 using FarmScout.Services;
 using FarmScout.ViewModels;
 using FarmScout.Views;
+using FarmScout.Controls;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 

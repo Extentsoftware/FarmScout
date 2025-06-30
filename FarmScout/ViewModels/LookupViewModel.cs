@@ -142,6 +142,7 @@ namespace FarmScout.ViewModels
                 {
                     Name = "",
                     Group = AvailableGroups.FirstOrDefault() ?? "Crop Types",
+                    SubGroup = "",
                     Description = ""
                 };
 
@@ -238,6 +239,7 @@ namespace FarmScout.ViewModels
                 {
                     filtered = filtered.Where(item => 
                         item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        item.SubGroup.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         item.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
                 }
 
