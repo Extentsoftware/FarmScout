@@ -13,7 +13,7 @@ namespace FarmScout.Controls
         private async void OnDiseaseInfoButtonClicked(object sender, EventArgs e)
         {
             var view = MauiProgram.Services.GetRequiredService<LookupPage>();
-            await Navigation.PushModalAsync(view);
+            await Shell.Current. Navigation.PushModalAsync(view);
 
             var farmScoutDatabase = MauiProgram.Services.GetRequiredService<FarmScoutDatabase>();
 
