@@ -216,9 +216,6 @@ public partial class ObservationViewModel : ObservableObject
         var availableTypes = ObservationTypes.AvailableTypes.ToList();
         var selectedTypes = SelectedObservationTypes.ToList();
 
-        App.Log($"ShowObservationTypesPopup: Available types: {string.Join(", ", availableTypes)}");
-        App.Log($"ShowObservationTypesPopup: Current selected types: {string.Join(", ", selectedTypes)}");
-
         // Create display strings with icons
         var displayOptions = availableTypes.Select(type =>
             $"{ObservationTypes.GetTypeIcon(type)} {type}").ToArray();
@@ -237,20 +234,14 @@ public partial class ObservationViewModel : ObservableObject
 
             if (selectedType != null)
             {
-                App.Log($"ShowObservationTypesPopup: User selected: {selectedType}");
-
                 if (selectedTypes.Contains(selectedType))
                 {
                     SelectedObservationTypes.Remove(selectedType);
-                    App.Log($"ShowObservationTypesPopup: Removed {selectedType}");
                 }
                 else
                 {
                     SelectedObservationTypes.Add(selectedType);
-                    App.Log($"ShowObservationTypesPopup: Added {selectedType}");
                 }
-
-                App.Log($"ShowObservationTypesPopup: Final selected types: {string.Join(", ", SelectedObservationTypes)}");
 
                 HasObservationTypes = SelectedObservationTypes.Count > 0;
 
