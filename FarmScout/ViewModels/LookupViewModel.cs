@@ -1,112 +1,56 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FarmScout.Models;
+using FarmScout.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using FarmScout.Models;
-using FarmScout.Services;
 
 namespace FarmScout.ViewModels
 {
-    public class LookupViewModel : INotifyPropertyChanged
+    [QueryProperty(nameof(LookupMode), "LookupMode")]
+    [QueryProperty(nameof(SelectedGroup), "SelectedGroup")]
+    [QueryProperty(nameof(SearchText), "SearchText")]
+    public partial class LookupViewModel : ObservableObject
     {
         private readonly FarmScoutDatabase _database;
         private readonly INavigationService _navigationService;
         
-        private ObservableCollection<LookupItem> _lookupItems;
-        private ObservableCollection<LookupItem> _filteredItems;
-        private string _selectedGroup = "All";
-        private string _searchText = "";
-        private LookupItem? _selectedItem;
-        private bool _isLoading;
-
         public LookupViewModel(FarmScoutDatabase database, INavigationService navigationService)
         {
             _database = database;
             _navigationService = navigationService;
-            _lookupItems = [];
-            _filteredItems = [];
-            
-            LoadLookupItemsCommand = new Command(async () => await LoadLookupItemsAsync());
-            AddLookupItemCommand = new Command(async () => await AddLookupItemAsync());
-            EditLookupItemCommand = new Command<LookupItem>(async (item) => await EditLookupItemAsync(item));
-            DeleteLookupItemCommand = new Command<LookupItem>(async (item) => await DeleteLookupItemAsync(item));
-            FilterByGroupCommand = new Command<string>(async (group) => await FilterByGroupAsync(group));
-            SearchCommand = new Command<string>(async (text) => await SearchAsync(text));
-            
+                        
             // Load initial data
-            _ = LoadLookupItemsAsync();
+            _ = LoadLookupItems();
         }
 
-        public ObservableCollection<LookupItem> LookupItems
-        {
-            get => _lookupItems;
-            set
-            {
-                _lookupItems = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial bool? LookupMode { get; set; }
 
-        public ObservableCollection<LookupItem> FilteredItems
-        {
-            get => _filteredItems;
-            set
-            {
-                _filteredItems = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial ObservableCollection<LookupItem> LookupItems { get; set; } = [];
 
-        public string SelectedGroup
-        {
-            get => _selectedGroup;
-            set
-            {
-                _selectedGroup = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial ObservableCollection<LookupItem> FilteredItems { get; set; } = [];
 
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial string SelectedGroup { get; set; } = "";
 
-        public LookupItem? SelectedItem
-        {
-            get => _selectedItem;
-            set
-            {
-                _selectedItem = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial string SearchText { get; set; } = "";
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set
-            {
-                _isLoading = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial LookupItem? SelectedItem { get; set; }
 
-        public ICommand LoadLookupItemsCommand { get; }
-        public ICommand AddLookupItemCommand { get; }
-        public ICommand EditLookupItemCommand { get; }
-        public ICommand DeleteLookupItemCommand { get; }
-        public ICommand FilterByGroupCommand { get; }
-        public ICommand SearchCommand { get; }
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
 
         public string[] AvailableGroups => LookupGroups.AvailableGroups;
 
-        private async Task LoadLookupItemsAsync()
+
+        [RelayCommand]
+        private async Task LoadLookupItems()
         {
             try
             {
@@ -134,7 +78,8 @@ namespace FarmScout.ViewModels
             }
         }
 
-        private async Task AddLookupItemAsync()
+        [RelayCommand]
+        private async Task AddLookupItem()
         {
             try
             {
@@ -152,7 +97,7 @@ namespace FarmScout.ViewModels
                     { "IsNew", true }
                 });
 
-                await LoadLookupItemsAsync();
+                await LoadLookupItems();
             }
             catch (Exception ex)
             {
@@ -163,7 +108,8 @@ namespace FarmScout.ViewModels
             }
         }
 
-        private async Task EditLookupItemAsync(LookupItem item)
+        [RelayCommand]
+        private async Task EditLookupItem(LookupItem item)
         {
             if (item == null) return;
 
@@ -175,7 +121,7 @@ namespace FarmScout.ViewModels
                     { "IsNew", false }
                 });
 
-                await LoadLookupItemsAsync();
+                await LoadLookupItems();
             }
             catch (Exception ex)
             {
@@ -186,7 +132,8 @@ namespace FarmScout.ViewModels
             }
         }
 
-        private async Task DeleteLookupItemAsync(LookupItem item)
+        [RelayCommand]
+        private async Task DeleteLookupItem(LookupItem item)
         {
             if (item == null) return;
 
@@ -203,7 +150,7 @@ namespace FarmScout.ViewModels
                 try
                 {
                     await _database.DeleteLookupItemAsync(item);
-                    await LoadLookupItemsAsync();
+                    await LoadLookupItems();
                 }
                 catch (Exception ex)
                 {
@@ -212,12 +159,14 @@ namespace FarmScout.ViewModels
             }
         }
 
-        private async Task FilterByGroupAsync(string group)
+        [RelayCommand]
+        private async Task FilterByGroup(string group)
         {
             await ApplyFiltersAsync();
         }
 
-        private async Task SearchAsync(string searchText)
+        [RelayCommand]
+        private async Task Search(string searchText)
         {
             await ApplyFiltersAsync();
         }
