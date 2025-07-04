@@ -39,18 +39,6 @@ public partial class DashboardViewModel(FarmScoutDatabase database, INavigationS
     }
 
     [RelayCommand]
-    private async Task AddObservation()
-    {
-        await navigationService.NavigateToAsync("Observation", new Dictionary<string, object> { { "Mode", "add" } });
-    }
-
-    [RelayCommand]
-    private async Task ViewObservations()
-    {
-        await navigationService.NavigateToAsync("Observations");
-    }
-
-    [RelayCommand]
     private async Task ViewTasks()
     {
         await navigationService.NavigateToAsync("Tasks");
@@ -61,27 +49,6 @@ public partial class DashboardViewModel(FarmScoutDatabase database, INavigationS
     {
         await LoadDashboardData();
     }
-
-    [RelayCommand]
-    private static async Task ViewObservation(SimpleObservationViewModel obs)
-    {
-        try
-        {
-            // Temporarily show alert instead of navigating to prevent crash
-            await Shell.Current.DisplayAlert("Observation Details", 
-                $"Observation: {obs.ObservationTypesText}\nSeverity: {obs.SeverityText}\nTimestamp: {obs.TimestampText}", 
-                "OK");
-        }
-        catch (Exception ex)
-        {
-            App.Log($"Error showing observation details: {ex.Message}");
-        }
-    }
-
-    // Additional commands for the new UI
-    public ICommand NavigateToAddObservationCommand => AddObservationCommand;
-    public ICommand NavigateToObservationsCommand => ViewObservationsCommand;
-    public ICommand NavigateToTasksCommand => ViewTasksCommand;
 
     public async Task LoadDashboardData()
     {

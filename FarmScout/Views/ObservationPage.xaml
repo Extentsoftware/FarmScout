@@ -9,8 +9,6 @@
              x:Name="ObservationPageRoot"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels" 
              Title="{Binding Title}"
-             Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"
-             
              >
     <!--Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"-->
 

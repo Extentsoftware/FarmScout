@@ -55,51 +55,6 @@
                     </Grid>
                 </Border>
                 
-                <!-- Quick Actions -->
-                <Border BackgroundColor="#F5F5F5" Padding="15">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="15">
-                        <Label Text="🚀 Quick Actions" 
-                               FontSize="18" 
-                               FontAttributes="Bold"
-                               TextColor="#2E7D32"/>
-                        
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <Button Text="📝 New Observation" 
-                                    Command="{Binding NavigateToAddObservationCommand}"
-                                    BackgroundColor="#4CAF50"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="50"/>
-                            
-                            <Button Text="📋 View All" 
-                                    Command="{Binding NavigateToObservationsCommand}"
-                                    BackgroundColor="#2196F3"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="50"/>
-                        </Grid>
-                        
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <Button Text="✅ Tasks" 
-                                    Command="{Binding NavigateToTasksCommand}"
-                                    BackgroundColor="#FF9800"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="50"/>
-                            
-                            <Button Text="🔄 Refresh" 
-                                    Command="{Binding RefreshCommand}"
-                                    BackgroundColor="#9C27B0"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="50"/>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-                
                 <!-- Recent Observations -->
                 <Border BackgroundColor="#F5F5F5" Padding="15">
                     <Border.StrokeShape>
@@ -149,19 +104,5 @@
                 
             </VerticalStackLayout>
         </ScrollView>
-        
-        <!-- Floating Action Button -->
-        <Button Grid.Row="1"
-                Text="➕"
-                FontSize="24"
-                BackgroundColor="#4CAF50"
-                TextColor="White"
-                CornerRadius="30"
-                WidthRequest="60"
-                HeightRequest="60"
-                Margin="20"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Command="{Binding NavigateToAddObservationCommand}"/>
     </Grid>
 </ContentPage> 

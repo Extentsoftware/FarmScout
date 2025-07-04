@@ -4,15 +4,16 @@
              x:Class="FarmScout.Views.ObservationsPage"
              x:DataType="viewmodels:ObservationsViewModel"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
-             Title="{Binding Title}" 
-             Shell.NavBarIsVisible="True"
-             Shell.PresentationMode="ModalAnimated">
+             Title="{Binding Title}" >
+
+    <!--Shell.NavBarIsVisible="True"
+             Shell.PresentationMode="ModalAnimated">-->
     
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->
         <Border Grid.Row="0" 
                BackgroundColor="#E8F5E8" 
-               Padding="5,5">
+               Padding="10,10">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <Button Grid.Column="0"
                         Text="← Back"
@@ -20,10 +21,11 @@
                         BackgroundColor="#666"
                         TextColor="White"
                         CornerRadius="8"
-                        Padding="10,8"/>
+                        Padding="10,5"/>
                 <Label Grid.Column="1"
                        Text="📋 All Observations" 
-                       FontSize="14" 
+                       FontSize="18" 
+                       HorizontalTextAlignment="Center"
                        FontAttributes="Bold" 
                        HorizontalOptions="Center"
                        TextColor="#2E7D32"/>
@@ -33,7 +35,7 @@
                         BackgroundColor="#4CAF50"
                         TextColor="White"
                         CornerRadius="8"
-                        Padding="10,8"/>
+                        Padding="10,5"/>
             </Grid>
         </Border>
         
@@ -42,7 +44,7 @@
             <CollectionView ItemsSource="{Binding Observations}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:SimpleObservationViewModel">
-                        <Border Margin="10,5" 
+                        <Border Margin="5,5" 
                                BackgroundColor="White" 
                                Padding="5">
                             <Border.StrokeShape>

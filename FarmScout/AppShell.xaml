@@ -7,31 +7,16 @@
     Shell.FlyoutBehavior="Flyout"
     FlyoutBackgroundColor="#2E7D32">
 
-    <Shell.FlyoutHeader>
-        <Grid BackgroundColor="#2E7D32" HeightRequest="100">
-            <Label Text="🌾 FarmScout" 
-                   FontSize="20" 
-                   FontAttributes="Bold" 
-                   TextColor="White"
-                   HorizontalOptions="Center" 
-                   VerticalOptions="Center"/>
-        </Grid>
-    </Shell.FlyoutHeader>
-
-    <ShellContent
-        Title="🏠 Dashboard"
-        Route="Dashboard"
-        ContentTemplate="{DataTemplate views:DashboardPage}">
-    </ShellContent>
-    
-    <!-- Menu Items for Navigation -->
-    <MenuItem Text="📝 Add Observation" 
-              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=AddObservationCommand}"/>
-    
-    <MenuItem Text="📋 All Observations" 
-              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=ViewObservationsCommand}"/>
-    
-    <MenuItem Text="✅ Tasks" 
-              Command="{Binding Source={RelativeSource AncestorType={x:Type Shell}}, Path=ViewTasksCommand}"/>
+    <TabBar>
+        <Tab Title="Dashboard">
+            <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" />
+        </Tab>
+        <Tab Title="Observations">
+            <ShellContent ContentTemplate="{DataTemplate views:ObservationsPage}" />
+        </Tab>
+        <Tab Title="Lookups">
+            <ShellContent ContentTemplate="{DataTemplate views:LookupPage}" />
+        </Tab>
+    </TabBar>
 
 </Shell>

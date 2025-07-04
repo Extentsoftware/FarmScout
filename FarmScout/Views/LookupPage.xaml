@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="FarmScout.Views.LookupPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Lookup Tables"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        
+        <!-- Search and Filter Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="16,8" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+            
+            <!-- Search Box -->
+            <SearchBar Grid.Column="0" 
+                       Placeholder="Search lookup items..."
+                       Text="{Binding SearchText}"
+                       SearchButtonPressed="OnSearchButtonPressed"
+                       TextChanged="OnSearchTextChanged"
+                       Margin="0,0,8,0"/>
+            
+            <!-- Group Filter -->
+            <Picker Grid.Column="1" 
+                    Title="Group"
+                    SelectedItem="{Binding SelectedGroup}"
+                    SelectedIndexChanged="OnGroupSelectedIndexChanged"
+                    ItemsSource="{Binding AvailableGroups}"
+                    WidthRequest="120"/>
+        </Grid>
+
+        <!-- Add Button -->
+        <Button Grid.Row="1" 
+                Text="Add New Item" 
+                Command="{Binding AddLookupItemCommand}"
+                Margin="16,8"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                TextColor="White"
+                CornerRadius="8"/>
+
+        <!-- Lookup Items List -->
+        <RefreshView Grid.Row="2" 
+                     IsRefreshing="{Binding IsLoading}"
+                     Command="{Binding LoadLookupItemsCommand}">
+            
+            <CollectionView ItemsSource="{Binding FilteredItems}"
+                           SelectionMode="Single"
+                           SelectedItem="{Binding SelectedItem}">
+                
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="*,Auto,Auto" 
+                          Padding="16,8" 
+                          BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
+                        <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
+                        <Label Grid.Column="1" Text="Group" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Grid.Column="2" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    </Grid>
+                </CollectionView.Header>
+                
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,Auto,Auto" 
+                              Padding="16,8" 
+                              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                              Margin="0,1">
+                            
+                            <!-- Name, SubGroup and Description -->
+                            <StackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding Name}" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                <StackLayout Orientation="Horizontal" Spacing="8" IsVisible="{Binding SubGroup, Converter={StaticResource NotNullConverter}}">
+                                    <Label Text="📋" FontSize="Small"/>
+                                    <Label Text="{Binding SubGroup}" 
+                                           FontSize="Small"
+                                           TextColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource LightBlue}}"
+                                           FontAttributes="Italic"/>
+                                </StackLayout>
+                                <Label Text="{Binding Description}" 
+                                       FontSize="Small"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                       IsVisible="{Binding Description, Converter={StaticResource NotNullConverter}}"/>
+                            </StackLayout>
+                            
+                            <!-- Group with Icon -->
+                            <StackLayout Grid.Column="1" 
+                                         Orientation="Horizontal" 
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         Spacing="4">
+                                <Label Text="{Binding Group, Converter={StaticResource GroupIconConverter}}" 
+                                       FontSize="Medium"/>
+                                <Label Text="{Binding Group}" 
+                                       FontSize="Small"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                            
+                            <!-- Action Buttons -->
+                            <StackLayout Grid.Column="2" 
+                                         Orientation="Horizontal" 
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         Spacing="8">
+                                
+                                <Button Text="Edit" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditLookupItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource Blue}}"
+                                        TextColor="White"
+                                        FontSize="Small"
+                                        Padding="8,4"
+                                        CornerRadius="4"/>
+                                
+                                <Button Text="Delete" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteLookupItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Red}, Dark={StaticResource Red}}"
+                                        TextColor="White"
+                                        FontSize="Small"
+                                        Padding="8,4"
+                                        CornerRadius="4"/>
+                            </StackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                
+                <CollectionView.EmptyView>
+                    <StackLayout HorizontalOptions="Center" 
+                                 VerticalOptions="Center" 
+                                 Spacing="16"
+                                 Margin="32">
+                        <Label Text="📝" 
+                               FontSize="48" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="No lookup items found" 
+                               FontSize="Large" 
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                        <Label Text="Add your first lookup item to get started" 
+                               FontSize="Medium" 
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage> 

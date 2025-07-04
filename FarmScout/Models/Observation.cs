@@ -22,7 +22,6 @@ namespace FarmScout.Models
         // Additional optional metrics
         public string DiseaseName { get; set; } = string.Empty;
         public string PestName { get; set; } = string.Empty;
-        public int? PlantCount { get; set; }
         public int? PestCount { get; set; }
         public double? AffectedAreaPercentage { get; set; }
         public double? DamageLevel { get; set; }
