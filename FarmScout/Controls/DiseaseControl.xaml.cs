@@ -12,8 +12,11 @@ namespace FarmScout.Controls
 
         private async void OnDiseaseInfoButtonClicked(object sender, EventArgs e)
         {
-            var view = MauiProgram.Services.GetRequiredService<LookupPage>();
-            await Shell.Current.Navigation.PushModalAsync(view);
+            await Shell.Current.GoToAsync("LookupPage", new Dictionary<string, object> { { "LookupMode", true }, { "SelectedGroup", "Diseases" }, { "SelectedText", "" } } );
+
+            //var factory = MauiProgram.Services.GetRequiredService<ILookupPageFactory>();
+            //var view = factory.Create("kl", 0);
+            //await Shell.Current.Navigation.PushModalAsync(view);
         }
     }
 } 

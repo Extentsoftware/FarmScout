@@ -1,6 +1,42 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using FarmScout.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace FarmScout.Views;
+
+public interface ILookupPageFactory
+{
+    LookupPage Create(string title, int count);
+}
+
+public class LookupPageFactory : ILookupPageFactory
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public LookupPageFactory(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public LookupPage Create(string title, int count)
+    {
+        var parameters = new LookupParameters
+        {
+            LookupMode = true,
+            SearchText = "",
+            SelectedGroup = "Diseases"
+        };
+        return ActivatorUtilities.CreateInstance<LookupPage>(_serviceProvider, parameters);
+    }
+}
+
+public class LookupParameters
+{
+    public bool? LookupMode { get; set; }
+    public string SelectedGroup { get; set; } = "";
+    public string SearchText { get; set; } = "";
+}
+
 
 public partial class LookupPage : ContentPage
 {
@@ -9,6 +45,15 @@ public partial class LookupPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    public LookupPage(LookupViewModel viewModel, LookupParameters parameters)
+    {
+
+        InitializeComponent();
+        BindingContext = viewModel;
+        /// LookupParameters
+    }
+
 
     protected override void OnAppearing()
     {

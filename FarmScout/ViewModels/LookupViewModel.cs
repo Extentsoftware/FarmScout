@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace FarmScout.ViewModels
 {
+
     [QueryProperty(nameof(LookupMode), "LookupMode")]
     [QueryProperty(nameof(SelectedGroup), "SelectedGroup")]
     [QueryProperty(nameof(SearchText), "SearchText")]
@@ -26,7 +27,7 @@ namespace FarmScout.ViewModels
         }
 
         [ObservableProperty]
-        public partial bool? LookupMode { get; set; }
+        public partial bool LookupMode { get; set; }
 
         [ObservableProperty]
         public partial ObservableCollection<LookupItem> LookupItems { get; set; } = [];

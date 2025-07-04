@@ -29,18 +29,19 @@ public static class MauiProgram
 		builder.Services.AddSingleton<PhotoService>();
 		builder.Services.AddSingleton<LocationService>();
 		builder.Services.AddSingleton<ShapefileService>();
-		builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
 
-		// Register ViewModels
-		builder.Services.AddTransient<DashboardViewModel>();
+        // Register ViewModels
+        builder.Services.AddTransient<DashboardViewModel>();
 		builder.Services.AddTransient<ObservationsViewModel>();
 		builder.Services.AddTransient<TasksViewModel>();
 		builder.Services.AddTransient<ObservationViewModel>();
 		builder.Services.AddTransient<LookupViewModel>();
 		builder.Services.AddTransient<LookupItemViewModel>();
+        builder.Services.AddSingleton<ILookupPageFactory, LookupPageFactory>();
 
-		// Register pages
-		builder.Services.AddTransient<DashboardPage>();
+        // Register pages
+        builder.Services.AddTransient<DashboardPage>();
 		builder.Services.AddTransient<ObservationsPage>();
 		builder.Services.AddTransient<TasksPage>();
 		builder.Services.AddTransient<ObservationPage>();
