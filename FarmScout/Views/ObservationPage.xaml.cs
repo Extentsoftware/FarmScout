@@ -7,7 +7,7 @@ namespace FarmScout.Views;
 [QueryProperty(nameof(Mode), "Mode")]
 public partial class ObservationPage : ContentPage
 {
-    public int ObservationId { get; set; }
+    public Guid ObservationId { get; set; }
     public string? Mode { get; set; }
 
     public ObservationPage(ObservationViewModel viewModel)
@@ -43,7 +43,7 @@ public partial class ObservationPage : ContentPage
                             break;
                     }
                 }
-                else if (ObservationId > 0)
+                else if (ObservationId != Guid.Empty)
                 {
                     // Default to edit mode if observation ID is provided
                     await viewModel.LoadObservationAsync(ObservationId);

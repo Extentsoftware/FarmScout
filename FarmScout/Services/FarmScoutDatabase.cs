@@ -1,10 +1,6 @@
 using SQLite;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FarmScout.Models;
-using System.IO;
 using System.Text.Json;
-using FarmScout.Views;
 
 namespace FarmScout.Services
 {
@@ -46,7 +42,8 @@ namespace FarmScout.Services
             try
             {
                 App.Log("Creating database tables...");
-                
+                var p = _database.DatabasePath;
+
                 await _database.EnableWriteAheadLoggingAsync();
 
                 App.Log("Creating Observation table...");
@@ -137,21 +134,21 @@ namespace FarmScout.Services
 
         // TaskItem CRUD
         public Task<int> AddTaskAsync(TaskItem task) => _database.InsertAsync(task);
-        public Task<List<TaskItem>> GetTasksForObservationAsync(int observationId) =>
+        public Task<List<TaskItem>> GetTasksForObservationAsync(Guid observationId) =>
             _database.Table<TaskItem>().Where(t => t.ObservationId == observationId).ToListAsync();
         public Task<int> UpdateTaskAsync(TaskItem task) => _database.UpdateAsync(task);
         public Task<int> DeleteTaskAsync(TaskItem task) => _database.DeleteAsync(task);
 
         // ObservationPhoto CRUD
         public Task<int> AddPhotoAsync(ObservationPhoto photo) => _database.InsertAsync(photo);
-        public Task<List<ObservationPhoto>> GetPhotosForObservationAsync(int observationId) =>
+        public Task<List<ObservationPhoto>> GetPhotosForObservationAsync(Guid observationId) =>
             _database.Table<ObservationPhoto>().Where(p => p.ObservationId == observationId).ToListAsync();
         public Task<int> UpdatePhotoAsync(ObservationPhoto photo) => _database.UpdateAsync(photo);
         public Task<int> DeletePhotoAsync(ObservationPhoto photo) => _database.DeleteAsync(photo);
 
         // ObservationLocation CRUD
         public Task<int> AddLocationAsync(ObservationLocation location) => _database.InsertAsync(location);
-        public Task<List<ObservationLocation>> GetLocationsForObservationAsync(int observationId) =>
+        public Task<List<ObservationLocation>> GetLocationsForObservationAsync(Guid observationId) =>
             _database.Table<ObservationLocation>().Where(l => l.ObservationId == observationId).ToListAsync();
         public Task<int> UpdateLocationAsync(ObservationLocation location) => _database.UpdateAsync(location);
         public Task<int> DeleteLocationAsync(ObservationLocation location) => _database.DeleteAsync(location);
@@ -266,7 +263,7 @@ namespace FarmScout.Services
             }
         }
 
-        public async Task<bool> LookupItemExistsAsync(string name, string group, int? excludeId = null)
+        public async Task<bool> LookupItemExistsAsync(string name, string group, Guid? excludeId = null)
         {
             try
             {

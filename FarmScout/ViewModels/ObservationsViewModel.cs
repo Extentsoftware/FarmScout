@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
+using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels;
 
@@ -14,7 +15,7 @@ public partial class ObservationsViewModel(FarmScoutDatabase database, INavigati
     public partial string Title { get; set; } = "Observations";
 
     [ObservableProperty]
-    public partial List<SimpleObservationViewModel> Observations { get; set; } = [];
+    public partial ObservableCollection<SimpleObservationViewModel> Observations { get; set; } = [];
 
     [RelayCommand]
     public async Task LoadObservations()
@@ -23,7 +24,7 @@ public partial class ObservationsViewModel(FarmScoutDatabase database, INavigati
 
         try
         {
-            IsBusy = true;
+            // IsBusy = true;
             App.Log("Loading observations...");
 
             var observations = await database.GetObservationsAsync();
@@ -123,7 +124,7 @@ public partial class ObservationsViewModel(FarmScoutDatabase database, INavigati
     }
 
     [RelayCommand]
-    private async Task Refresh()
+    public async Task Refresh()
     {
         await LoadObservations();
     }

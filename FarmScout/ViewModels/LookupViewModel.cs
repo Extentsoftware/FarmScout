@@ -8,10 +8,6 @@ using System.Runtime.CompilerServices;
 
 namespace FarmScout.ViewModels
 {
-
-    [QueryProperty(nameof(LookupMode), "LookupMode")]
-    [QueryProperty(nameof(SelectedGroup), "SelectedGroup")]
-    [QueryProperty(nameof(SearchText), "SearchText")]
     public partial class LookupViewModel : ObservableObject
     {
         private readonly FarmScoutDatabase _database;
@@ -26,8 +22,14 @@ namespace FarmScout.ViewModels
             _ = LoadLookupItems();
         }
 
+        /// <summary>
+        /// when true, the page allows selection ofan item
+        /// </summary>
         [ObservableProperty]
-        public partial bool LookupMode { get; set; }
+        public partial bool SelectMode { get; set; }
+
+        [ObservableProperty]
+        public partial bool EditMode { get; set; } = true;
 
         [ObservableProperty]
         public partial ObservableCollection<LookupItem> LookupItems { get; set; } = [];
@@ -57,6 +59,8 @@ namespace FarmScout.ViewModels
             {
                 IsLoading = true;
                 var items = await _database.GetLookupItemsAsync();
+
+                items = items.OrderBy(x => x.SubGroup).ThenBy(x=>x.Name).ToList();
                 
                 LookupItems.Clear();
                 foreach (var item in items)
