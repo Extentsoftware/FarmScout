@@ -18,15 +18,7 @@
             <Border Grid.Row="0" 
                BackgroundColor="#E8F5E8" 
                Padding="5,5">
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Button Grid.Column="0"
-                        Text="← Back"
-                        Command="{Binding GoBackCommand}"
-                        BackgroundColor="#666"
-                        TextColor="White"
-                        CornerRadius="8"
-                        Padding="10,8"/>
-                    
+                <Grid ColumnDefinitions="Auto,*,Auto">                    
                     <Label 
                         Grid.Column="1"
                         Text="{Binding Title}" x:Name="Header"
@@ -153,6 +145,11 @@
             
             <!-- Disease Information -->
             <controls:DiseaseControl 
+                x:Name="DiseaseControl"
+                DiseaseName="{Binding DiseaseName}"
+                DiseaseType="{Binding DiseaseType}"
+                DiseaseDescription="{Binding DiseaseDescription}"
+                SelectedDiseaseId="{Binding SelectedDiseaseId}"
                 IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}"/>
 
             <!-- Pest Information -->

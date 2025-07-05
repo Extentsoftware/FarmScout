@@ -97,6 +97,12 @@ public partial class ObservationViewModel : ObservableObject
     public partial string DiseaseType { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial string DiseaseDescription { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial Guid? SelectedDiseaseId { get; set; }
+
+    [ObservableProperty]
     public partial string PestName { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -564,6 +570,8 @@ public partial class ObservationViewModel : ObservableObject
         // Clear additional metrics
         DiseaseName = string.Empty;
         DiseaseType = string.Empty;
+        DiseaseDescription = string.Empty;
+        SelectedDiseaseId = null;
         PestName = string.Empty;
         PestCount = null;
         AffectedAreaPercentage = null;
@@ -746,6 +754,25 @@ public partial class ObservationViewModel : ObservableObject
         // Load Disease Information
         DiseaseName = observation.DiseaseName ?? string.Empty;
         DiseaseType = observation.Disease ?? string.Empty; // Using Disease property for DiseaseType
+        
+        // Try to load additional disease information from lookup database
+        if (!string.IsNullOrEmpty(DiseaseName))
+        {
+            try
+            {
+                var diseases = await database.GetLookupItemsByGroupAsync("Diseases");
+                var matchingDisease = diseases.FirstOrDefault(d => d.Name.Equals(DiseaseName, StringComparison.OrdinalIgnoreCase));
+                if (matchingDisease != null)
+                {
+                    DiseaseDescription = matchingDisease.Description;
+                    SelectedDiseaseId = matchingDisease.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Failed to load disease details: {ex.Message}");
+            }
+        }
 
         // Load Pest Information
         PestCount = observation.PestCount;
