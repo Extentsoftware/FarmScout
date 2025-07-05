@@ -6,8 +6,8 @@ namespace FarmScout.Models
 {
     public class Observation
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Disease { get; set; } = string.Empty;
         public double SoilMoisture { get; set; }
         public string PhotoPath { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ namespace FarmScout.Models
         public string ObservationTypes { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
         public string Severity { get; set; } = string.Empty;
-        public int? FarmLocationId { get; set; }
+        public Guid? FarmLocationId { get; set; }
         
         // Additional optional metrics
         public string DiseaseName { get; set; } = string.Empty;
@@ -46,5 +46,7 @@ namespace FarmScout.Models
         public string InfestationArea { get; set; } = string.Empty;
         
         // Tasks will be linked by ObservationId in TaskItem
+        // Photos will be linked by ObservationId in ObservationPhoto
+        // Locations will be linked by ObservationId in ObservationLocation
     }
 } 

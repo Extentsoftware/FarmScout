@@ -56,7 +56,7 @@ public class ShapefileService
             
             var farmLocation = new FarmLocation
             {
-                Id = id++,
+                Id = Guid.NewGuid(),
                 Name = sample.Name,
                 Description = $"Sample {sample.Type} field",
                 Geometry = polygon.ToText(),

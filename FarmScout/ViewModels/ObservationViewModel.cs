@@ -477,7 +477,7 @@ public partial class ObservationViewModel : ObservableObject
     }
 
     // Public methods
-    public async Task LoadObservationAsync(int observationId)
+    public async Task LoadObservationAsync(Guid observationId)
     {
         if (IsBusy) return;
 
@@ -627,23 +627,23 @@ public partial class ObservationViewModel : ObservableObject
             SoilPotassium = SoilPotassium
         };
 
-        var observationId = await database.AddObservationAsync(observation);
+        await database.AddObservationAsync(observation);
 
         // Add locations
         foreach (var location in Locations)
         {
-            location.ObservationId = observationId;
+            location.ObservationId = observation.Id;
             await database.AddLocationAsync(location);
         }
 
         // Add photos
         foreach (var photo in Photos)
         {
-            photo.ObservationId = observationId;
+            photo.ObservationId = observation.Id;
             await database.AddPhotoAsync(photo);
         }
 
-        App.Log($"Created new observation with ID: {observationId}");
+        App.Log($"Created new observation with ID: {observation.Id}");
         await Shell.Current.DisplayAlert("Success", "Observation created successfully", "OK");
         await navigationService.GoBackAsync();
     }

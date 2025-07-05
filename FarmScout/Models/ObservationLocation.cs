@@ -5,11 +5,11 @@ namespace FarmScout.Models
 {
     public class ObservationLocation
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid Id { get; set; } = Guid.NewGuid();
         
         [Indexed]
-        public int ObservationId { get; set; }
+        public Guid ObservationId { get; set; }
         
         public double Latitude { get; set; }
         

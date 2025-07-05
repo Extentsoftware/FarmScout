@@ -107,19 +107,55 @@ The app requires the following Android permissions:
 ## Database Schema
 
 ### Observation Table
-- `Id` (Primary Key, Auto Increment)
+- `Id` (Primary Key, GUID): Unique identifier for the observation
 - `Disease` (Text): Description of disease or issue
 - `SoilMoisture` (Real): Soil moisture percentage
 - `PhotoPath` (Text): Path to captured photo
 - `Latitude` (Real): GPS latitude
 - `Longitude` (Real): GPS longitude
 - `Timestamp` (DateTime): When observation was recorded
+- `FarmLocationId` (GUID, Nullable): Foreign key to FarmLocation
 
 ### TaskItem Table
-- `Id` (Primary Key, Auto Increment)
-- `ObservationId` (Integer): Foreign key to Observation
+- `Id` (Primary Key, GUID): Unique identifier for the task
+- `ObservationId` (GUID): Foreign key to Observation
 - `Description` (Text): Task description
 - `IsCompleted` (Boolean): Task completion status
+
+### ObservationPhoto Table
+- `Id` (Primary Key, GUID): Unique identifier for the photo
+- `ObservationId` (GUID): Foreign key to Observation
+- `PhotoPath` (Text): Path to the photo file
+- `Description` (Text): Photo description
+- `Timestamp` (DateTime): When photo was taken
+
+### ObservationLocation Table
+- `Id` (Primary Key, GUID): Unique identifier for the location
+- `ObservationId` (GUID): Foreign key to Observation
+- `Latitude` (Real): GPS latitude
+- `Longitude` (Real): GPS longitude
+- `Description` (Text): Location description
+- `Timestamp` (DateTime): When location was recorded
+
+### FarmLocation Table
+- `Id` (Primary Key, GUID): Unique identifier for the farm location
+- `Name` (Text): Name of the farm location
+- `Description` (Text): Description of the location
+- `Geometry` (Text): WKT geometry representation
+- `FieldType` (Text): Type of field (e.g., Corn, Soybeans)
+- `Area` (Real): Area in acres or hectares
+- `Owner` (Text): Owner of the field
+- `LastUpdated` (DateTime): Last update timestamp
+
+### LookupItem Table
+- `Id` (Primary Key, GUID): Unique identifier for the lookup item
+- `Name` (Text): Name of the item
+- `Group` (Text): Category group
+- `SubGroup` (Text): Sub-category
+- `Description` (Text): Item description
+- `CreatedAt` (DateTime): Creation timestamp
+- `UpdatedAt` (DateTime): Last update timestamp
+- `IsActive` (Boolean): Whether the item is active
 
 ### Lookup Tables System
 

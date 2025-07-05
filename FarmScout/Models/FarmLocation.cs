@@ -1,11 +1,13 @@
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using SQLite;
 
 namespace FarmScout.Models;
 
 public class FarmLocation
 {
-    public int Id { get; set; }
+    [PrimaryKey]
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
     public string Geometry { get; set; } = null!;

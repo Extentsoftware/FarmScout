@@ -5,8 +5,8 @@ namespace FarmScout.Models
     [Table("LookupItems")]
     public class LookupItem
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid Id { get; set; } = Guid.NewGuid();
         
         [MaxLength(100), NotNull]
         public string Name { get; set; } = string.Empty;

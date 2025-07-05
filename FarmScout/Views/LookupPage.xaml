@@ -3,12 +3,48 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="Lookup Tables"
-             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             
+             >
 
-    <Grid RowDefinitions="Auto,Auto,*">
-        
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0" 
+       BackgroundColor="#E8F5E8" 
+       Padding="5,5">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0"
+                Text="← Back"
+                Command="{Binding GoBackCommand}"
+                BackgroundColor="#666"
+                TextColor="White"
+                CornerRadius="8"
+                Padding="10,8"/>
+
+                <Label 
+                Grid.Column="1"
+                Text="{Binding Title}" x:Name="Header"
+                FontSize="14" 
+                FontAttributes="Bold" 
+                HorizontalOptions="Center"
+                TextColor="#2E7D32"/>
+
+                <HorizontalStackLayout Grid.Column="2">
+                    <!-- Edit Button (View Mode) -->
+                    <Button Grid.Row="1" 
+                        Text="Add New Item" 
+                        Command="{Binding AddLookupItemCommand}"
+                        Margin="16,8"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        IsVisible="{Binding EditMode}"
+                        />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
         <!-- Search and Filter Bar -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="16,8" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Padding="16,8" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
             
             <!-- Search Box -->
             <SearchBar Grid.Column="0" 
@@ -24,20 +60,24 @@
                     SelectedItem="{Binding SelectedGroup}"
                     SelectedIndexChanged="OnGroupSelectedIndexChanged"
                     ItemsSource="{Binding AvailableGroups}"
-                    WidthRequest="120"/>
+                    WidthRequest="120"
+                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                    />
         </Grid>
 
         <!-- Add Button -->
-        <Button Grid.Row="1" 
+        <Button Grid.Row="2" 
                 Text="Add New Item" 
                 Command="{Binding AddLookupItemCommand}"
                 Margin="16,8"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                 TextColor="White"
-                CornerRadius="8"/>
+                CornerRadius="8"
+                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                />
 
         <!-- Lookup Items List -->
-        <RefreshView Grid.Row="2" 
+        <RefreshView Grid.Row="3" 
                      IsRefreshing="{Binding IsLoading}"
                      Command="{Binding LoadLookupItemsCommand}">
             
@@ -50,7 +90,9 @@
                           Padding="16,8" 
                           BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
                         <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
-                        <Label Grid.Column="1" Text="Group" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Grid.Column="1" Text="Group" FontAttributes="Bold" HorizontalOptions="Center"
+                               IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                               />
                         <Label Grid.Column="2" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
                     </Grid>
                 </CollectionView.Header>
@@ -66,6 +108,7 @@
                             <StackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold"
+                                       FontSize="Medium"
                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                                 <StackLayout Orientation="Horizontal" Spacing="8" IsVisible="{Binding SubGroup, Converter={StaticResource NotNullConverter}}">
                                     <Label Text="📋" FontSize="Small"/>
@@ -85,7 +128,9 @@
                                          Orientation="Horizontal" 
                                          HorizontalOptions="Center"
                                          VerticalOptions="Center"
-                                         Spacing="4">
+                                         Spacing="4"
+                                         IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                                         >
                                 <Label Text="{Binding Group, Converter={StaticResource GroupIconConverter}}" 
                                        FontSize="Medium"/>
                                 <Label Text="{Binding Group}" 
@@ -99,8 +144,20 @@
                                          HorizontalOptions="Center"
                                          VerticalOptions="Center"
                                          Spacing="8">
-                                
+
+                                <Button Text="Select" 
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectMode}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectLookupItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource Blue}}"
+                                        TextColor="White"
+                                        FontSize="Small"
+                                        Padding="8,4"
+                                        CornerRadius="4"/>
+
+
                                 <Button Text="Edit" 
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditLookupItemCommand}"
                                         CommandParameter="{Binding}"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource Blue}}"
@@ -108,8 +165,8 @@
                                         FontSize="Small"
                                         Padding="8,4"
                                         CornerRadius="4"/>
-                                
                                 <Button Text="Delete" 
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteLookupItemCommand}"
                                         CommandParameter="{Binding}"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource Red}, Dark={StaticResource Red}}"
