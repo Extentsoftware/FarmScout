@@ -49,8 +49,7 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; }
 
-        public string[] AvailableGroups => LookupGroups.AvailableGroups;
-
+        public static string[] AvailableGroups => LookupGroups.AvailableGroups;
 
         [RelayCommand]
         private async Task LoadLookupItems()
@@ -60,7 +59,7 @@ namespace FarmScout.ViewModels
                 IsLoading = true;
                 var items = await _database.GetLookupItemsAsync();
 
-                items = items.OrderBy(x => x.SubGroup).ThenBy(x=>x.Name).ToList();
+                items = [.. items.OrderBy(x => x.SubGroup).ThenBy(x => x.Name)];
                 
                 LookupItems.Clear();
                 foreach (var item in items)
@@ -72,9 +71,9 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
+                if (Shell.Current != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to load lookup items: {ex.Message}", "OK");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to load lookup items: {ex.Message}", "OK");
                 }
             }
             finally
@@ -106,9 +105,9 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
+                if (Shell.Current != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add lookup item: {ex.Message}", "OK");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to add lookup item: {ex.Message}", "OK");
                 }
             }
         }
@@ -166,9 +165,9 @@ namespace FarmScout.ViewModels
         {
             if (item == null) return;
 
-            if (Application.Current?.MainPage == null) return;
+            if (Shell.Current == null) return;
 
-            var confirm = await Application.Current.MainPage.DisplayAlert(
+            var confirm = await Shell.Current.DisplayAlert(
                 "Confirm Delete",
                 $"Are you sure you want to delete '{item.Name}'?",
                 "Delete",
@@ -183,7 +182,7 @@ namespace FarmScout.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to delete lookup item: {ex.Message}", "OK");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to delete lookup item: {ex.Message}", "OK");
                 }
             }
         }
