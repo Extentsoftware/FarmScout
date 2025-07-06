@@ -156,7 +156,7 @@ namespace FarmScout.ViewModels
             {
                 if (Application.Current?.MainPage != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to edit lookup item: {ex.Message}", "OK");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to edit lookup item: {ex.Message}", "OK");
                 }
             }
         }

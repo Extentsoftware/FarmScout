@@ -6,6 +6,8 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels
 {
+    [QueryProperty(nameof(IsNew), "IsNew")]
+    [QueryProperty(nameof(Item), "Item")]
     public class LookupItemViewModel : INotifyPropertyChanged
     {
         private readonly FarmScoutDatabase _database;
