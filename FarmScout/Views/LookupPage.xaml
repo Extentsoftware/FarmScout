@@ -51,14 +51,11 @@
                            SelectedItem="{Binding SelectedItem}">
                 
                 <CollectionView.Header>
-                    <Grid ColumnDefinitions="*,Auto,Auto" 
+                    <Grid ColumnDefinitions="*,Auto" 
                           Padding="16,8" 
                           BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
                         <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
-                        <Label Grid.Column="1" Text="Group" FontAttributes="Bold" HorizontalOptions="Center"
-                               IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
-                               />
-                        <Label Grid.Column="2" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Grid.Column="1" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
                     </Grid>
                 </CollectionView.Header>
                 
@@ -93,24 +90,16 @@
                                          Orientation="Vertical" 
                                          HorizontalOptions="Center"
                                          VerticalOptions="Center"
-                                         Spacing="8">
-                                <Button Text="Edit" 
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditLookupItemCommand}"
+                                         Spacing="2">
+                                <Button Text="☰" 
+                                        HeightRequest="30" MinimumHeightRequest="30"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LookupItemActionCommand}"
                                         CommandParameter="{Binding}"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource Blue}}"
+                                        BackgroundColor="Grey"
                                         TextColor="White"
                                         FontSize="Micro"
-                                        Padding="8,4"
-                                        CornerRadius="4"/>
-                                <Button Text="Delete" 
-                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteLookupItemCommand}"
-                                        CommandParameter="{Binding}"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource Red}, Dark={StaticResource Red}}"
-                                        TextColor="White"
-                                        FontSize="Micro"
-                                        Padding="8,4"
+                                        Padding="0,0"
+                                        Margin="0,0"
                                         CornerRadius="4"/>
                             </StackLayout>
                         </Grid>

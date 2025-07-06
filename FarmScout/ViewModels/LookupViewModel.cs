@@ -114,6 +114,30 @@ namespace FarmScout.ViewModels
         }
 
         [RelayCommand]
+        private async Task LookupItemAction(LookupItem item)
+        {
+            if (item == null) return;
+
+            // Create selection dialog
+            string[] options = ["Edit", "Delete"];
+            var action = await Shell.Current.DisplayActionSheet(
+                "Select action",
+                "Cancel",
+                null,
+                options);
+            switch (action)
+            {
+                case "Edit":
+                    await EditLookupItem(item);
+                    break;
+                case "Delete":
+                    await DeleteLookupItem(item);
+                    break;
+            }
+        }
+
+
+        [RelayCommand]
         private async Task EditLookupItem(LookupItem item)
         {
             if (item == null) return;
