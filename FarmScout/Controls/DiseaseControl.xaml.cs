@@ -6,7 +6,7 @@ namespace FarmScout.Controls
 {
     public partial class DiseaseControl : ContentView
     {
-        private readonly FarmScoutDatabase _database;
+        private readonly IFarmScoutDatabase _database;
 
         public static readonly BindableProperty DiseaseNameProperty =
             BindableProperty.Create(nameof(DiseaseName), typeof(string), typeof(DiseaseControl), string.Empty);
@@ -47,7 +47,7 @@ namespace FarmScout.Controls
         public DiseaseControl()
         {            
             InitializeComponent();
-            _database = new FarmScoutDatabase();
+            _database = MauiProgram.Services.GetRequiredService<IFarmScoutDatabase>();
             BindingContext = this;
         }
 

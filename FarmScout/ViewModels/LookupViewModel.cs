@@ -10,10 +10,10 @@ namespace FarmScout.ViewModels
 {
     public partial class LookupViewModel : ObservableObject
     {
-        private readonly FarmScoutDatabase _database;
+        private readonly IFarmScoutDatabase _database;
         private readonly INavigationService _navigationService;
         
-        public LookupViewModel(FarmScoutDatabase database, INavigationService navigationService)
+        public LookupViewModel(IFarmScoutDatabase database, INavigationService navigationService)
         {
             _database = database;
             _navigationService = navigationService;
@@ -49,7 +49,7 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; }
 
-        public static string[] AvailableGroups => LookupGroups.AvailableGroups;
+        public string[] AvailableGroups => LookupGroups.AvailableGroups;
 
         [RelayCommand]
         private async Task LoadLookupItems()

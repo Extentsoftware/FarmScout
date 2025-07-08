@@ -25,7 +25,7 @@ public static class MauiProgram
 
 		// Register services
 
-		builder.Services.AddSingleton<FarmScoutDatabase>();
+		builder.Services.AddSingleton<IFarmScoutDatabase, FarmScoutDatabase>();
 		builder.Services.AddSingleton<PhotoService>();
 		builder.Services.AddSingleton<LocationService>();
 		builder.Services.AddSingleton<ShapefileService>();

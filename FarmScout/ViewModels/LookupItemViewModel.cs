@@ -12,12 +12,12 @@ namespace FarmScout.ViewModels
     [QueryProperty(nameof(Item), "Item")]
     public partial class LookupItemViewModel : ObservableObject
     {
-        private readonly FarmScoutDatabase _database;
+        private readonly IFarmScoutDatabase _database;
         private readonly INavigationService _navigationService;
         
         private LookupItem? _item;
 
-        public LookupItemViewModel(FarmScoutDatabase database, INavigationService navigationService)
+        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
         {
             _database = database;
             _navigationService = navigationService;

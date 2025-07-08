@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationsViewModel(FarmScoutDatabase database, INavigationService navigationService) : ObservableObject
+public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
 {
     [ObservableProperty]
     public partial bool IsBusy { get; set; }

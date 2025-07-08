@@ -1,0 +1,72 @@
+================================================================================
+SECTION HEALTH SUMMARY REPORT (Last 200 Lines)
+================================================================================
+Report Generated: 2025-07-07 17:42:03
+Data Range: 2025-06-26 to 2025-07-04
+Total Observations Analyzed: 200
+
+SUMMARY STATISTICS:
+----------------------------------------
+Total Sections Monitored: 9
+Total Metrics Tracked: 2
+Date Range: 2025-06-26 to 2025-07-04
+
+SECTION HEALTH RANKINGS:
+----------------------------------------
+ 1. B1S1: 3.00 🟢 GOOD
+ 2. B1S2: 3.00 🟢 GOOD
+ 3. B2S1A: 3.00 🟢 GOOD
+ 4. B2S1B: 3.00 🟢 GOOD
+ 5. B2S2: 3.00 🟢 GOOD
+ 6. B2S4: 3.00 🟢 GOOD
+ 7. B2S6: 3.00 🟢 GOOD
+ 8. B2S8: 3.00 🟢 GOOD
+ 9. B2S7: 1.00 🔴 POOR
+
+METRIC PERFORMANCE:
+----------------------------------------
+• insect pests: 3.00 🟢 GOOD
+• Insect pests: 1.00 🔴 POOR
+
+WARNING NOTES AND CRITICAL ISSUES:
+----------------------------------------
+🟢 B2S6 - insect pests: pass
+   Note: only eggs of green vegetable bugs found [unhetched]
+
+🔴 B2S7 - Insect pests: fail
+   Note: 1 green stink bug found
+
+
+DETAILED SECTION ANALYSIS:
+----------------------------------------
+
+B1S1: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B1S2: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B2S1A: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B2S1B: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B2S2: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B2S4: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+B2S6: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+    Note: only eggs of green vegetable bugs found [unhetched]
+
+B2S7: 🔴 POOR (Score: 1.00)
+  🔴 Insect pests: fail
+    Note: 1 green stink bug found
+
+B2S8: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: pass
+
+================================================================================
