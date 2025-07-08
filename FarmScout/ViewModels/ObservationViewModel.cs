@@ -9,14 +9,14 @@ namespace FarmScout.ViewModels;
 public partial class ObservationViewModel : ObservableObject
 {
     private Observation? _originalObservation;
-    private readonly FarmScoutDatabase database;
+    private readonly IFarmScoutDatabase database;
     private readonly PhotoService photoService;
     private readonly LocationService locationService;
     private readonly ShapefileService shapefileService;
     private readonly INavigationService navigationService;
 
     public ObservationViewModel(
-        FarmScoutDatabase database,
+        IFarmScoutDatabase database,
         PhotoService photoService,
         LocationService locationService,
         ShapefileService shapefileService,

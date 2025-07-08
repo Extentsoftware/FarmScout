@@ -1,31 +1,26 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FarmScout.Models;
+using FarmScout.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using FarmScout.Models;
-using FarmScout.Services;
 
 namespace FarmScout.ViewModels
-{
-    public class LookupItemViewModel : INotifyPropertyChanged
+{   
+    [QueryProperty(nameof(IsNew), "IsNew")]
+    [QueryProperty(nameof(Item), "Item")]
+    public partial class LookupItemViewModel : ObservableObject
     {
-        private readonly FarmScoutDatabase _database;
+        private readonly IFarmScoutDatabase _database;
         private readonly INavigationService _navigationService;
         
         private LookupItem? _item;
-        private bool _isNew;
-        private string _name = "";
-        private string _group = "";
-        private string _subGroup = "";
-        private string _description = "";
-        private bool _isLoading;
 
-        public LookupItemViewModel(FarmScoutDatabase database, INavigationService navigationService)
+        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
         {
             _database = database;
             _navigationService = navigationService;
-            
-            SaveCommand = new Command(async () => await SaveAsync());
-            CancelCommand = new Command(async () => await CancelAsync());
         }
 
         public LookupItem? Item
@@ -45,76 +40,40 @@ namespace FarmScout.ViewModels
             }
         }
 
-        public bool IsNew
-        {
-            get => _isNew;
-            set
-            {
-                _isNew = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        private partial bool IsNew { get; set; }
 
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        private partial string Name { get; set; } = "";
 
-        public string Group
-        {
-            get => _group;
-            set
-            {
-                _group = value;
-                // Reset SubGroup when Group changes
-                SubGroup = "";
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(AvailableSubGroups));
-            }
-        }
+        [ObservableProperty]
+        private partial string Group { get; set; } = "";
+        //{
+        //    get => _group;
+        //    set
+        //    {
+        //        _group = value;
+        //        // Reset SubGroup when Group changes
+        //        SubGroup = "";
+        //        OnPropertyChanged();
+        //        OnPropertyChanged(nameof(AvailableSubGroups));
+        //    }
+        //}
 
-        public string SubGroup
-        {
-            get => _subGroup;
-            set
-            {
-                _subGroup = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        private partial string SubGroup {  get; set; } = "";
 
-        public string Description
-        {
-            get => _description;
-            set
-            {
-                _description = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        private partial string Description { get; set; } = "";
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set
-            {
-                _isLoading = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        [ObservableProperty]
+        private partial bool IsLoading { get; set; }
 
         public string[] AvailableGroups => LookupGroups.AvailableGroups;
         public string[] AvailableSubGroups => LookupGroups.GetSubGroupsForGroup(Group);
 
-        private async Task SaveAsync()
+        [RelayCommand]
+        private async Task Save()
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
@@ -189,16 +148,17 @@ namespace FarmScout.ViewModels
             }
         }
 
-        private async Task CancelAsync()
+        [RelayCommand]
+        private async Task Cancel()
         {
             await _navigationService.GoBackAsync();
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        //public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        //protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
     }
 } 

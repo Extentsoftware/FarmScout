@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace FarmScout.Services
 {
-    public class FarmScoutDatabase
+    public class FarmScoutDatabase : IFarmScoutDatabase
     {
         private readonly SQLiteAsyncConnection _database;
         public const SQLite.SQLiteOpenFlags Flags =
@@ -21,7 +21,7 @@ namespace FarmScout.Services
 
             // Initialize SQLite
             SQLitePCL.Batteries_V2.Init();
-            
+
 
             _database = new SQLiteAsyncConnection(dbPath, Flags);
 
@@ -50,19 +50,19 @@ namespace FarmScout.Services
 
                 await _database.CreateTableAsync<Observation>();
                 App.Log("Observation table created successfully using sync method");
-                
+
                 App.Log("Creating TaskItem table...");
                 await _database.CreateTableAsync<TaskItem>();
                 App.Log("TaskItem table created successfully");
-                
+
                 App.Log("Creating ObservationPhoto table...");
                 await _database.CreateTableAsync<ObservationPhoto>();
                 App.Log("ObservationPhoto table created successfully");
-                
+
                 App.Log("Creating ObservationLocation table...");
                 await _database.CreateTableAsync<ObservationLocation>();
                 App.Log("ObservationLocation table created successfully");
-                
+
                 App.Log("Creating FarmLocation table...");
                 await _database.CreateTableAsync<FarmLocation>();
                 App.Log("FarmLocation table created successfully");
@@ -75,7 +75,7 @@ namespace FarmScout.Services
                 await SeedLookupDataAsync();
 
                 App.Log("Database initialization completed successfully");
-                
+
                 // Log the number of observations in the database
                 var count = await _database.Table<Observation>().CountAsync();
                 App.Log($"Database initialized. Current observation count: {count}");
@@ -105,7 +105,7 @@ namespace FarmScout.Services
                 throw;
             }
         }
-        
+
         public async Task<List<Observation>> GetObservationsAsync()
         {
             try
@@ -113,13 +113,13 @@ namespace FarmScout.Services
                 App.Log("GetObservationsAsync called");
                 var observations = await _database.Table<Observation>().ToListAsync();
                 App.Log($"Retrieved {observations.Count} observations from database");
-                
+
                 // Log details of each observation
                 foreach (var obs in observations)
                 {
                     App.Log($"Observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}, Severity={obs.Severity}");
                 }
-                
+
                 return observations;
             }
             catch (Exception ex)
@@ -128,7 +128,7 @@ namespace FarmScout.Services
                 throw;
             }
         }
-        
+
         public Task<int> UpdateObservationAsync(Observation obs) => _database.UpdateAsync(obs);
         public Task<int> DeleteObservationAsync(Observation obs) => _database.DeleteAsync(obs);
 
@@ -214,12 +214,12 @@ namespace FarmScout.Services
                 var items = await _database.Table<LookupItem>()
                     .Where(l => l.IsActive)
                     .ToListAsync();
-                
+
                 var groups = items.Select(l => l.Group)
                     .Distinct()
                     .OrderBy(g => g)
                     .ToList();
-                
+
                 return groups;
             }
             catch (Exception ex)
@@ -268,15 +268,15 @@ namespace FarmScout.Services
             try
             {
                 var query = _database.Table<LookupItem>()
-                    .Where(l => l.Name.ToLower() == name.ToLower() && 
-                               l.Group == group && 
+                    .Where(l => l.Name.ToLower() == name.ToLower() &&
+                               l.Group == group &&
                                l.IsActive);
-                
+
                 if (excludeId.HasValue)
                 {
                     query = query.Where(l => l.Id != excludeId.Value);
                 }
-                
+
                 var count = await query.CountAsync();
                 return count > 0;
             }

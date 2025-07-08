@@ -7,7 +7,7 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class TasksViewModel(FarmScoutDatabase database) : ObservableObject
+public partial class TasksViewModel(IFarmScoutDatabase database) : ObservableObject
 {
     public ObservableCollection<TaskViewModel> Tasks { get; } = [];
 
