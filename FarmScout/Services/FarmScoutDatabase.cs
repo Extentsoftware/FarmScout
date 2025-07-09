@@ -71,8 +71,23 @@ namespace FarmScout.Services
                 await _database.CreateTableAsync<LookupItem>();
                 App.Log("LookupItem table created successfully");
 
+                App.Log("Creating ObservationType table...");
+                await _database.CreateTableAsync<ObservationType>();
+                App.Log("ObservationType table created successfully");
+
+                App.Log("Creating ObservationTypeDataPoint table...");
+                await _database.CreateTableAsync<ObservationTypeDataPoint>();
+                App.Log("ObservationTypeDataPoint table created successfully");
+
+                App.Log("Creating ObservationMetadata table...");
+                await _database.CreateTableAsync<ObservationMetadata>();
+                App.Log("ObservationMetadata table created successfully");
+
                 // Seed initial lookup data
                 await SeedLookupDataAsync();
+                
+                // Seed initial observation types and data points
+                await SeedObservationTypesAsync();
 
                 App.Log("Database initialization completed successfully");
 
@@ -117,7 +132,7 @@ namespace FarmScout.Services
                 // Log details of each observation
                 foreach (var obs in observations)
                 {
-                    App.Log($"Observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}, Severity={obs.Severity}");
+                    App.Log($"Observation: ID={obs.Id}, Timestamp={obs.Timestamp}, Severity={obs.Severity}");
                 }
 
                 return observations;
@@ -390,6 +405,226 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error seeding lookup data: {ex.Message}");
+                // Don't throw - seeding failure shouldn't prevent app startup
+            }
+        }
+
+        // ObservationType CRUD
+        public Task<int> AddObservationTypeAsync(ObservationType observationType) => _database.InsertAsync(observationType);
+        public Task<int> UpdateObservationTypeAsync(ObservationType observationType) => _database.UpdateAsync(observationType);
+        public Task<int> DeleteObservationTypeAsync(ObservationType observationType) => _database.DeleteAsync(observationType);
+
+        public async Task<List<ObservationType>> GetObservationTypesAsync()
+        {
+            try
+            {
+                var types = await _database.Table<ObservationType>()
+                    .Where(t => t.IsActive)
+                    .OrderBy(t => t.SortOrder)
+                    .ThenBy(t => t.Name)
+                    .ToListAsync();
+                App.Log($"Retrieved {types.Count} observation types from database");
+                return types;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving observation types: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ObservationType?> GetObservationTypeByIdAsync(Guid id)
+        {
+            try
+            {
+                var type = await _database.Table<ObservationType>()
+                    .Where(t => t.Id == id && t.IsActive)
+                    .FirstOrDefaultAsync();
+                return type;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving observation type by ID: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ObservationType?> GetObservationTypeByNameAsync(string name)
+        {
+            try
+            {
+                var type = await _database.Table<ObservationType>()
+                    .Where(t => t.Name.ToLower() == name.ToLower() && t.IsActive)
+                    .FirstOrDefaultAsync();
+                return type;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving observation type by name: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ObservationTypeDataPoint CRUD
+        public Task<int> AddObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint) => _database.InsertAsync(dataPoint);
+        public Task<int> UpdateObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint) => _database.UpdateAsync(dataPoint);
+        public Task<int> DeleteObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint) => _database.DeleteAsync(dataPoint);
+
+        public async Task<List<ObservationTypeDataPoint>> GetDataPointsForObservationTypeAsync(Guid observationTypeId)
+        {
+            try
+            {
+                var dataPoints = await _database.Table<ObservationTypeDataPoint>()
+                    .Where(d => d.ObservationTypeId == observationTypeId && d.IsActive)
+                    .OrderBy(d => d.SortOrder)
+                    .ThenBy(d => d.Label)
+                    .ToListAsync();
+                App.Log($"Retrieved {dataPoints.Count} data points for observation type {observationTypeId}");
+                return dataPoints;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving data points for observation type: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ObservationMetadata CRUD
+        public Task<int> AddObservationMetadataAsync(ObservationMetadata metadata) => _database.InsertAsync(metadata);
+        public Task<int> UpdateObservationMetadataAsync(ObservationMetadata metadata) => _database.UpdateAsync(metadata);
+        public Task<int> DeleteObservationMetadataAsync(ObservationMetadata metadata) => _database.DeleteAsync(metadata);
+
+        public async Task<List<ObservationMetadata>> GetMetadataForObservationAsync(Guid observationId)
+        {
+            try
+            {
+                var metadata = await _database.Table<ObservationMetadata>()
+                    .Where(m => m.ObservationId == observationId)
+                    .ToListAsync();
+                App.Log($"Retrieved {metadata.Count} metadata items for observation {observationId}");
+                return metadata;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving metadata for observation: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<ObservationMetadata>> GetMetadataForObservationAndTypeAsync(Guid observationId, Guid observationTypeId)
+        {
+            try
+            {
+                var metadata = await _database.Table<ObservationMetadata>()
+                    .Where(m => m.ObservationId == observationId && m.ObservationTypeId == observationTypeId)
+                    .ToListAsync();
+                App.Log($"Retrieved {metadata.Count} metadata items for observation {observationId} and type {observationTypeId}");
+                return metadata;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving metadata for observation and type: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task SeedObservationTypesAsync()
+        {
+            try
+            {
+                // Check if data already exists
+                var existingCount = await _database.Table<ObservationType>().CountAsync();
+                if (existingCount > 0)
+                {
+                    App.Log($"ObservationType table already has {existingCount} items, skipping seed");
+                    return;
+                }
+
+                App.Log("Seeding observation types with initial data...");
+
+                var observationTypes = new List<ObservationType>
+                {
+                    new() { Name = "Disease", Description = "Plant disease observations", Icon = "🦠", Color = "#F44336", SortOrder = 1 },
+                    new() { Name = "Dead Plant", Description = "Dead or dying plant observations", Icon = "💀", Color = "#9E9E9E", SortOrder = 2 },
+                    new() { Name = "Pest", Description = "Pest infestation observations", Icon = "🐛", Color = "#FF9800", SortOrder = 3 },
+                    new() { Name = "Damage", Description = "Plant damage observations", Icon = "💥", Color = "#795548", SortOrder = 4 },
+                    new() { Name = "Growth", Description = "Plant growth observations", Icon = "🌱", Color = "#4CAF50", SortOrder = 5 },
+                    new() { Name = "Harvest", Description = "Harvest observations", Icon = "🌾", Color = "#FFC107", SortOrder = 6 },
+                    new() { Name = "Weather", Description = "Weather condition observations", Icon = "🌤️", Color = "#2196F3", SortOrder = 7 },
+                    new() { Name = "Soil", Description = "Soil condition observations", Icon = "🌍", Color = "#8D6E63", SortOrder = 8 },
+                    new() { Name = "Soil Moisture", Description = "Soil moisture observations", Icon = "💧", Color = "#00BCD4", SortOrder = 9 }
+                };
+
+                foreach (var type in observationTypes)
+                {
+                    await AddObservationTypeAsync(type);
+                }
+
+                // Seed data points for each observation type
+                await SeedDataPointsAsync(observationTypes);
+
+                App.Log($"Successfully seeded {observationTypes.Count} observation types");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding observation types: {ex.Message}");
+                // Don't throw - seeding failure shouldn't prevent app startup
+            }
+        }
+
+        private async Task SeedDataPointsAsync(List<ObservationType> observationTypes)
+        {
+            try
+            {
+                var diseaseType = observationTypes.First(t => t.Name == "Disease");
+                var pestType = observationTypes.First(t => t.Name == "Pest");
+                var harvestType = observationTypes.First(t => t.Name == "Harvest");
+                var weatherType = observationTypes.First(t => t.Name == "Weather");
+                var soilType = observationTypes.First(t => t.Name == "Soil");
+
+                var dataPoints = new List<ObservationTypeDataPoint>
+                {
+                    // Disease data points
+                    new() { ObservationTypeId = diseaseType.Id, Code = "disease_name", Label = "Disease Name", DataType = DataTypes.Lookup, LookupGroupName = "Diseases", IsRequired = true, SortOrder = 1 },
+                    new() { ObservationTypeId = diseaseType.Id, Code = "affected_area", Label = "Affected Area %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                    new() { ObservationTypeId = diseaseType.Id, Code = "plant_count", Label = "Plant Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                    new() { ObservationTypeId = diseaseType.Id, Code = "symptoms", Label = "Symptoms", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
+
+                    // Pest data points
+                    new() { ObservationTypeId = pestType.Id, Code = "pest_name", Label = "Pest Name", DataType = DataTypes.Lookup, LookupGroupName = "Pests", IsRequired = true, SortOrder = 1 },
+                    new() { ObservationTypeId = pestType.Id, Code = "pest_count", Label = "Pest Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                    new() { ObservationTypeId = pestType.Id, Code = "damage_level", Label = "Damage Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                    new() { ObservationTypeId = pestType.Id, Code = "infestation_area", Label = "Infestation Area", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
+
+                    // Harvest data points
+                    new() { ObservationTypeId = harvestType.Id, Code = "crop_type", Label = "Crop Type", DataType = DataTypes.Lookup, LookupGroupName = "Crop Types", IsRequired = true, SortOrder = 1 },
+                    new() { ObservationTypeId = harvestType.Id, Code = "weight_kg", Label = "Weight (kg)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                    new() { ObservationTypeId = harvestType.Id, Code = "quality", Label = "Quality", DataType = DataTypes.String, IsRequired = false, SortOrder = 3 },
+                    new() { ObservationTypeId = harvestType.Id, Code = "yield_per_area", Label = "Yield per Area", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
+
+                    // Weather data points
+                    new() { ObservationTypeId = weatherType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
+                    new() { ObservationTypeId = weatherType.Id, Code = "humidity", Label = "Humidity (%)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                    new() { ObservationTypeId = weatherType.Id, Code = "wind_speed", Label = "Wind Speed", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                    new() { ObservationTypeId = weatherType.Id, Code = "precipitation", Label = "Precipitation", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
+
+                    // Soil data points
+                    new() { ObservationTypeId = soilType.Id, Code = "ph_level", Label = "pH Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
+                    new() { ObservationTypeId = soilType.Id, Code = "moisture", Label = "Moisture %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                    new() { ObservationTypeId = soilType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                    new() { ObservationTypeId = soilType.Id, Code = "nutrient_level", Label = "Nutrient Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 }
+                };
+
+                foreach (var dataPoint in dataPoints)
+                {
+                    await AddObservationTypeDataPointAsync(dataPoint);
+                }
+
+                App.Log($"Successfully seeded {dataPoints.Count} data points");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding data points: {ex.Message}");
                 // Don't throw - seeding failure shouldn't prevent app startup
             }
         }

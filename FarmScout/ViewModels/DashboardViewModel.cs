@@ -32,9 +32,9 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
     { 
         get 
         {
-            if (RecentObservations.Count == 0) return 0.0;
-            var total = RecentObservations.Sum(obs => obs.Observation.SoilMoisture);
-            return total / RecentObservations.Count;
+            // For now, return 0 since SoilMoisture is now stored in metadata
+            // This will be implemented when we add metadata loading to the dashboard
+            return 0.0;
         }
     }
 
@@ -101,13 +101,12 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             RecentActivity.Clear();
             foreach (var obs in recentObservations)
             {
-                var types = ObservationTypes.SplitTypes(obs.ObservationTypes);
-                var typeText = types.Count > 0 ? string.Join(", ", types) : "No type specified";
+                // For now, use placeholder data since we need to load from metadata
                 RecentActivity.Add(new ActivityItem
                 {
                     Icon = "🌱",
-                    Title = $"Observation: {typeText}",
-                    Description = $"Soil: {obs.SoilMoisture:F0}%",
+                    Title = "Observation",
+                    Description = "Data loading...",
                     Timestamp = obs.Timestamp.ToString("MMM dd, HH:mm")
                 });
             }

@@ -138,35 +138,49 @@
                 </VerticalStackLayout>
             </Border>
             
-            <!-- Additional Metrics -->
-            <!-- Soil Moisture -->
-            <controls:SoilMoistureControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil Moisture}"/>
-            
-            <!-- Disease Information -->
-            <controls:DiseaseControl 
-                x:Name="DiseaseControl"
-                DiseaseName="{Binding DiseaseName}"
-                DiseaseType="{Binding DiseaseType}"
-                DiseaseDescription="{Binding DiseaseDescription}"
-                SelectedDiseaseId="{Binding SelectedDiseaseId}"
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}"/>
-
-            <!-- Pest Information -->
-            <controls:PestControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Pest}"/>
-
-            <!-- Harvest Information -->
-            <controls:HarvestControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Harvest}"/>
-
-            <!-- Weather Information -->
-            <controls:WeatherControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Weather}"/>
-
-            <!-- Soil Information -->
-            <controls:SoilControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil}"/>
+            <!-- Dynamic Observation Type Controls -->
+            <CollectionView ItemsSource="{Binding SelectedObservationTypes}" 
+                          IsVisible="{Binding HasObservationTypes}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ObservationType">
+                        <Border BackgroundColor="#F5F5F5" Padding="15" Margin="0,0,0,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Icon}" 
+                                           FontSize="20"
+                                           VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding Name}" 
+                                           FontSize="18" 
+                                           FontAttributes="Bold"
+                                           TextColor="#2E7D32"
+                                           VerticalOptions="Center"/>
+                                    <!-- Edit/Add Mode -->
+                                    <Button Grid.Column="2" 
+                                            Text="❌" 
+                                            Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemoveObservationTypeCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="#FF5722"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="30"
+                                            HeightRequest="30"
+                                            FontSize="12"
+                                            IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                                </Grid>
+                                
+                                <!-- Dynamic ObservationTypeControl -->
+                                <controls:ObservationTypeControl x:Name="ObservationTypeControl"
+                                                                 IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
             
             <!-- Photos -->
             <Border BackgroundColor="#F5F5F5" Padding="15">

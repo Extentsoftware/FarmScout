@@ -34,7 +34,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
 
             foreach (var obs in observations.OrderByDescending(o => o.Timestamp))
             {
-                App.Log($"Processing observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}");
+                App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
                 observationViewModels.Add(new SimpleObservationViewModel(obs));
             }
 
@@ -140,8 +140,9 @@ public partial class SimpleObservationViewModel(Observation observation) : Obser
     {
         get
         {
-            var types = ObservationTypes.SplitTypes(Observation.ObservationTypes);
-            return types.Count > 0 ? string.Join(", ", types) : "No type specified";
+            // For now, return a placeholder since we need to load from metadata
+            // This will be implemented when we add metadata loading to the list view
+            return "Loading types...";
         }
     }
     public string SeverityText => $"{SeverityLevels.GetSeverityIcon(Observation.Severity)} {Observation.Severity}";

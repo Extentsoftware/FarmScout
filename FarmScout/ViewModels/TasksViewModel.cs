@@ -115,9 +115,8 @@ public class TaskViewModel(TaskItem taskItem, Observation observation)
     {
         get
         {
-            var types = ObservationTypes.SplitTypes(Observation.ObservationTypes);
-            var typeText = types.Count > 0 ? string.Join(", ", types) : "No type specified";
-            return $"From: {typeText}";
+            // For now, return a placeholder since we need to load from metadata
+            return "From: Loading...";
         }
     }
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy");

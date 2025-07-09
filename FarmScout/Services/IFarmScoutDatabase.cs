@@ -4,6 +4,7 @@ namespace FarmScout.Services
 {
     public interface IFarmScoutDatabase
     {
+        // Existing methods
         Task<int> AddLocationAsync(ObservationLocation location);
         Task<int> AddLookupItemAsync(LookupItem item);
         Task<int> AddObservationAsync(Observation obs);
@@ -27,5 +28,22 @@ namespace FarmScout.Services
         Task<int> UpdateObservationAsync(Observation obs);
         Task<int> UpdatePhotoAsync(ObservationPhoto photo);
         Task<int> UpdateTaskAsync(TaskItem task);
+        
+        // New metadata system methods
+        Task<int> AddObservationTypeAsync(ObservationType observationType);
+        Task<int> AddObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint);
+        Task<int> AddObservationMetadataAsync(ObservationMetadata metadata);
+        Task<int> DeleteObservationTypeAsync(ObservationType observationType);
+        Task<int> DeleteObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint);
+        Task<int> DeleteObservationMetadataAsync(ObservationMetadata metadata);
+        Task<List<ObservationType>> GetObservationTypesAsync();
+        Task<ObservationType?> GetObservationTypeByIdAsync(Guid id);
+        Task<ObservationType?> GetObservationTypeByNameAsync(string name);
+        Task<List<ObservationTypeDataPoint>> GetDataPointsForObservationTypeAsync(Guid observationTypeId);
+        Task<List<ObservationMetadata>> GetMetadataForObservationAsync(Guid observationId);
+        Task<List<ObservationMetadata>> GetMetadataForObservationAndTypeAsync(Guid observationId, Guid observationTypeId);
+        Task<int> UpdateObservationTypeAsync(ObservationType observationType);
+        Task<int> UpdateObservationTypeDataPointAsync(ObservationTypeDataPoint dataPoint);
+        Task<int> UpdateObservationMetadataAsync(ObservationMetadata metadata);
     }
 }
