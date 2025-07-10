@@ -28,6 +28,9 @@ public partial class ObservationViewModel : ObservableObject
         this.shapefileService = shapefileService;
         this.navigationService = navigationService;
 
+        // Initialize severity display
+        SeverityDisplay = "Select Severity";
+
         LoadFarmLocationsAsync().GetAwaiter().GetResult();
     }
 
@@ -81,6 +84,12 @@ public partial class ObservationViewModel : ObservableObject
     public partial string SelectedSeverity { get; set; } = "";
 
     [ObservableProperty]
+    public partial string SeverityDisplay { get; set; } = "";
+
+    [ObservableProperty]
+    public partial string SeverityColor { get; set; } = "#2196F3";
+
+    [ObservableProperty]
     public partial FarmLocation? SelectedFarmLocation { get; set; }
 
     [ObservableProperty]
@@ -116,6 +125,8 @@ public partial class ObservationViewModel : ObservableObject
     partial void OnSelectedSeverityChanged(string value)
     {
         // Update severity display
+        SeverityDisplay = string.IsNullOrWhiteSpace(value) ? "Select Severity" : $"{SeverityLevels.GetSeverityIcon(value)} {value}";
+        SeverityColor = SeverityLevels.GetSeverityColor(value);
     }
 
     [RelayCommand]
@@ -300,10 +311,18 @@ public partial class ObservationViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectFarmLocation(FarmLocation? farmLocation)
     {
-        if (farmLocation != null)
+        if (IsBusy) return;
+
+        var action = await Shell.Current.DisplayActionSheet(
+            "Select Location",
+            "Cancel",
+            null,
+            FarmLocations.Select(x=>x.Name).ToArray());
+
+        if (action != null && action != "Cancel")
         {
-            SelectedFarmLocation = farmLocation;
-            SelectedFarmLocationText = farmLocation.Name;
+            SelectedFarmLocation = FarmLocations.First(x => x.Name == action);
+            SelectedFarmLocationText = SelectedFarmLocation.Name;
         }
     }
 
@@ -485,6 +504,8 @@ public partial class ObservationViewModel : ObservableObject
     {
         Notes = "";
         SelectedSeverity = "";
+        SeverityDisplay = "Select Severity";
+        SeverityColor = "#2196F3";
         SelectedFarmLocation = null;
         SelectedFarmLocationText = "";
         NewTaskDescription = "";
