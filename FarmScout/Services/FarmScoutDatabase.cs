@@ -6,6 +6,8 @@ namespace FarmScout.Services
 {
     public class FarmScoutDatabase : IFarmScoutDatabase
     {
+        public bool IsReady { get; set; }
+
         private readonly SQLiteAsyncConnection _database;
         public const SQLite.SQLiteOpenFlags Flags =
                    // open the database in read/write mode
@@ -16,33 +18,28 @@ namespace FarmScout.Services
                    SQLite.SQLiteOpenFlags.SharedCache;
         public FarmScoutDatabase()
         {
+            IsReady = false;
+
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "farmscout.db3");
             App.Log($"Initializing database at path: {dbPath}");
 
             // Initialize SQLite
             SQLitePCL.Batteries_V2.Init();
 
-
             _database = new SQLiteAsyncConnection(dbPath, Flags);
 
-            // Initialize database synchronously to avoid hanging
-            try
-            {
-                InitializeDatabaseAsync().Wait(TimeSpan.FromSeconds(10));
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Database initialization failed: {ex.Message}");
-                // Continue anyway - the database might still work
-            }
+            MainThread.InvokeOnMainThreadAsync(InitializeDatabaseAsync);
         }
 
-        private async Task InitializeDatabaseAsync()
+        public async Task InitializeDatabaseAsync()
         {
             try
             {
                 App.Log("Creating database tables...");
                 var p = _database.DatabasePath;
+
+                _database.Trace = true;
+                _database.Tracer = App.Log;
 
                 await _database.EnableWriteAheadLoggingAsync();
 
@@ -94,7 +91,8 @@ namespace FarmScout.Services
                 // Log the number of observations in the database
                 var count = await _database.Table<Observation>().CountAsync();
                 App.Log($"Database initialized. Current observation count: {count}");
-
+                
+                IsReady = true;
             }
             catch (Exception ex)
             {

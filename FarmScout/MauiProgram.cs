@@ -60,9 +60,11 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-
         Services = builder.Services.BuildServiceProvider();
 
-        return builder.Build();
-	}
+        var app = builder.Build();
+
+		return app;
+
+    }
 }

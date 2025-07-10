@@ -4,6 +4,9 @@ namespace FarmScout.Services
 {
     public interface IFarmScoutDatabase
     {
+        bool IsReady { get; set; }
+        Task InitializeDatabaseAsync();
+
         // Existing methods
         Task<int> AddLocationAsync(ObservationLocation location);
         Task<int> AddLookupItemAsync(LookupItem item);

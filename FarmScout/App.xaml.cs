@@ -80,15 +80,21 @@ public partial class App : Application
 		}
 	}
 
-	public static void Log(string message)
+    private static object MyLock { get; } = new object();
+
+    public static void Log(string message)
 	{
-		try
+		
+		lock (MyLock)
 		{
-            File.AppendAllText(LogFilePath, $"[{DateTime.Now:O}] {message}\n");
-		}
-        catch 
-		{
-			// do nothing
+			try
+			{
+				File.AppendAllText(LogFilePath, $"[{DateTime.Now:O}] {message}\n");
+			}
+			catch
+			{
+				// do nothing
+			}
 		}
 	}
 }

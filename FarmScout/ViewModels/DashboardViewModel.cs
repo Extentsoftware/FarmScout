@@ -52,8 +52,12 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
 
     public async Task LoadDashboardData()
     {
+        for (int i = 0; i < 100 && !database.IsReady; i++)
+            await Task.Delay(10);
+
         App.Log("DashboardViewModel: LoadDashboardData start");
-        if (IsBusy) return;
+        if (IsBusy || !database.IsReady) 
+            return;
 
         try
         {
