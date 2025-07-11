@@ -13,14 +13,12 @@ public partial class ObservationPage : ContentPage
     public string? Mode { get; set; }
     
     private readonly Dictionary<Guid, ObservationTypeControl> _observationTypeControls = new();
-    private readonly IFarmScoutDatabase _database;
 
     public ObservationPage(ObservationViewModel viewModel, IFarmScoutDatabase database)
     {
         InitializeComponent();
         
         BindingContext = viewModel;
-        _database = database;
         App.Log("ObservationPage ViewModel set from constructor injection");
         
         // Subscribe to observation type changes
@@ -37,7 +35,7 @@ public partial class ObservationPage : ContentPage
             _ = LoadObservationTypeControlsAsync();
         }
     }
-    
+
     private async Task LoadObservationTypeControlsAsync()
     {
         if (BindingContext is not ObservationViewModel viewModel) return;

@@ -1,10 +1,11 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using SQLite;
 using System;
 
 namespace FarmScout.Models
 {
     [Table("ObservationTypes")]
-    public class ObservationType
+    public class ObservationType : ObservableObject
     {
         [PrimaryKey]
         public Guid Id { get; set; } = Guid.NewGuid();

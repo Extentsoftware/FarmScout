@@ -2,9 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
 
 namespace FarmScout.ViewModels
 {   
@@ -153,12 +150,5 @@ namespace FarmScout.ViewModels
         {
             await _navigationService.GoBackAsync();
         }
-
-        //public event PropertyChangedEventHandler? PropertyChanged;
-
-        //protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
     }
 } 

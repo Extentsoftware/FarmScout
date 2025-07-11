@@ -317,7 +317,7 @@ public partial class ObservationViewModel : ObservableObject
             "Select Location",
             "Cancel",
             null,
-            FarmLocations.Select(x=>x.Name).ToArray());
+            FarmLocations.Select(x => x.Name).ToArray());
 
         if (action != null && action != "Cancel")
         {
