@@ -1,5 +1,6 @@
 using FarmScout.Models;
 using FarmScout.Services;
+using System.Windows.Input;
 
 namespace FarmScout.Controls;
 
@@ -9,7 +10,33 @@ public partial class ObservationTypeControl : ContentView
     private readonly Dictionary<Guid, object> _values = new(); // Changed to use DataPointId as key
     private readonly Dictionary<string, Guid> _codeToIdMap = new(); // Map data point codes to IDs
     
+    public static readonly BindableProperty ObservationTypeIdProperty =
+        BindableProperty.Create(nameof(ObservationTypeId), typeof(Guid), typeof(ObservationTypeControl), Guid.Empty, propertyChanged: OnObservationTypeIdChanged);
+    
+    public static readonly BindableProperty ValuesChangedCommandProperty =
+        BindableProperty.Create(nameof(ValuesChangedCommand), typeof(ICommand), typeof(ObservationTypeControl), null);
+    
+    public Guid ObservationTypeId
+    {
+        get => (Guid)GetValue(ObservationTypeIdProperty);
+        set => SetValue(ObservationTypeIdProperty, value);
+    }
+    
+    public ICommand ValuesChangedCommand
+    {
+        get => (ICommand)GetValue(ValuesChangedCommandProperty);
+        set => SetValue(ValuesChangedCommandProperty, value);
+    }
+    
     public event EventHandler<Dictionary<Guid, object>>? ValuesChanged;
+
+    private static async void OnObservationTypeIdChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is ObservationTypeControl control && newValue is Guid observationTypeId && observationTypeId != Guid.Empty)
+        {
+            await control.LoadObservationTypeAsync(observationTypeId);
+        }
+    }
 
     public ObservationTypeControl()
     {
@@ -29,11 +56,15 @@ public partial class ObservationTypeControl : ContentView
             foreach (var dataPoint in dataPoints.OrderBy(dp => dp.SortOrder))
             {
                 _codeToIdMap[dataPoint.Code] = dataPoint.Id; // Store the mapping
-                var control = CreateControlForDataPoint(dataPoint);
-                if (control != null)
+
+                Application.Current?.Dispatcher.Dispatch(() =>
                 {
-                    MainLayout.Children.Add(control);
-                }
+                    var control = CreateControlForDataPoint(dataPoint);
+                    if (control != null)
+                    {
+                        MainLayout.Children.Add(control);
+                    }
+                });
             }
         }
         catch (Exception ex)
@@ -58,6 +89,7 @@ public partial class ObservationTypeControl : ContentView
     {
         var label = new Label
         {
+            TextColor= Colors.Black,
             Text = dataPoint.Label,
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 5, 0, 5)
@@ -65,6 +97,7 @@ public partial class ObservationTypeControl : ContentView
 
         var entry = new Entry
         {
+            TextColor = Colors.Black,
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
             Margin = new Thickness(0, 0, 0, 10)
         };
@@ -73,6 +106,7 @@ public partial class ObservationTypeControl : ContentView
         {
             _values[dataPoint.Id] = e.NewTextValue;
             ValuesChanged?.Invoke(this, _values);
+            ValuesChangedCommand?.Execute(_values);
         };
 
         return new VerticalStackLayout
@@ -85,6 +119,7 @@ public partial class ObservationTypeControl : ContentView
     {
         var label = new Label
         {
+            TextColor = Colors.Black,
             Text = dataPoint.Label,
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 5, 0, 5)
@@ -92,6 +127,7 @@ public partial class ObservationTypeControl : ContentView
 
         var entry = new Entry
         {
+            TextColor = Colors.Black,
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
             Keyboard = Keyboard.Numeric,
             Margin = new Thickness(0, 0, 0, 10)
@@ -108,6 +144,7 @@ public partial class ObservationTypeControl : ContentView
                 _values.Remove(dataPoint.Id);
             }
             ValuesChanged?.Invoke(this, _values);
+            ValuesChangedCommand?.Execute(_values);
         };
 
         return new VerticalStackLayout
@@ -120,6 +157,7 @@ public partial class ObservationTypeControl : ContentView
     {
         var label = new Label
         {
+            TextColor = Colors.Black,
             Text = dataPoint.Label,
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 5, 0, 5)
@@ -127,6 +165,7 @@ public partial class ObservationTypeControl : ContentView
 
         var picker = new Picker
         {
+            TextColor = Colors.Black,
             Title = $"Select {dataPoint.Label.ToLower()}",
             Margin = new Thickness(0, 0, 0, 10)
         };
@@ -145,6 +184,7 @@ public partial class ObservationTypeControl : ContentView
                 _values.Remove(dataPoint.Id);
             }
             ValuesChanged?.Invoke(this, _values);
+            ValuesChangedCommand?.Execute(_values);
         };
 
         return new VerticalStackLayout

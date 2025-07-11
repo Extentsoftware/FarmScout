@@ -198,6 +198,7 @@ public partial class ObservationViewModel : ObservableObject
         var displayText = string.Join(", ", SelectedObservationTypes.Select(t => t.Name));
         SelectedTypesDisplay = displayText.Length > 50 ? displayText[..47] + "..." : displayText;
         HasObservationTypes = SelectedObservationTypes.Count > 0;
+        OnPropertyChanged(nameof(SelectedObservationTypes));
     }
 
     [RelayCommand]
@@ -740,6 +741,18 @@ public partial class ObservationViewModel : ObservableObject
         catch (Exception)
         {
             await Shell.Current.DisplayAlert("Warning", "Could not load farm locations", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private void UpdateMetadataForType(Dictionary<Guid, object> metadata)
+    {
+        // This is a simplified approach - we'll need to track which observation type this belongs to
+        // For now, we'll use the last selected type
+        if (SelectedObservationTypes.Any())
+        {
+            var currentType = SelectedObservationTypes.Last();
+            _metadataByType[currentType.Id] = metadata;
         }
     }
 

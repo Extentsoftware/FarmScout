@@ -173,7 +173,9 @@
                                 
                                 <!-- Dynamic ObservationTypeControl -->
                                 <controls:ObservationTypeControl 
-                                                                 IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                                    ObservationTypeId="{Binding Id}"
+                                    ValuesChangedCommand="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=UpdateMetadataForTypeCommand}"
+                                    IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
