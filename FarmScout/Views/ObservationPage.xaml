@@ -172,7 +172,7 @@
                                 </Grid>
                                 
                                 <!-- Dynamic ObservationTypeControl -->
-                                <controls:ObservationTypeControl x:Name="ObservationTypeControl"
+                                <controls:ObservationTypeControl 
                                                                  IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
                             </VerticalStackLayout>
                         </Border>
