@@ -756,6 +756,8 @@ public partial class ObservationViewModel : ObservableObject
         }
     }
 
+    public Dictionary<Guid, Dictionary<Guid, object>> MetadataByType => _metadataByType;
+
     public void UpdateMetadataForType(Guid observationTypeId, Dictionary<Guid, object> metadata)
     {
         _metadataByType[observationTypeId] = metadata;

@@ -9,12 +9,26 @@ public partial class ObservationTypeControl : ContentView
     private readonly IFarmScoutDatabase _database;
     private readonly Dictionary<Guid, object> _values = new(); // Changed to use DataPointId as key
     private readonly Dictionary<string, Guid> _codeToIdMap = new(); // Map data point codes to IDs
+    private readonly Dictionary<Guid, ControlReference> _controlReferences = new();
+    
+    private class ControlReference
+    {
+        public Entry? Entry { get; set; }
+        public Label? Label { get; set; }
+        public Picker? Picker { get; set; }
+    }
     
     public static readonly BindableProperty ObservationTypeIdProperty =
         BindableProperty.Create(nameof(ObservationTypeId), typeof(Guid), typeof(ObservationTypeControl), Guid.Empty, propertyChanged: OnObservationTypeIdChanged);
     
     public static readonly BindableProperty ValuesChangedCommandProperty =
         BindableProperty.Create(nameof(ValuesChangedCommand), typeof(ICommand), typeof(ObservationTypeControl), null);
+    
+    public static readonly BindableProperty IsEditableProperty =
+        BindableProperty.Create(nameof(IsEditable), typeof(bool), typeof(ObservationTypeControl), true);
+    
+    public static readonly BindableProperty InitialValuesProperty =
+        BindableProperty.Create(nameof(InitialValues), typeof(Dictionary<Guid, object>), typeof(ObservationTypeControl), null, propertyChanged: OnInitialValuesChanged);
     
     public Guid ObservationTypeId
     {
@@ -28,6 +42,18 @@ public partial class ObservationTypeControl : ContentView
         set => SetValue(ValuesChangedCommandProperty, value);
     }
     
+    public bool IsEditable
+    {
+        get => (bool)GetValue(IsEditableProperty);
+        set => SetValue(IsEditableProperty, value);
+    }
+    
+    public Dictionary<Guid, object> InitialValues
+    {
+        get => (Dictionary<Guid, object>)GetValue(InitialValuesProperty);
+        set => SetValue(InitialValuesProperty, value);
+    }
+    
     public event EventHandler<Dictionary<Guid, object>>? ValuesChanged;
 
     private static async void OnObservationTypeIdChanged(BindableObject bindable, object oldValue, object newValue)
@@ -35,6 +61,14 @@ public partial class ObservationTypeControl : ContentView
         if (bindable is ObservationTypeControl control && newValue is Guid observationTypeId && observationTypeId != Guid.Empty)
         {
             await control.LoadObservationTypeAsync(observationTypeId);
+        }
+    }
+    
+    private static void OnInitialValuesChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is ObservationTypeControl control && newValue is Dictionary<Guid, object> values)
+        {
+            control.SetValues(values);
         }
     }
 
@@ -50,6 +84,7 @@ public partial class ObservationTypeControl : ContentView
         {
             MainLayout.Children.Clear();
             _values.Clear();
+            _controlReferences.Clear();
 
             var dataPoints = await _database.GetDataPointsForObservationTypeAsync(observationTypeId);
             
@@ -99,7 +134,16 @@ public partial class ObservationTypeControl : ContentView
         {
             TextColor = Colors.Black,
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
-            Margin = new Thickness(0, 0, 0, 10)
+            Margin = new Thickness(0, 0, 0, 10),
+            IsEnabled = IsEditable
+        };
+
+        var valueLabel = new Label
+        {
+            TextColor = Colors.Black,
+            FontSize = 16,
+            Margin = new Thickness(0, 0, 0, 10),
+            IsVisible = !IsEditable
         };
 
         entry.TextChanged += (sender, e) =>
@@ -109,9 +153,12 @@ public partial class ObservationTypeControl : ContentView
             ValuesChangedCommand?.Execute(_values);
         };
 
+        // Store references for value updates
+        _controlReferences[dataPoint.Id] = new ControlReference { Entry = entry, Label = valueLabel };
+
         return new VerticalStackLayout
         {
-            Children = { label, entry }
+            Children = { label, entry, valueLabel }
         };
     }
 
@@ -130,7 +177,16 @@ public partial class ObservationTypeControl : ContentView
             TextColor = Colors.Black,
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
             Keyboard = Keyboard.Numeric,
-            Margin = new Thickness(0, 0, 0, 10)
+            Margin = new Thickness(0, 0, 0, 10),
+            IsEnabled = IsEditable
+        };
+
+        var valueLabel = new Label
+        {
+            TextColor = Colors.Black,
+            FontSize = 16,
+            Margin = new Thickness(0, 0, 0, 10),
+            IsVisible = !IsEditable
         };
 
         entry.TextChanged += (sender, e) =>
@@ -147,9 +203,12 @@ public partial class ObservationTypeControl : ContentView
             ValuesChangedCommand?.Execute(_values);
         };
 
+        // Store references for value updates
+        _controlReferences[dataPoint.Id] = new ControlReference { Entry = entry, Label = valueLabel };
+
         return new VerticalStackLayout
         {
-            Children = { label, entry }
+            Children = { label, entry, valueLabel }
         };
     }
 
@@ -167,7 +226,16 @@ public partial class ObservationTypeControl : ContentView
         {
             TextColor = Colors.Black,
             Title = $"Select {dataPoint.Label.ToLower()}",
-            Margin = new Thickness(0, 0, 0, 10)
+            Margin = new Thickness(0, 0, 0, 10),
+            IsEnabled = IsEditable
+        };
+
+        var valueLabel = new Label
+        {
+            TextColor = Colors.Black,
+            FontSize = 16,
+            Margin = new Thickness(0, 0, 0, 10),
+            IsVisible = !IsEditable
         };
 
         // Load lookup items asynchronously
@@ -187,9 +255,12 @@ public partial class ObservationTypeControl : ContentView
             ValuesChangedCommand?.Execute(_values);
         };
 
+        // Store references for value updates
+        _controlReferences[dataPoint.Id] = new ControlReference { Picker = picker, Label = valueLabel };
+
         return new VerticalStackLayout
         {
-            Children = { label, picker }
+            Children = { label, picker, valueLabel }
         };
     }
 
@@ -226,8 +297,38 @@ public partial class ObservationTypeControl : ContentView
 
     private void UpdateControlsWithValues()
     {
-        // This would need to be implemented to update the UI controls
-        // with the current values when loading existing data
-        // For now, we'll leave this as a placeholder
+        foreach (var kvp in _values)
+        {
+            if (_controlReferences.TryGetValue(kvp.Key, out var controlRef))
+            {
+                var value = kvp.Value?.ToString() ?? "";
+                
+                // Update entry controls
+                if (controlRef.Entry != null)
+                {
+                    controlRef.Entry.Text = value;
+                }
+                
+                // Update picker controls
+                if (controlRef.Picker != null)
+                {
+                    // Find the matching item in the picker
+                    for (int i = 0; i < controlRef.Picker.Items.Count; i++)
+                    {
+                        if (controlRef.Picker.Items[i] == value)
+                        {
+                            controlRef.Picker.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                
+                // Update label controls (for view mode)
+                if (controlRef.Label != null)
+                {
+                    controlRef.Label.Text = value;
+                }
+            }
+        }
     }
 } 
