@@ -7,9 +7,9 @@ namespace FarmScout.Controls;
 public partial class ObservationTypeControl : ContentView
 {
     private readonly IFarmScoutDatabase _database;
-    private readonly Dictionary<Guid, object> _values = new(); // Changed to use DataPointId as key
-    private readonly Dictionary<string, Guid> _codeToIdMap = new(); // Map data point codes to IDs
-    private readonly Dictionary<Guid, ControlReference> _controlReferences = new();
+    private readonly Dictionary<Guid, object> _values = []; // Changed to use DataPointId as key
+    private readonly Dictionary<string, Guid> _codeToIdMap = []; // Map data point codes to IDs
+    private readonly Dictionary<Guid, ControlReference> _controlReferences = [];
     
     private class ControlReference
     {
@@ -109,7 +109,7 @@ public partial class ObservationTypeControl : ContentView
         }
     }
 
-    private View? CreateControlForDataPoint(ObservationTypeDataPoint dataPoint)
+    private VerticalStackLayout? CreateControlForDataPoint(ObservationTypeDataPoint dataPoint)
     {
         return dataPoint.DataType switch
         {
@@ -120,7 +120,7 @@ public partial class ObservationTypeControl : ContentView
         };
     }
 
-    private View CreateStringControl(ObservationTypeDataPoint dataPoint)
+    private VerticalStackLayout CreateStringControl(ObservationTypeDataPoint dataPoint)
     {
         var label = new Label
         {
@@ -162,7 +162,7 @@ public partial class ObservationTypeControl : ContentView
         };
     }
 
-    private View CreateLongControl(ObservationTypeDataPoint dataPoint)
+    private VerticalStackLayout CreateLongControl(ObservationTypeDataPoint dataPoint)
     {
         var label = new Label
         {
@@ -212,7 +212,7 @@ public partial class ObservationTypeControl : ContentView
         };
     }
 
-    private View CreateLookupControl(ObservationTypeDataPoint dataPoint)
+    private VerticalStackLayout CreateLookupControl(ObservationTypeDataPoint dataPoint)
     {
         var label = new Label
         {
@@ -302,12 +302,9 @@ public partial class ObservationTypeControl : ContentView
             if (_controlReferences.TryGetValue(kvp.Key, out var controlRef))
             {
                 var value = kvp.Value?.ToString() ?? "";
-                
+
                 // Update entry controls
-                if (controlRef.Entry != null)
-                {
-                    controlRef.Entry.Text = value;
-                }
+                controlRef.Entry?.Text = value;
                 
                 // Update picker controls
                 if (controlRef.Picker != null)
@@ -324,10 +321,7 @@ public partial class ObservationTypeControl : ContentView
                 }
                 
                 // Update label controls (for view mode)
-                if (controlRef.Label != null)
-                {
-                    controlRef.Label.Text = value;
-                }
+                controlRef.Label?.Text = value;
             }
         }
     }

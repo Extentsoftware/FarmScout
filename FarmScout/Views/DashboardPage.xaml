@@ -92,7 +92,7 @@
                                                     CornerRadius="15"
                                                     WidthRequest="30"
                                                     HeightRequest="30"
-                                                    Command="{Binding x:DataType=viewmodels:DashboardViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewObservationCommand}"
+                                                    Command="{Binding x:DataType=viewmodels:DashboardViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewDetailsCommand}"
                                                     CommandParameter="{Binding}"/>
                                         </Grid>
                                     </Border>

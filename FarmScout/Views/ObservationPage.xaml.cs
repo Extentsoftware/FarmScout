@@ -12,7 +12,7 @@ public partial class ObservationPage : ContentPage
     public Guid ObservationId { get; set; }
     public string? Mode { get; set; }
     
-    private readonly Dictionary<Guid, ObservationTypeControl> _observationTypeControls = new();
+    private readonly Dictionary<Guid, ObservationTypeControl> _observationTypeControls = [];
 
     public ObservationPage(ObservationViewModel viewModel, IFarmScoutDatabase database)
     {

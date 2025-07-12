@@ -40,7 +40,6 @@ public class ShapefileService
             new { Name = "West Field", Type = "Alfalfa", Lat = 40.7128, Lon = -74.0160, Width = 0.01, Height = 0.01 }
         };
         
-        int id = 1;
         foreach (var sample in sampleLocations)
         {
             var coordinates = new Coordinate[]

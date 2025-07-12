@@ -7,18 +7,9 @@ namespace FarmScout.ViewModels
 {   
     [QueryProperty(nameof(IsNew), "IsNew")]
     [QueryProperty(nameof(Item), "Item")]
-    public partial class LookupItemViewModel : ObservableObject
+    public partial class LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
     {
-        private readonly IFarmScoutDatabase _database;
-        private readonly INavigationService _navigationService;
-        
         private LookupItem? _item;
-
-        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
-        {
-            _database = database;
-            _navigationService = navigationService;
-        }
 
         public LookupItem? Item
         {
@@ -38,35 +29,32 @@ namespace FarmScout.ViewModels
         }
 
         [ObservableProperty]
-        private partial bool IsNew { get; set; }
+        public partial bool IsNew { get; set; }
 
         [ObservableProperty]
-        private partial string Name { get; set; } = "";
+        public partial string Name { get; set; } = "";
 
         [ObservableProperty]
-        private partial string Group { get; set; } = "";
-        //{
-        //    get => _group;
-        //    set
-        //    {
-        //        _group = value;
-        //        // Reset SubGroup when Group changes
-        //        SubGroup = "";
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(AvailableSubGroups));
-        //    }
-        //}
+        public partial string Group { get; set; } = "";
+
+        partial void OnGroupChanged(string value)
+        {
+            // Reset SubGroup when Group changes
+            SubGroup = "";
+            OnPropertyChanged(nameof(AvailableSubGroups));
+        }
 
         [ObservableProperty]
-        private partial string SubGroup {  get; set; } = "";
+        public partial string SubGroup { get; set; } = "";
 
         [ObservableProperty]
-        private partial string Description { get; set; } = "";
+        public partial string Description { get; set; } = "";
 
         [ObservableProperty]
-        private partial bool IsLoading { get; set; }
+        public partial bool IsLoading { get; set; }
 
-        public string[] AvailableGroups => LookupGroups.AvailableGroups;
+        public static string[] AvailableGroups => LookupGroups.AvailableGroups;
+        
         public string[] AvailableSubGroups => LookupGroups.GetSubGroupsForGroup(Group);
 
         [RelayCommand]
@@ -104,7 +92,7 @@ namespace FarmScout.ViewModels
                 IsLoading = true;
 
                 // Check if item already exists (case-insensitive)
-                var exists = await _database.LookupItemExistsAsync(Name, Group, IsNew ? null : Item.Id);
+                var exists = await database.LookupItemExistsAsync(Name, Group, IsNew ? null : Item.Id);
                 if (exists)
                 {
                     if (Application.Current?.MainPage != null)
@@ -123,14 +111,14 @@ namespace FarmScout.ViewModels
 
                 if (IsNew)
                 {
-                    await _database.AddLookupItemAsync(Item);
+                    await database.AddLookupItemAsync(Item);
                 }
                 else
                 {
-                    await _database.UpdateLookupItemAsync(Item);
+                    await database.UpdateLookupItemAsync(Item);
                 }
 
-                await _navigationService.GoBackAsync();
+                await navigationService.GoBackAsync();
             }
             catch (Exception ex)
             {
@@ -148,7 +136,7 @@ namespace FarmScout.ViewModels
         [RelayCommand]
         private async Task Cancel()
         {
-            await _navigationService.GoBackAsync();
+            await navigationService.GoBackAsync();
         }
     }
 } 

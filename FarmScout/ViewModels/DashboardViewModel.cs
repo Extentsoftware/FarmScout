@@ -134,6 +134,20 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             App.Log("DashboardViewModel: LoadDashboardData end");
         }
     }
+
+    [RelayCommand]
+    private async Task ViewDetails(SimpleObservationViewModel? obs)
+    {
+        if (obs != null)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "ObservationId", obs.Observation.Id },
+                { "Mode", "view" }
+            };
+            await navigationService.NavigateToAsync("Observation", parameters);
+        }
+    }
 }
 
 public class ActivityItem

@@ -49,7 +49,7 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; }
 
-        public string[] AvailableGroups => LookupGroups.AvailableGroups;
+        public static string[] AvailableGroups => LookupGroups.AvailableGroups;
 
         [RelayCommand]
         private async Task LoadLookupItems()
@@ -153,7 +153,7 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
+                if (Application.Current?.Windows.FirstOrDefault()?.Page != null)
                 {
                     await Shell.Current.DisplayAlert("Error", $"Failed to edit lookup item: {ex.Message}", "OK");
                 }
@@ -214,7 +214,7 @@ namespace FarmScout.ViewModels
                 // Filter by search text
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    filtered = filtered.Where(item => 
+                    filtered = filtered.Where(item =>
                         item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         item.SubGroup.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         item.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase));

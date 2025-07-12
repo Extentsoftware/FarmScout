@@ -99,7 +99,7 @@ public partial class ObservationViewModel : ObservableObject
     public partial ObservationMode Mode { get; set; }
 
     // Metadata storage
-    private readonly Dictionary<Guid, Dictionary<Guid, object>> _metadataByType = new();
+    private readonly Dictionary<Guid, Dictionary<Guid, object>> _metadataByType = [];
 
     // Computed properties
     [ObservableProperty]
@@ -150,7 +150,7 @@ public partial class ObservationViewModel : ObservableObject
                 "Select Observation Types",
                 "Cancel",
                 null,
-                AvailableObservationTypes.Select(t => $"{t.Icon} {t.Name}").ToArray());
+                [.. AvailableObservationTypes.Select(t => $"{t.Icon} {t.Name}")]);
 
             if (action != null && action != "Cancel")
             {
@@ -160,7 +160,7 @@ public partial class ObservationViewModel : ObservableObject
                     if (!SelectedObservationTypes.Any(t => t.Id == selectedType.Id))
                     {
                         SelectedObservationTypes.Add(selectedType);
-                        _metadataByType[selectedType.Id] = new Dictionary<Guid, object>();
+                        _metadataByType[selectedType.Id] = [];
                     }
                     else
                     {
@@ -318,7 +318,7 @@ public partial class ObservationViewModel : ObservableObject
             "Select Location",
             "Cancel",
             null,
-            FarmLocations.Select(x => x.Name).ToArray());
+            [.. FarmLocations.Select(x => x.Name)]);
 
         if (action != null && action != "Cancel")
         {
@@ -470,7 +470,7 @@ public partial class ObservationViewModel : ObservableObject
         };
     }
 
-    public async Task SetViewMode()
+    public void SetViewMode()
     {
         Mode = ObservationMode.View;
         IsViewMode = true;
@@ -480,7 +480,7 @@ public partial class ObservationViewModel : ObservableObject
         UpdateTitle();
     }
 
-    public async Task SetAddMode()
+    public void SetAddMode()
     {
         Mode = ObservationMode.Add;
         IsAddMode = true;
@@ -491,7 +491,7 @@ public partial class ObservationViewModel : ObservableObject
         UpdateTitle();
     }
 
-    public async Task SetEditMode()
+    public void SetEditMode()
     {
         Mode = ObservationMode.Edit;
         IsEditMode = true;
@@ -690,12 +690,12 @@ public partial class ObservationViewModel : ObservableObject
             if (observationType != null && !SelectedObservationTypes.Any(t => t.Id == observationType.Id))
             {
                 SelectedObservationTypes.Add(observationType);
-                _metadataByType[observationType.Id] = new Dictionary<Guid, object>();
+                _metadataByType[observationType.Id] = [];
             }
             
-            if (_metadataByType.ContainsKey(meta.ObservationTypeId))
+            if (_metadataByType.TryGetValue(meta.ObservationTypeId, out Dictionary<Guid, object>? value))
             {
-                _metadataByType[meta.ObservationTypeId][meta.DataPointId] = meta.Value;
+                value[meta.DataPointId] = meta.Value;
             }
         }
 

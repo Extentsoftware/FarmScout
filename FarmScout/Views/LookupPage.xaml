@@ -4,7 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="Lookup Tables"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
-             
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:models="clr-namespace:FarmScout.Models"
+             x:DataType="viewmodels:LookupViewModel"
              >
 
     <Grid RowDefinitions="Auto,Auto,Auto,*">
@@ -60,7 +62,7 @@
                 </CollectionView.Header>
                 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:LookupItem">
                         <Grid ColumnDefinitions="*,Auto" 
                               Padding="16,8" 
                               BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"

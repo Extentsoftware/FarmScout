@@ -2,8 +2,19 @@
 <ContentPage x:Class="FarmScout.Views.LookupItemPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="{Binding IsNew, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Item|Edit Item'}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+             Title="Lookup Table"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             x:DataType="viewmodels:LookupItemViewModel"
+             xmlns:converters="clr-namespace:FarmScout.Converters">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:BoolInverterConverter x:Key="BoolInverterConverter" />
+            <converters:NotNullConverter x:Key="NotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <StackLayout Padding="16" Spacing="16">
@@ -78,7 +89,7 @@
                         TextColor="White"
                         CornerRadius="8"
                         HorizontalOptions="FillAndExpand"
-                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToStringConverter}, ConverterParameter='False|True'}"/>
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
             </StackLayout>
 
             <!-- Loading Indicator -->
