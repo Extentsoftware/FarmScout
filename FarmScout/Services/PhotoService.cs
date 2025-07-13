@@ -2,7 +2,7 @@ namespace FarmScout.Services
 {
     public class PhotoService
     {
-        public async Task<string?> CapturePhotoAsync()
+        public static async Task<string?> CapturePhotoAsync()
         {
             if (MediaPicker.Default.IsCaptureSupported)
             {

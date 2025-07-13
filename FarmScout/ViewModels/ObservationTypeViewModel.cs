@@ -3,18 +3,16 @@ using FarmScout.Models;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationTypeViewModel : ObservableObject
+public partial class ObservationTypeViewModel(ObservationType observationType) : ObservableObject
 {
     [ObservableProperty]
-    public partial ObservationType ObservationType { get; set; }
+    public partial ObservationType ObservationType { get; set; } = observationType;
 
     [ObservableProperty]
     public partial Dictionary<Guid, object> Metadata { get; set; } = [];
 
-    public ObservationTypeViewModel(ObservationType observationType)
-    {
-        ObservationType = observationType;
-    }
+    [ObservableProperty]
+    public partial int DataPointsCount { get; set; } = 0;
 
     public Guid Id => ObservationType.Id;
     public string Name => ObservationType.Name;

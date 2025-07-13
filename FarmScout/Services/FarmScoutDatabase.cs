@@ -63,6 +63,14 @@ namespace FarmScout.Services
                 await _database.CreateTableAsync<FarmLocation>();
                 App.Log("FarmLocation table created successfully");
 
+                App.Log("Creating LookupGroup table...");
+                await _database.CreateTableAsync<LookupGroup>();
+                App.Log("LookupGroup table created successfully");
+
+                App.Log("Creating LookupSubGroup table...");
+                await _database.CreateTableAsync<LookupSubGroup>();
+                App.Log("LookupSubGroup table created successfully");
+
                 App.Log("Creating LookupItem table...");
                 await _database.CreateTableAsync<LookupItem>();
                 App.Log("LookupItem table created successfully");
@@ -225,8 +233,7 @@ namespace FarmScout.Services
             {
                 var items = await _database.Table<LookupItem>()
                     .Where(l => l.IsActive)
-                    .OrderBy(l => l.Group)
-                    .ThenBy(l => l.Name)
+                    .OrderBy(l => l.Name)
                     .ToListAsync();
                 App.Log($"Retrieved {items.Count} lookup items from database");
                 return items;
@@ -238,14 +245,26 @@ namespace FarmScout.Services
             }
         }
 
-        public async Task<List<LookupItem>> GetLookupItemsByGroupAsync(string group)
+        public async Task<List<LookupItem>> GetLookupItemsByGroupAsync(string groupName)
         {
             try
             {
+                App.Log($"GetLookupItemsByGroupAsync called for group: {groupName}");
+                
+                // Get the group ID for the group name
+                var group = await GetLookupGroupByNameAsync(groupName);
+                if (group == null)
+                {
+                    App.Log($"Group '{groupName}' not found");
+                    return new List<LookupItem>();
+                }
+
                 var items = await _database.Table<LookupItem>()
-                    .Where(l => l.Group == group && l.IsActive)
+                    .Where(l => l.GroupId == group.Id && l.IsActive)
                     .OrderBy(l => l.Name)
                     .ToListAsync();
+                
+                App.Log($"Retrieved {items.Count} lookup items for group {groupName}");
                 return items;
             }
             catch (Exception ex)
@@ -255,19 +274,69 @@ namespace FarmScout.Services
             }
         }
 
-        public async Task<List<string>> GetLookupGroupsAsync()
+        // Lookup Groups CRUD
+        public async Task<int> AddLookupGroupAsync(LookupGroup group)
         {
             try
             {
-                var items = await _database.Table<LookupItem>()
-                    .Where(l => l.IsActive)
+                App.Log($"AddLookupGroupAsync called: {group.Name}");
+                var result = await _database.InsertAsync(group);
+                App.Log($"LookupGroup added with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error adding lookup group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateLookupGroupAsync(LookupGroup group)
+        {
+            try
+            {
+                group.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(group);
+                App.Log($"LookupGroup updated with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error updating lookup group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteLookupGroupAsync(LookupGroup group)
+        {
+            try
+            {
+                // Soft delete by setting IsActive to false
+                group.IsActive = false;
+                group.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(group);
+                App.Log($"LookupGroup soft deleted with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error deleting lookup group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<LookupGroup>> GetLookupGroupsAsync()
+        {
+            try
+            {
+                App.Log("GetLookupGroupsAsync called");
+                var groups = await _database.Table<LookupGroup>()
+                    .Where(g => g.IsActive)
+                    .OrderBy(g => g.SortOrder)
+                    .ThenBy(g => g.Name)
                     .ToListAsync();
-
-                var groups = items.Select(l => l.Group)
-                    .Distinct()
-                    .OrderBy(g => g)
-                    .ToList();
-
+                
+                App.Log($"Retrieved {groups.Count} lookup groups");
                 return groups;
             }
             catch (Exception ex)
@@ -277,6 +346,138 @@ namespace FarmScout.Services
             }
         }
 
+        public async Task<LookupGroup?> GetLookupGroupByIdAsync(Guid id)
+        {
+            try
+            {
+                App.Log($"GetLookupGroupByIdAsync called: {id}");
+                var group = await _database.Table<LookupGroup>()
+                    .Where(g => g.Id == id && g.IsActive)
+                    .FirstOrDefaultAsync();
+                
+                App.Log($"Retrieved lookup group: {group?.Name ?? "null"}");
+                return group;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving lookup group by ID: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<LookupGroup?> GetLookupGroupByNameAsync(string name)
+        {
+            try
+            {
+                App.Log($"GetLookupGroupByNameAsync called: {name}");
+                var group = await _database.Table<LookupGroup>()
+                    .Where(g => g.Name == name && g.IsActive)
+                    .FirstOrDefaultAsync();
+                
+                App.Log($"Retrieved lookup group: {group?.Name ?? "null"}");
+                return group;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving lookup group by name: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Lookup SubGroups CRUD
+        public async Task<int> AddLookupSubGroupAsync(LookupSubGroup subGroup)
+        {
+            try
+            {
+                App.Log($"AddLookupSubGroupAsync called: {subGroup.Name}");
+                var result = await _database.InsertAsync(subGroup);
+                App.Log($"LookupSubGroup added with ID: {subGroup.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error adding lookup subgroup: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateLookupSubGroupAsync(LookupSubGroup subGroup)
+        {
+            try
+            {
+                subGroup.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(subGroup);
+                App.Log($"LookupSubGroup updated with ID: {subGroup.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error updating lookup subgroup: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteLookupSubGroupAsync(LookupSubGroup subGroup)
+        {
+            try
+            {
+                // Soft delete by setting IsActive to false
+                subGroup.IsActive = false;
+                subGroup.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(subGroup);
+                App.Log($"LookupSubGroup soft deleted with ID: {subGroup.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error deleting lookup subgroup: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<LookupSubGroup>> GetLookupSubGroupsAsync(Guid groupId)
+        {
+            try
+            {
+                App.Log($"GetLookupSubGroupsAsync called for group ID: {groupId}");
+                var subgroups = await _database.Table<LookupSubGroup>()
+                    .Where(sg => sg.GroupId == groupId && sg.IsActive)
+                    .OrderBy(sg => sg.SortOrder)
+                    .ThenBy(sg => sg.Name)
+                    .ToListAsync();
+                
+                App.Log($"Retrieved {subgroups.Count} lookup subgroups for group {groupId}");
+                return subgroups;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving lookup subgroups: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<string>> GetLookupSubGroupNamesAsync(Guid groupId)
+        {
+            try
+            {
+                App.Log($"GetLookupSubGroupNamesAsync called for group ID: {groupId}");
+                var subgroups = await _database.Table<LookupSubGroup>()
+                    .Where(sg => sg.GroupId == groupId && sg.IsActive)
+                    .OrderBy(sg => sg.SortOrder)
+                    .ThenBy(sg => sg.Name)
+                    .ToListAsync();
+                
+                var subgroupNames = subgroups.Select(sg => sg.Name).ToList();
+                App.Log($"Retrieved {subgroupNames.Count} subgroup names for group {groupId}");
+                return subgroupNames;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving lookup subgroup names: {ex.Message}");
+                throw;
+            }
+        }
+        
         public async Task<int> UpdateLookupItemAsync(LookupItem item)
         {
             try
@@ -311,13 +512,20 @@ namespace FarmScout.Services
             }
         }
 
-        public async Task<bool> LookupItemExistsAsync(string name, string group, Guid? excludeId = null)
+        public async Task<bool> LookupItemExistsAsync(string name, string groupName, Guid? excludeId = null)
         {
             try
             {
+                // Get the group ID for the group name
+                var group = await GetLookupGroupByNameAsync(groupName);
+                if (group == null)
+                {
+                    return false;
+                }
+
                 var query = _database.Table<LookupItem>()
                     .Where(l => l.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) &&
-                               l.Group == group &&
+                               l.GroupId == group.Id &&
                                l.IsActive);
 
                 if (excludeId.HasValue)
@@ -339,95 +547,393 @@ namespace FarmScout.Services
         {
             try
             {
-                // Check if data already exists
-                var existingCount = await _database.Table<LookupItem>().CountAsync();
-                if (existingCount > 0)
+                // Check if groups already exist
+                var existingGroupsCount = await _database.Table<LookupGroup>().CountAsync();
+                if (existingGroupsCount > 0)
                 {
-                    App.Log($"Lookup table already has {existingCount} items, skipping seed");
+                    App.Log($"Lookup groups already exist ({existingGroupsCount} groups), skipping seed");
                     return;
                 }
 
-                App.Log("Seeding lookup table with initial data...");
+                App.Log("Seeding lookup groups and subgroups with initial data...");
 
-                var seedData = new List<LookupItem>
+                // Create groups with their icons and colors
+                var groups = new List<LookupGroup>
                 {
-                    // Crop Types
-                    new() { Name = "Corn", Group = "Crop Types", Description = "Maize crop for grain or silage" },
-                    new() { Name = "Soybeans", Group = "Crop Types", Description = "Legume crop for oil and protein" },
-                    new() { Name = "Wheat", Group = "Crop Types", Description = "Cereal grain crop" },
-                    new() { Name = "Cotton", Group = "Crop Types", Description = "Fiber crop" },
-                    new() { Name = "Rice", Group = "Crop Types", Description = "Staple grain crop" },
-
-                    // Diseases
-                    new() { Name = "Rust", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease affecting leaves and stems" },
-                    new() { Name = "Blight", Group = "Diseases", SubGroup = "Bacterial", Description = "Rapid plant disease causing wilting" },
-                    new() { Name = "Mildew", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal growth on plant surfaces" },
-                    new() { Name = "Root Rot", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease affecting plant roots" },
-                    new() { Name = "Leaf Spot", Group = "Diseases", SubGroup = "Fungal", Description = "Fungal disease causing spots on leaves" },
-
-                    // Pests
-                    new() { Name = "Aphids", Group = "Pests", SubGroup = "Insects", Description = "Small sap-sucking insects" },
-                    new() { Name = "Corn Borer", Group = "Pests", SubGroup = "Insects", Description = "Larva that bores into corn stalks" },
-                    new() { Name = "Spider Mites", Group = "Pests", SubGroup = "Mites", Description = "Tiny arachnids that feed on plant sap" },
-                    new() { Name = "Cutworms", Group = "Pests", SubGroup = "Insects", Description = "Caterpillars that cut plant stems" },
-                    new() { Name = "Wireworms", Group = "Pests", SubGroup = "Insects", Description = "Click beetle larvae that damage roots" },
-
-                    // Chemicals
-                    new() { Name = "Glyphosate", Group = "Chemicals", SubGroup = "Herbicide", Description = "Broad-spectrum herbicide" },
-                    new() { Name = "Atrazine", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for corn" },
-                    new() { Name = "2,4-D", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for broadleaf weeds" },
-                    new() { Name = "Paraquat", Group = "Chemicals", SubGroup = "Herbicide", Description = "Contact herbicide" },
-                    new() { Name = "Dicamba", Group = "Chemicals", SubGroup = "Herbicide", Description = "Selective herbicide for broadleaf weeds" },
-                    new() { Name = "Chlorothalonil", Group = "Chemicals", SubGroup = "Fungicide", Description = "Protectant fungicide for foliar diseases" },
-                    new() { Name = "Azoxystrobin", Group = "Chemicals", SubGroup = "Fungicide", Description = "Systemic fungicide for disease control" },
-                    new() { Name = "Malathion", Group = "Chemicals", SubGroup = "Insecticide", Description = "Organophosphate insecticide" },
-                    new() { Name = "Carbaryl", Group = "Chemicals", SubGroup = "Insecticide", Description = "Carbamate insecticide for pest control" },
-                    new() { Name = "Gibberellic Acid", Group = "Chemicals", SubGroup = "Growth Regulator", Description = "Plant growth regulator" },
-
-                    // Fertilizers
-                    new() { Name = "Urea", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Nitrogen fertilizer (46-0-0)" },
-                    new() { Name = "Ammonium Nitrate", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Nitrogen fertilizer (34-0-0)" },
-                    new() { Name = "Triple Superphosphate", Group = "Fertilizers", SubGroup = "Phosphorus", Description = "Phosphorus fertilizer (0-46-0)" },
-                    new() { Name = "Potassium Chloride", Group = "Fertilizers", SubGroup = "Potassium", Description = "Potassium fertilizer (0-0-60)" },
-                    new() { Name = "NPK 10-10-10", Group = "Fertilizers", SubGroup = "Nitrogen", Description = "Balanced fertilizer" },
-                    new() { Name = "Compost", Group = "Fertilizers", SubGroup = "Organic", Description = "Organic soil amendment" },
-
-                    // Soil Types
-                    new() { Name = "Clay", Group = "Soil Types", SubGroup = "Mineral", Description = "Fine-grained soil with high water retention" },
-                    new() { Name = "Silt", Group = "Soil Types", SubGroup = "Mineral", Description = "Medium-grained soil" },
-                    new() { Name = "Sandy", Group = "Soil Types", SubGroup = "Mineral", Description = "Coarse-grained soil with good drainage" },
-                    new() { Name = "Loam", Group = "Soil Types", SubGroup = "Mixed", Description = "Well-balanced soil mixture" },
-                    new() { Name = "Peat", Group = "Soil Types", SubGroup = "Organic", Description = "Organic-rich soil" },
-
-                    // Weather Conditions
-                    new() { Name = "Sunny", Group = "Weather Conditions", SubGroup = "Temperature", Description = "Clear skies with full sun" },
-                    new() { Name = "Cloudy", Group = "Weather Conditions", SubGroup = "Pressure", Description = "Overcast conditions" },
-                    new() { Name = "Rainy", Group = "Weather Conditions", SubGroup = "Precipitation", Description = "Precipitation occurring" },
-                    new() { Name = "Windy", Group = "Weather Conditions", SubGroup = "Wind", Description = "High wind conditions" },
-                    new() { Name = "Foggy", Group = "Weather Conditions", SubGroup = "Humidity", Description = "Low visibility due to fog" },
-
-                    // Growth Stages
-                    new() { Name = "Germination", Group = "Growth Stages", SubGroup = "Vegetative", Description = "Seed sprouting and root development" },
-                    new() { Name = "Vegetative", Group = "Growth Stages", SubGroup = "Vegetative", Description = "Leaf and stem growth" },
-                    new() { Name = "Flowering", Group = "Growth Stages", SubGroup = "Reproductive", Description = "Flower development and pollination" },
-                    new() { Name = "Fruiting", Group = "Growth Stages", SubGroup = "Reproductive", Description = "Fruit or grain development" },
-                    new() { Name = "Maturity", Group = "Growth Stages", SubGroup = "Maturity", Description = "Full development and harvest ready" },
-
-                    // Damage Types
-                    new() { Name = "Hail Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Physical damage from hail stones" },
-                    new() { Name = "Wind Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from high winds" },
-                    new() { Name = "Drought Stress", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from lack of water" },
-                    new() { Name = "Flood Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from excess water" },
-                    new() { Name = "Frost Damage", Group = "Damage Types", SubGroup = "Environmental", Description = "Damage from freezing temperatures" },
-
-                    // Treatment Methods
-                    new() { Name = "Chemical Treatment", Group = "Treatment Methods", SubGroup = "Chemical", Description = "Application of pesticides or herbicides" },
-                    new() { Name = "Biological Control", Group = "Treatment Methods", SubGroup = "Biological", Description = "Use of natural predators or beneficial organisms" },
-                    new() { Name = "Cultural Control", Group = "Treatment Methods", SubGroup = "Cultural", Description = "Management practices to prevent problems" },
-                    new() { Name = "Mechanical Control", Group = "Treatment Methods", SubGroup = "Mechanical", Description = "Physical removal or barriers" },
-                    new() { Name = "Integrated Pest Management", Group = "Treatment Methods", SubGroup = "Integrated", Description = "Combined approach using multiple methods" }
+                    new() { Name = "Crop Types", Icon = "🌾", Color = "#4CAF50", SortOrder = 1 },
+                    new() { Name = "Diseases", Icon = "🦠", Color = "#F44336", SortOrder = 2 },
+                    new() { Name = "Pests", Icon = "🐛", Color = "#FF9800", SortOrder = 3 },
+                    new() { Name = "Chemicals", Icon = "🧪", Color = "#9C27B0", SortOrder = 4 },
+                    new() { Name = "Fertilizers", Icon = "🌱", Color = "#8BC34A", SortOrder = 5 },
+                    new() { Name = "Soil Types", Icon = "🌍", Color = "#8D6E63", SortOrder = 6 },
+                    new() { Name = "Weather Conditions", Icon = "🌤️", Color = "#2196F3", SortOrder = 7 },
+                    new() { Name = "Growth Stages", Icon = "📈", Color = "#00BCD4", SortOrder = 8 },
+                    new() { Name = "Damage Types", Icon = "💥", Color = "#795548", SortOrder = 9 },
+                    new() { Name = "Treatment Methods", Icon = "💊", Color = "#607D8B", SortOrder = 10 }
                 };
 
+                // Add groups to database
+                foreach (var group in groups)
+                {
+                    await AddLookupGroupAsync(group);
+                }
+
+                // Create subgroups for each group
+                var subgroups = new List<LookupSubGroup>();
+
+                // Chemicals subgroups
+                var chemicalsGroup = await GetLookupGroupByNameAsync("Chemicals");
+                if (chemicalsGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Herbicide", GroupId = chemicalsGroup.Id, SortOrder = 1 },
+                        new() { Name = "Fungicide", GroupId = chemicalsGroup.Id, SortOrder = 2 },
+                        new() { Name = "Insecticide", GroupId = chemicalsGroup.Id, SortOrder = 3 },
+                        new() { Name = "Fertilizer", GroupId = chemicalsGroup.Id, SortOrder = 4 },
+                        new() { Name = "Growth Regulator", GroupId = chemicalsGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Diseases subgroups
+                var diseasesGroup = await GetLookupGroupByNameAsync("Diseases");
+                if (diseasesGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Fungal", GroupId = diseasesGroup.Id, SortOrder = 1 },
+                        new() { Name = "Bacterial", GroupId = diseasesGroup.Id, SortOrder = 2 },
+                        new() { Name = "Viral", GroupId = diseasesGroup.Id, SortOrder = 3 },
+                        new() { Name = "Nematode", GroupId = diseasesGroup.Id, SortOrder = 4 },
+                        new() { Name = "Other", GroupId = diseasesGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Pests subgroups
+                var pestsGroup = await GetLookupGroupByNameAsync("Pests");
+                if (pestsGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Insects", GroupId = pestsGroup.Id, SortOrder = 1 },
+                        new() { Name = "Mites", GroupId = pestsGroup.Id, SortOrder = 2 },
+                        new() { Name = "Nematodes", GroupId = pestsGroup.Id, SortOrder = 3 },
+                        new() { Name = "Birds", GroupId = pestsGroup.Id, SortOrder = 4 },
+                        new() { Name = "Mammals", GroupId = pestsGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Fertilizers subgroups
+                var fertilizersGroup = await GetLookupGroupByNameAsync("Fertilizers");
+                if (fertilizersGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Nitrogen", GroupId = fertilizersGroup.Id, SortOrder = 1 },
+                        new() { Name = "Phosphorus", GroupId = fertilizersGroup.Id, SortOrder = 2 },
+                        new() { Name = "Potassium", GroupId = fertilizersGroup.Id, SortOrder = 3 },
+                        new() { Name = "Micronutrients", GroupId = fertilizersGroup.Id, SortOrder = 4 },
+                        new() { Name = "Organic", GroupId = fertilizersGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Soil Types subgroups
+                var soilTypesGroup = await GetLookupGroupByNameAsync("Soil Types");
+                if (soilTypesGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Mineral", GroupId = soilTypesGroup.Id, SortOrder = 1 },
+                        new() { Name = "Organic", GroupId = soilTypesGroup.Id, SortOrder = 2 },
+                        new() { Name = "Mixed", GroupId = soilTypesGroup.Id, SortOrder = 3 }
+                    });
+                }
+
+                // Weather Conditions subgroups
+                var weatherGroup = await GetLookupGroupByNameAsync("Weather Conditions");
+                if (weatherGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Temperature", GroupId = weatherGroup.Id, SortOrder = 1 },
+                        new() { Name = "Precipitation", GroupId = weatherGroup.Id, SortOrder = 2 },
+                        new() { Name = "Wind", GroupId = weatherGroup.Id, SortOrder = 3 },
+                        new() { Name = "Humidity", GroupId = weatherGroup.Id, SortOrder = 4 },
+                        new() { Name = "Pressure", GroupId = weatherGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Growth Stages subgroups
+                var growthStagesGroup = await GetLookupGroupByNameAsync("Growth Stages");
+                if (growthStagesGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Vegetative", GroupId = growthStagesGroup.Id, SortOrder = 1 },
+                        new() { Name = "Reproductive", GroupId = growthStagesGroup.Id, SortOrder = 2 },
+                        new() { Name = "Maturity", GroupId = growthStagesGroup.Id, SortOrder = 3 }
+                    });
+                }
+
+                // Damage Types subgroups
+                var damageTypesGroup = await GetLookupGroupByNameAsync("Damage Types");
+                if (damageTypesGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Environmental", GroupId = damageTypesGroup.Id, SortOrder = 1 },
+                        new() { Name = "Biological", GroupId = damageTypesGroup.Id, SortOrder = 2 },
+                        new() { Name = "Mechanical", GroupId = damageTypesGroup.Id, SortOrder = 3 },
+                        new() { Name = "Chemical", GroupId = damageTypesGroup.Id, SortOrder = 4 }
+                    });
+                }
+
+                // Treatment Methods subgroups
+                var treatmentMethodsGroup = await GetLookupGroupByNameAsync("Treatment Methods");
+                if (treatmentMethodsGroup != null)
+                {
+                    subgroups.AddRange(new LookupSubGroup[]
+                    {
+                        new() { Name = "Chemical", GroupId = treatmentMethodsGroup.Id, SortOrder = 1 },
+                        new() { Name = "Biological", GroupId = treatmentMethodsGroup.Id, SortOrder = 2 },
+                        new() { Name = "Cultural", GroupId = treatmentMethodsGroup.Id, SortOrder = 3 },
+                        new() { Name = "Mechanical", GroupId = treatmentMethodsGroup.Id, SortOrder = 4 },
+                        new() { Name = "Integrated", GroupId = treatmentMethodsGroup.Id, SortOrder = 5 }
+                    });
+                }
+
+                // Add subgroups to database
+                foreach (var subgroup in subgroups)
+                {
+                    await AddLookupSubGroupAsync(subgroup);
+                }
+
+                App.Log($"Successfully seeded {groups.Count} groups and {subgroups.Count} subgroups");
+
+                // Now seed the lookup items
+                await SeedLookupItemsAsync();
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding lookup data: {ex.Message}");
+                // Don't throw - seeding failure shouldn't prevent app startup
+            }
+        }
+
+        private async Task SeedLookupItemsAsync()
+        {
+            try
+            {
+                // Check if lookup items already exist
+                var existingItemsCount = await _database.Table<LookupItem>().CountAsync();
+                if (existingItemsCount > 0)
+                {
+                    App.Log($"Lookup items already exist ({existingItemsCount} items), skipping seed");
+                    return;
+                }
+
+                App.Log("Seeding lookup items with initial data...");
+
+                var seedData = new List<LookupItem>();
+
+                // Get all groups and subgroups for reference
+                var groups = await GetLookupGroupsAsync();
+                var groupDict = groups.ToDictionary(g => g.Name, g => g.Id);
+
+                // Crop Types (no subgroups)
+                var cropTypesGroup = await GetLookupGroupByNameAsync("Crop Types");
+                if (cropTypesGroup != null)
+                {
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Corn", GroupId = cropTypesGroup.Id, Description = "Maize crop for grain or silage" },
+                        new() { Name = "Soybeans", GroupId = cropTypesGroup.Id, Description = "Legume crop for oil and protein" },
+                        new() { Name = "Wheat", GroupId = cropTypesGroup.Id, Description = "Cereal grain crop" },
+                        new() { Name = "Cotton", GroupId = cropTypesGroup.Id, Description = "Fiber crop" },
+                        new() { Name = "Rice", GroupId = cropTypesGroup.Id, Description = "Staple grain crop" }
+                    });
+                }
+
+                // Diseases
+                var diseasesGroup = await GetLookupGroupByNameAsync("Diseases");
+                if (diseasesGroup != null)
+                {
+                    var diseasesSubgroups = await GetLookupSubGroupsAsync(diseasesGroup.Id);
+                    var fungalSubgroup = diseasesSubgroups.FirstOrDefault(sg => sg.Name == "Fungal");
+                    var bacterialSubgroup = diseasesSubgroups.FirstOrDefault(sg => sg.Name == "Bacterial");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Rust", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease affecting leaves and stems" },
+                        new() { Name = "Blight", GroupId = diseasesGroup.Id, SubGroupId = bacterialSubgroup?.Id, Description = "Rapid plant disease causing wilting" },
+                        new() { Name = "Mildew", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal growth on plant surfaces" },
+                        new() { Name = "Root Rot", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease affecting plant roots" },
+                        new() { Name = "Leaf Spot", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease causing spots on leaves" }
+                    });
+                }
+
+                // Pests
+                var pestsGroup = await GetLookupGroupByNameAsync("Pests");
+                if (pestsGroup != null)
+                {
+                    var pestsSubgroups = await GetLookupSubGroupsAsync(pestsGroup.Id);
+                    var insectsSubgroup = pestsSubgroups.FirstOrDefault(sg => sg.Name == "Insects");
+                    var mitesSubgroup = pestsSubgroups.FirstOrDefault(sg => sg.Name == "Mites");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Aphids", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Small sap-sucking insects" },
+                        new() { Name = "Corn Borer", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Larva that bores into corn stalks" },
+                        new() { Name = "Spider Mites", GroupId = pestsGroup.Id, SubGroupId = mitesSubgroup?.Id, Description = "Tiny arachnids that feed on plant sap" },
+                        new() { Name = "Cutworms", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Caterpillars that cut plant stems" },
+                        new() { Name = "Wireworms", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Click beetle larvae that damage roots" }
+                    });
+                }
+
+                // Chemicals
+                var chemicalsGroup = await GetLookupGroupByNameAsync("Chemicals");
+                if (chemicalsGroup != null)
+                {
+                    var chemicalsSubgroups = await GetLookupSubGroupsAsync(chemicalsGroup.Id);
+                    var herbicideSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Herbicide");
+                    var fungicideSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Fungicide");
+                    var insecticideSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Insecticide");
+                    var growthRegulatorSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Growth Regulator");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Glyphosate", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Broad-spectrum herbicide" },
+                        new() { Name = "Atrazine", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Selective herbicide for corn" },
+                        new() { Name = "2,4-D", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Selective herbicide for broadleaf weeds" },
+                        new() { Name = "Paraquat", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Contact herbicide" },
+                        new() { Name = "Dicamba", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Selective herbicide for broadleaf weeds" },
+                        new() { Name = "Chlorothalonil", GroupId = chemicalsGroup.Id, SubGroupId = fungicideSubgroup?.Id, Description = "Protectant fungicide for foliar diseases" },
+                        new() { Name = "Azoxystrobin", GroupId = chemicalsGroup.Id, SubGroupId = fungicideSubgroup?.Id, Description = "Systemic fungicide for disease control" },
+                        new() { Name = "Malathion", GroupId = chemicalsGroup.Id, SubGroupId = insecticideSubgroup?.Id, Description = "Organophosphate insecticide" },
+                        new() { Name = "Carbaryl", GroupId = chemicalsGroup.Id, SubGroupId = insecticideSubgroup?.Id, Description = "Carbamate insecticide for pest control" },
+                        new() { Name = "Gibberellic Acid", GroupId = chemicalsGroup.Id, SubGroupId = growthRegulatorSubgroup?.Id, Description = "Plant growth regulator" }
+                    });
+                }
+
+                // Fertilizers
+                var fertilizersGroup = await GetLookupGroupByNameAsync("Fertilizers");
+                if (fertilizersGroup != null)
+                {
+                    var fertilizersSubgroups = await GetLookupSubGroupsAsync(fertilizersGroup.Id);
+                    var nitrogenSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Nitrogen");
+                    var phosphorusSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Phosphorus");
+                    var potassiumSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Potassium");
+                    var organicSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Organic");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Urea", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Nitrogen fertilizer (46-0-0)" },
+                        new() { Name = "Ammonium Nitrate", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Nitrogen fertilizer (34-0-0)" },
+                        new() { Name = "Triple Superphosphate", GroupId = fertilizersGroup.Id, SubGroupId = phosphorusSubgroup?.Id, Description = "Phosphorus fertilizer (0-46-0)" },
+                        new() { Name = "Potassium Chloride", GroupId = fertilizersGroup.Id, SubGroupId = potassiumSubgroup?.Id, Description = "Potassium fertilizer (0-0-60)" },
+                        new() { Name = "NPK 10-10-10", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Balanced fertilizer" },
+                        new() { Name = "Compost", GroupId = fertilizersGroup.Id, SubGroupId = organicSubgroup?.Id, Description = "Organic soil amendment" }
+                    });
+                }
+
+                // Soil Types
+                var soilTypesGroup = await GetLookupGroupByNameAsync("Soil Types");
+                if (soilTypesGroup != null)
+                {
+                    var soilTypesSubgroups = await GetLookupSubGroupsAsync(soilTypesGroup.Id);
+                    var mineralSubgroup = soilTypesSubgroups.FirstOrDefault(sg => sg.Name == "Mineral");
+                    var organicSubgroup = soilTypesSubgroups.FirstOrDefault(sg => sg.Name == "Organic");
+                    var mixedSubgroup = soilTypesSubgroups.FirstOrDefault(sg => sg.Name == "Mixed");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Clay", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Fine-grained soil with high water retention" },
+                        new() { Name = "Silt", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Medium-grained soil" },
+                        new() { Name = "Sandy", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Coarse-grained soil with good drainage" },
+                        new() { Name = "Loam", GroupId = soilTypesGroup.Id, SubGroupId = mixedSubgroup?.Id, Description = "Well-balanced soil mixture" },
+                        new() { Name = "Peat", GroupId = soilTypesGroup.Id, SubGroupId = organicSubgroup?.Id, Description = "Organic-rich soil" }
+                    });
+                }
+
+                // Weather Conditions
+                var weatherGroup = await GetLookupGroupByNameAsync("Weather Conditions");
+                if (weatherGroup != null)
+                {
+                    var weatherSubgroups = await GetLookupSubGroupsAsync(weatherGroup.Id);
+                    var temperatureSubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Temperature");
+                    var precipitationSubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Precipitation");
+                    var windSubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Wind");
+                    var humiditySubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Humidity");
+                    var pressureSubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Pressure");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Sunny", GroupId = weatherGroup.Id, SubGroupId = temperatureSubgroup?.Id, Description = "Clear skies with full sun" },
+                        new() { Name = "Cloudy", GroupId = weatherGroup.Id, SubGroupId = pressureSubgroup?.Id, Description = "Overcast conditions" },
+                        new() { Name = "Rainy", GroupId = weatherGroup.Id, SubGroupId = precipitationSubgroup?.Id, Description = "Precipitation occurring" },
+                        new() { Name = "Windy", GroupId = weatherGroup.Id, SubGroupId = windSubgroup?.Id, Description = "High wind conditions" },
+                        new() { Name = "Foggy", GroupId = weatherGroup.Id, SubGroupId = humiditySubgroup?.Id, Description = "Low visibility due to fog" }
+                    });
+                }
+
+                // Growth Stages
+                var growthStagesGroup = await GetLookupGroupByNameAsync("Growth Stages");
+                if (growthStagesGroup != null)
+                {
+                    var growthStagesSubgroups = await GetLookupSubGroupsAsync(growthStagesGroup.Id);
+                    var vegetativeSubgroup = growthStagesSubgroups.FirstOrDefault(sg => sg.Name == "Vegetative");
+                    var reproductiveSubgroup = growthStagesSubgroups.FirstOrDefault(sg => sg.Name == "Reproductive");
+                    var maturitySubgroup = growthStagesSubgroups.FirstOrDefault(sg => sg.Name == "Maturity");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Germination", GroupId = growthStagesGroup.Id, SubGroupId = vegetativeSubgroup?.Id, Description = "Seed sprouting and root development" },
+                        new() { Name = "Vegetative", GroupId = growthStagesGroup.Id, SubGroupId = vegetativeSubgroup?.Id, Description = "Leaf and stem growth" },
+                        new() { Name = "Flowering", GroupId = growthStagesGroup.Id, SubGroupId = reproductiveSubgroup?.Id, Description = "Flower development and pollination" },
+                        new() { Name = "Fruiting", GroupId = growthStagesGroup.Id, SubGroupId = reproductiveSubgroup?.Id, Description = "Fruit or grain development" },
+                        new() { Name = "Maturity", GroupId = growthStagesGroup.Id, SubGroupId = maturitySubgroup?.Id, Description = "Full development and harvest ready" }
+                    });
+                }
+
+                // Damage Types
+                var damageTypesGroup = await GetLookupGroupByNameAsync("Damage Types");
+                if (damageTypesGroup != null)
+                {
+                    var damageTypesSubgroups = await GetLookupSubGroupsAsync(damageTypesGroup.Id);
+                    var environmentalSubgroup = damageTypesSubgroups.FirstOrDefault(sg => sg.Name == "Environmental");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Hail Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Physical damage from hail stones" },
+                        new() { Name = "Wind Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from high winds" },
+                        new() { Name = "Drought Stress", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from lack of water" },
+                        new() { Name = "Flood Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from excess water" },
+                        new() { Name = "Frost Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from freezing temperatures" }
+                    });
+                }
+
+                // Treatment Methods
+                var treatmentMethodsGroup = await GetLookupGroupByNameAsync("Treatment Methods");
+                if (treatmentMethodsGroup != null)
+                {
+                    var treatmentMethodsSubgroups = await GetLookupSubGroupsAsync(treatmentMethodsGroup.Id);
+                    var chemicalSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Chemical");
+                    var biologicalSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Biological");
+                    var culturalSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Cultural");
+                    var mechanicalSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Mechanical");
+                    var integratedSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Integrated");
+
+                    seedData.AddRange(new LookupItem[]
+                    {
+                        new() { Name = "Chemical Treatment", GroupId = treatmentMethodsGroup.Id, SubGroupId = chemicalSubgroup?.Id, Description = "Application of pesticides or herbicides" },
+                        new() { Name = "Biological Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = biologicalSubgroup?.Id, Description = "Use of natural predators or beneficial organisms" },
+                        new() { Name = "Cultural Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = culturalSubgroup?.Id, Description = "Management practices to prevent problems" },
+                        new() { Name = "Mechanical Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = mechanicalSubgroup?.Id, Description = "Physical removal or barriers" },
+                        new() { Name = "Integrated Pest Management", GroupId = treatmentMethodsGroup.Id, SubGroupId = integratedSubgroup?.Id, Description = "Combined approach using multiple methods" }
+                    });
+                }
+
+                // Add all lookup items to database
                 foreach (var item in seedData)
                 {
                     await AddLookupItemAsync(item);
@@ -437,7 +943,7 @@ namespace FarmScout.Services
             }
             catch (Exception ex)
             {
-                App.Log($"Error seeding lookup data: {ex.Message}");
+                App.Log($"Error seeding lookup items: {ex.Message}");
                 // Don't throw - seeding failure shouldn't prevent app startup
             }
         }
@@ -518,6 +1024,22 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error retrieving data points for observation type: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ObservationTypeDataPoint?> GetDataPointByIdAsync(Guid id)
+        {
+            try
+            {
+                var dataPoint = await _database.Table<ObservationTypeDataPoint>()
+                    .Where(d => d.Id == id && d.IsActive)
+                    .FirstOrDefaultAsync();
+                return dataPoint;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving data point by ID: {ex.Message}");
                 throw;
             }
         }

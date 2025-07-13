@@ -8,7 +8,22 @@ namespace FarmScout.Converters
         {
             if (value is string groupName)
             {
-                return FarmScout.Models.LookupGroups.GetGroupIcon(groupName);
+                // For now, return a default icon since we need to access the database
+                // In a real implementation, you might want to pass the group object instead
+                return groupName switch
+                {
+                    "Crop Types" => "🌾",
+                    "Diseases" => "🦠",
+                    "Pests" => "🐛",
+                    "Chemicals" => "🧪",
+                    "Fertilizers" => "🌱",
+                    "Soil Types" => "🌍",
+                    "Weather Conditions" => "🌤️",
+                    "Growth Stages" => "📈",
+                    "Damage Types" => "💥",
+                    "Treatment Methods" => "💊",
+                    _ => "📝"
+                };
             }
             return "📝";
         }

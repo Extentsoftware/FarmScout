@@ -62,9 +62,14 @@ namespace FarmScout.ViewModels
 
                 await LookupItems.PopulateFromAsync(
                     async () => await _database.GetLookupItemsAsync(),
-                    (x) => x.OrderBy(x => x.SubGroup).ThenBy(x => x.Name));
+                    (x) => x.OrderBy(x => x.Name));
 
-                await AvailableGroups.PopulateFromAsync(async () => await _database.GetLookupGroupsAsync());
+                var groups = await _database.GetLookupGroupsAsync();
+                AvailableGroups.Clear();
+                foreach (var group in groups)
+                {
+                    AvailableGroups.Add(group.Name);
+                }
 
                 await ApplyFiltersAsync();
             }
@@ -86,8 +91,8 @@ namespace FarmScout.ViewModels
                 var newItem = new LookupItem
                 {
                     Name = "",
-                    Group = AvailableGroups.FirstOrDefault() ?? "Crop Types",
-                    SubGroup = "",
+                    GroupId = Guid.Empty, // Will be set when group is selected
+                    SubGroupId = null,
                     Description = ""
                 };
 
@@ -198,7 +203,12 @@ namespace FarmScout.ViewModels
                 // Filter by group
                 if (SelectedGroup != "All")
                 {
-                    filtered = filtered.Where(item => item.Group == SelectedGroup);
+                    // We need to get the group ID and filter by that
+                    var group = await _database.GetLookupGroupByNameAsync(SelectedGroup);
+                    if (group != null)
+                    {
+                        filtered = filtered.Where(item => item.GroupId == group.Id);
+                    }
                 }
 
                 // Filter by search text
@@ -206,7 +216,6 @@ namespace FarmScout.ViewModels
                 {
                     filtered = filtered.Where(item =>
                         item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        item.SubGroup.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         item.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
                 }
 

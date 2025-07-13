@@ -16,6 +16,9 @@
         <Tab Title="Lookups">
             <ShellContent ContentTemplate="{DataTemplate views:LookupPage}" />
         </Tab>
+        <Tab Title="Settings">
+            <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
+        </Tab>
     </TabBar>
 
 </Shell>

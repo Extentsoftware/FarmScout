@@ -209,7 +209,7 @@ public partial class ObservationViewModel : ObservableObject
         {
             IsBusy = true;
 
-            var photoPath = await photoService.CapturePhotoAsync();
+            var photoPath = await PhotoService.CapturePhotoAsync();
             if (!string.IsNullOrEmpty(photoPath))
             {
                 var photo = new ObservationPhoto
