@@ -12,14 +12,14 @@ public partial class ObservationViewModel : ObservableObject
     private readonly IFarmScoutDatabase database;
     private readonly PhotoService photoService;
     private readonly LocationService locationService;
-    private readonly ShapefileService shapefileService;
+    private readonly FarmLocationService shapefileService;
     private readonly INavigationService navigationService;
 
     public ObservationViewModel(
         IFarmScoutDatabase database,
         PhotoService photoService,
         LocationService locationService,
-        ShapefileService shapefileService,
+        FarmLocationService shapefileService,
         INavigationService navigationService)
     {
         this.database = database;
@@ -744,7 +744,7 @@ public partial class ObservationViewModel : ObservableObject
         try
         {
             // Load shapefile or create sample data
-            await shapefileService.LoadShapefileAsync("farm_locations.shp");
+            // await shapefileService.LoadShapefileAsync("farm_locations.shp");
 
             FarmLocations.Clear();
             foreach (var location in shapefileService.GetFarmLocations())

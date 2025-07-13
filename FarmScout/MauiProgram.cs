@@ -25,7 +25,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IFarmScoutDatabase, FarmScoutDatabase>();
 		builder.Services.AddSingleton<PhotoService>();
 		builder.Services.AddSingleton<LocationService>();
-		builder.Services.AddSingleton<ShapefileService>();
+		builder.Services.AddSingleton<FarmLocationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
 
         // Register ViewModels
@@ -61,7 +61,7 @@ public static class MauiProgram
 
         var app = builder.Build();
 
-		return app;
+        return app;
 
     }
     public static async Task DisplayAlertAsync(string title, string message, string cancel)
