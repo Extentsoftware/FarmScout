@@ -9,22 +9,12 @@ namespace FarmScout.ViewModels
 {   
     [QueryProperty(nameof(IsNew), "IsNew")]
     [QueryProperty(nameof(Item), "Item")]
-    public partial class LookupItemViewModel : ObservableObject
+    public partial class LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
     {
         private LookupItem? _item;
-        private readonly IFarmScoutDatabase database;
-        private readonly INavigationService navigationService;
 
-        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
-        {
-            this.database = database;
-            this.navigationService = navigationService;
-            AvailableSubGroups = [];
-            AvailableGroups = [];
-            AvailableGroups.PopulateFrom( database.GetLookupGroupsAsync().GetAwaiter().GetResult());
-        }
-
-        public static bool IsNew { get; set; }
+        [ObservableProperty]
+        public partial bool IsNew { get; set; }
 
         public LookupItem? Item
         {
@@ -48,6 +38,27 @@ namespace FarmScout.ViewModels
 
         [ObservableProperty]
         public partial string Group { get; set; } = "";
+
+        [RelayCommand]
+        public async Task LoadLookupItems()
+        {
+            try
+            {
+                IsLoading = true;
+                var group = Group;
+                await AvailableGroups.PopulateFromAsync(async () => await database.GetLookupGroupsAsync());
+                Group = group; // Reset to previous value if it was set
+
+            }
+            catch (Exception ex)
+            {
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load lookup items: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         partial void OnGroupChanged(string value)
         {
@@ -82,10 +93,10 @@ namespace FarmScout.ViewModels
         public partial bool IsLoading { get; set; }
 
         [ObservableProperty]
-        public partial ObservableCollection<string> AvailableGroups { get; set; }
+        public partial ObservableCollection<string> AvailableGroups { get; set; } = [];
 
-        [ObservableProperty] 
-        public partial ObservableCollection<string> AvailableSubGroups{ get; set; }
+        [ObservableProperty]
+        public partial ObservableCollection<string> AvailableSubGroups { get; set; } = [];
 
         [RelayCommand]
         private async Task Save()

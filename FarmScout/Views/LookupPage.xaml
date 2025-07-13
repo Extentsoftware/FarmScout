@@ -54,8 +54,7 @@
                 
                 <CollectionView.Header>
                     <Grid ColumnDefinitions="*,Auto" 
-                          Padding="16,8" 
-                          BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
+                          Padding="16,8" >
                         <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
                         <Label Grid.Column="1" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
                     </Grid>
@@ -65,7 +64,6 @@
                     <DataTemplate x:DataType="models:LookupItem">
                         <Grid ColumnDefinitions="*,Auto" 
                               Padding="16,8" 
-                              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                               Margin="0,1">
                             
                             <!-- Name, SubGroup and Description -->
@@ -73,17 +71,15 @@
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold"
                                        FontSize="Small"
-                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                       />
                                 <StackLayout Orientation="Horizontal" Spacing="8" IsVisible="{Binding SubGroup, Converter={StaticResource NotNullConverter}}">
                                     <Label Text="📋" FontSize="Small"/>
                                     <Label Text="{Binding SubGroup}" 
                                            FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource LightBlue}}"
                                            FontAttributes="Italic"/>
                                 </StackLayout>
                                 <Label Text="{Binding Description}" 
                                        FontSize="Micro"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
                                        IsVisible="{Binding Description, Converter={StaticResource NotNullConverter}}"/>
                             </StackLayout>
                             
@@ -119,11 +115,12 @@
                         <Label Text="No lookup items found" 
                                FontSize="Large" 
                                HorizontalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+
+                               />
                         <Label Text="Add your first lookup item to get started" 
                                FontSize="Medium" 
                                HorizontalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+                               />
                     </StackLayout>
                 </CollectionView.EmptyView>
             </CollectionView>
