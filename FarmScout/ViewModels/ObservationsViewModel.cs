@@ -83,7 +83,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
             foreach (var obs in observations)
             {
                 App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
-                Observations.Add(new SimpleObservationViewModel(obs));
+                Observations.Add(new SimpleObservationViewModel(obs, database));
             }
             
             _currentPage++;
@@ -185,9 +185,19 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     }
 }
 
-public partial class SimpleObservationViewModel(Observation observation) : ObservableObject
+public partial class SimpleObservationViewModel : ObservableObject
 {
-    public Observation Observation { get; } = observation;
+    private readonly IFarmScoutDatabase _database;
+    
+    public Observation Observation { get; }
+    
+    public SimpleObservationViewModel(Observation observation, IFarmScoutDatabase database)
+    {
+        Observation = observation;
+        _database = database;
+        _ = LoadPhotoAsync();
+    }
+    
     public string Notes => Observation.Notes;
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy HH:mm");
     public string LocationText => $"📍 {Observation.Latitude:F4}, {Observation.Longitude:F4}";
@@ -198,8 +208,44 @@ public partial class SimpleObservationViewModel(Observation observation) : Obser
     public string SeverityColor => SeverityLevels.GetSeverityColor(Observation.Severity);
 
     [ObservableProperty] 
-    public partial bool HasPhoto { get; set; } = false; // Will be updated when we load photos
+    public partial bool HasPhoto { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool NoPhoto { get; set; } = true; // Will be updated when we load photos
+    public partial bool NoPhoto { get; set; } = true;
+    
+    [ObservableProperty]
+    public partial string? PhotoPath { get; set; }
+    
+    [ObservableProperty]
+    public partial bool IsLoadingPhoto { get; set; } = true;
+
+    private async Task LoadPhotoAsync()
+    {
+        try
+        {
+            IsLoadingPhoto = true;
+            var photos = await _database.GetPhotosForObservationAsync(Observation.Id);
+            if (photos.Count > 0)
+            {
+                PhotoPath = photos.First().PhotoPath;
+                HasPhoto = true;
+                NoPhoto = false;
+            }
+            else
+            {
+                HasPhoto = false;
+                NoPhoto = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error loading photo for observation {Observation.Id}: {ex.Message}");
+            HasPhoto = false;
+            NoPhoto = true;
+        }
+        finally
+        {
+            IsLoadingPhoto = false;
+        }
+    }
 } 

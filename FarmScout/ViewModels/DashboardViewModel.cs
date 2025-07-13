@@ -85,7 +85,7 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             RecentObservations.Clear();
             foreach (var obs in recentObservations)
             {
-                RecentObservations.Add(new SimpleObservationViewModel(obs));
+                RecentObservations.Add(new SimpleObservationViewModel(obs, database));
             }
             App.Log($"DashboardViewModel: Added {RecentObservations.Count} recent observations to UI");
             

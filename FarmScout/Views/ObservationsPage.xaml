@@ -52,7 +52,7 @@
                                 <RoundRectangle CornerRadius="10" />
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
-                                <!-- Photo placeholder -->
+                                <!-- Photo -->
                                 <Border Grid.Column="0" 
                                        BackgroundColor="#F5F5F5" 
                                        WidthRequest="80" 
@@ -61,10 +61,28 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="5" />
                                     </Border.StrokeShape>
-                                    <Label Text="📷" 
-                                           FontSize="24" 
-                                           HorizontalOptions="Center" 
-                                           VerticalOptions="Center"/>
+                                    <Grid>
+                                        <!-- Loading indicator -->
+                                        <ActivityIndicator IsRunning="{Binding IsLoadingPhoto}" 
+                                                         IsVisible="{Binding IsLoadingPhoto}"
+                                                         HorizontalOptions="Center" 
+                                                         VerticalOptions="Center"
+                                                         Color="#4CAF50"/>
+                                    
+                                        <!-- Actual Image -->
+                                        <Image Source="{Binding PhotoPath}" 
+                                               Aspect="AspectFill"
+                                               IsVisible="{Binding HasPhoto}"
+                                               HorizontalOptions="Fill"
+                                               VerticalOptions="Fill"/>
+                                    
+                                        <!-- Placeholder when no photo -->
+                                        <Label Text="📷" 
+                                               FontSize="24" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center"
+                                               IsVisible="{Binding NoPhoto}"/>
+                                    </Grid>
                                 </Border>
                                 
                                 <!-- Details -->

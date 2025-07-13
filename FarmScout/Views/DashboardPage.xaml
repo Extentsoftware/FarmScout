@@ -76,8 +76,41 @@
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="10" />
                                         </Border.StrokeShape>
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Photo -->
+                                            <Border Grid.Column="0" 
+                                                   BackgroundColor="#F5F5F5" 
+                                                   WidthRequest="50" 
+                                                   HeightRequest="50"
+                                                   Margin="0,0,10,0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="5" />
+                                                </Border.StrokeShape>
+                                                <Grid>
+                                                    <!-- Loading indicator -->
+                                                    <ActivityIndicator IsRunning="{Binding IsLoadingPhoto}" 
+                                                                        IsVisible="{Binding IsLoadingPhoto}"
+                                                                        HorizontalOptions="Center" 
+                                                                        VerticalOptions="Center"
+                                                                        Color="#4CAF50"/>
+                                                
+                                                    <!-- Actual Image -->
+                                                    <Image Source="{Binding PhotoPath}" 
+                                                            Aspect="AspectFill"
+                                                            IsVisible="{Binding HasPhoto}"
+                                                            HorizontalOptions="Fill"
+                                                            VerticalOptions="Fill"/>
+                                                
+                                                    <!-- Placeholder when no photo -->
+                                                    <Label Text="📷" 
+                                                            FontSize="16" 
+                                                            HorizontalOptions="Center" 
+                                                            VerticalOptions="Center"
+                                                            IsVisible="{Binding NoPhoto}"/>
+                                            </Grid>
+                                            </Border>
+                                            
+                                            <VerticalStackLayout Grid.Column="1" Spacing="5">
                                                 <Label Text="{Binding Summary}" 
                                                        FontAttributes="Bold" 
                                                        FontSize="14"/>
@@ -85,7 +118,7 @@
                                                        FontSize="12" 
                                                        TextColor="#666"/>
                                             </VerticalStackLayout>
-                                            <Button Grid.Column="1" 
+                                            <Button Grid.Column="2" 
                                                     Text="👁️" 
                                                     BackgroundColor="#1976D2" 
                                                     TextColor="White"
