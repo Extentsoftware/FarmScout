@@ -108,7 +108,7 @@ public partial class ObservationTypeControl : ContentView
                         MainLayout.Children.Add(control);
                     }
 
-                    UpdateControlValues(_values[dataPoint.Id], _controlReferences[dataPoint.Id]);
+                    UpdateControlWithValues(dataPoint.Id);
                 });
             }
 
@@ -319,6 +319,14 @@ public partial class ObservationTypeControl : ContentView
             {
                 UpdateControlValues(kvp, controlRef);
             }
+        }
+    }
+
+    private void UpdateControlWithValues(Guid datapointId)
+    {
+        if (_values.TryGetValue(datapointId, out var value) && _controlReferences.TryGetValue(datapointId, out ControlReference? controlRef))
+        {
+            UpdateControlValues(value, controlRef);
         }
     }
 
