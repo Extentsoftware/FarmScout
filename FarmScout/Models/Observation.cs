@@ -1,6 +1,4 @@
 using SQLite;
-using System;
-using System.Collections.Generic;
 
 namespace FarmScout.Models
 {
@@ -8,7 +6,7 @@ namespace FarmScout.Models
     {
         [PrimaryKey]
         public Guid Id { get; set; } = Guid.NewGuid();
-        
+        public string Summary { get; set; } = string.Empty;
         public string PhotoPath { get; set; } = string.Empty;
         public double Latitude { get; set; }
         public double Longitude { get; set; }

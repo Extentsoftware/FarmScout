@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FarmScout.Models;
 using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
@@ -28,15 +26,9 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
     // Additional properties for the new UI
     public int TotalObservations => ObservationCount;
     public int TotalTasks => TaskCount;
-    public double AverageSoilMoisture 
-    { 
-        get 
-        {
-            // For now, return 0 since SoilMoisture is now stored in metadata
-            // This will be implemented when we add metadata loading to the dashboard
-            return 0.0;
-        }
-    }
+
+    [ObservableProperty]
+    public partial double AverageSoilMoisture { get; set; }
 
     [RelayCommand]
     private async Task ViewTasks()
@@ -97,10 +89,6 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             }
             App.Log($"DashboardViewModel: Added {RecentObservations.Count} recent observations to UI");
             
-            // Force UI refresh for collections and computed properties
-            OnPropertyChanged(nameof(RecentObservations));
-            OnPropertyChanged(nameof(AverageSoilMoisture));
-
             // Load recent activity (last 5 observations) for the old UI
             RecentActivity.Clear();
             foreach (var obs in recentObservations)
@@ -121,7 +109,7 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             App.Log($"DashboardViewModel: Exception: {ex}");
             try 
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to load dashboard data: {ex.Message}", "OK"); 
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load dashboard data: {ex.Message}", "OK"); 
             }
             catch
             {

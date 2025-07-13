@@ -46,7 +46,7 @@ public partial class TasksViewModel(IFarmScoutDatabase database) : ObservableObj
         }
         catch (Exception)
         {
-            await Shell.Current.DisplayAlert("Error", "Failed to load tasks", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load tasks", "OK");
         }
         finally
         {
@@ -66,7 +66,7 @@ public partial class TasksViewModel(IFarmScoutDatabase database) : ObservableObj
         }
         catch (Exception)
         {
-            await Shell.Current.DisplayAlert("Error", "Failed to update task status", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to update task status", "OK");
         }
     }
 
@@ -75,7 +75,7 @@ public partial class TasksViewModel(IFarmScoutDatabase database) : ObservableObj
     {
         if (taskVM == null) return;
 
-        var result = await Shell.Current.DisplayAlert("Confirm Delete", 
+        var result = await MauiProgram.DisplayAlertAsync("Confirm Delete", 
             "Are you sure you want to delete this task?", "Yes", "No");
         
         if (result)
@@ -88,7 +88,7 @@ public partial class TasksViewModel(IFarmScoutDatabase database) : ObservableObj
             }
             catch (Exception)
             {
-                await Shell.Current.DisplayAlert("Error", "Failed to delete task", "OK");
+                await MauiProgram.DisplayAlertAsync("Error", "Failed to delete task", "OK");
             }
             finally
             {

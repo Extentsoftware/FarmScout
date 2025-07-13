@@ -11,6 +11,8 @@ namespace FarmScout.ViewModels
     {
         private LookupItem? _item;
 
+        public static bool IsNew { get; set; }
+
         public LookupItem? Item
         {
             get => _item;
@@ -27,9 +29,6 @@ namespace FarmScout.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        [ObservableProperty]
-        public partial bool IsNew { get; set; }
 
         [ObservableProperty]
         public partial string Name { get; set; } = "";
@@ -62,28 +61,19 @@ namespace FarmScout.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Validation Error", "Name is required.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Name is required.", "OK");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Group))
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Validation Error", "Group is required.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Group is required.", "OK");
                 return;
             }
 
             if (Item == null)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", "No item to save.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", "No item to save.", "OK");
                 return;
             }
 
@@ -95,11 +85,7 @@ namespace FarmScout.ViewModels
                 var exists = await database.LookupItemExistsAsync(Name, Group, IsNew ? null : Item.Id);
                 if (exists)
                 {
-                    if (Application.Current?.MainPage != null)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Validation Error", 
-                            $"A {Group} with the name '{Name}' already exists.", "OK");
-                    }
+                    await MauiProgram.DisplayAlertAsync("Validation Error", $"A {Group} with the name '{Name}' already exists.", "OK");
                     return;
                 }
 
@@ -122,10 +108,7 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save lookup item: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to save lookup item: {ex.Message}", "OK");
             }
             finally
             {

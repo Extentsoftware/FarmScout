@@ -24,7 +24,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
 
         try
         {
-            // IsBusy = true;
+            IsBusy = true;
             App.Log("Loading observations...");
 
             var observations = await database.GetObservationsAsync();
@@ -49,7 +49,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
         catch (Exception ex)
         {
             App.Log($"Error loading observations: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observations", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observations", "OK");
         }
         finally
         {
@@ -76,7 +76,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     {
         if (obs == null) return;
 
-        var result = await Shell.Current.DisplayAlert("Confirm Delete", 
+        var result = await MauiProgram.DisplayAlertAsync("Confirm Delete", 
             "Are you sure you want to delete this observation?", "Yes", "No");
         
         if (result)
@@ -94,11 +94,12 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
                 
                 // Delete observation
                 await database.DeleteObservationAsync(obs.Observation);
+                IsBusy = false;
                 await LoadObservations();
             }
             catch (Exception)
             {
-                await Shell.Current.DisplayAlert("Error", "Failed to delete observation", "OK");
+                await MauiProgram.DisplayAlertAsync("Error", "Failed to delete observation", "OK");
             }
             finally
             {
@@ -136,15 +137,9 @@ public partial class SimpleObservationViewModel(Observation observation) : Obser
     public string Notes => Observation.Notes;
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy HH:mm");
     public string LocationText => $"📍 {Observation.Latitude:F4}, {Observation.Longitude:F4}";
-    public string ObservationTypesText 
-    {
-        get
-        {
-            // For now, return a placeholder since we need to load from metadata
-            // This will be implemented when we add metadata loading to the list view
-            return "Loading types...";
-        }
-    }
+
+    public string Summary => $"{Observation.Summary}";
+
     public string SeverityText => $"{SeverityLevels.GetSeverityIcon(Observation.Severity)} {Observation.Severity}";
     public string SeverityColor => SeverityLevels.GetSeverityColor(Observation.Severity);
 

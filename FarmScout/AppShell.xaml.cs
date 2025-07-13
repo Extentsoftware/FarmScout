@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace FarmScout;
 

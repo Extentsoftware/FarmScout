@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.Maui.Media;
-
 namespace FarmScout.Services
 {
     public class PhotoService

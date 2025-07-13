@@ -36,7 +36,6 @@ namespace FarmScout.Services
             try
             {
                 App.Log("Creating database tables...");
-                var p = _database.DatabasePath;
 
                 _database.Trace = true;
                 _database.Tracer = App.Log;
@@ -281,7 +280,7 @@ namespace FarmScout.Services
             try
             {
                 var query = _database.Table<LookupItem>()
-                    .Where(l => l.Name.ToLower() == name.ToLower() &&
+                    .Where(l => l.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) &&
                                l.Group == group &&
                                l.IsActive);
 
@@ -452,7 +451,7 @@ namespace FarmScout.Services
             try
             {
                 var type = await _database.Table<ObservationType>()
-                    .Where(t => t.Name.ToLower() == name.ToLower() && t.IsActive)
+                    .Where(t => t.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && t.IsActive)
                     .FirstOrDefaultAsync();
                 return type;
             }

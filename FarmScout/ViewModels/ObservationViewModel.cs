@@ -84,7 +84,7 @@ public partial class ObservationViewModel : ObservableObject
     public partial string SelectedSeverity { get; set; } = "";
 
     [ObservableProperty]
-    public partial string SeverityDisplay { get; set; } = "";
+    public partial string SeverityDisplay { get; set; }
 
     [ObservableProperty]
     public partial string SeverityColor { get; set; } = "#2196F3";
@@ -164,7 +164,7 @@ public partial class ObservationViewModel : ObservableObject
                     }
                     else
                     {
-                        await Shell.Current.DisplayAlert("Info", "This observation type is already selected", "OK");
+                        await MauiProgram.DisplayAlertAsync("Info", "This observation type is already selected", "OK");
                     }
                 }
             }
@@ -174,7 +174,7 @@ public partial class ObservationViewModel : ObservableObject
         catch (Exception ex)
         {
             App.Log($"Error showing observation types: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observation types", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observation types", "OK");
         }
         finally
         {
@@ -228,7 +228,7 @@ public partial class ObservationViewModel : ObservableObject
         catch (Exception ex)
         {
             App.Log($"Error taking photo: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to take photo", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to take photo", "OK");
         }
         finally
         {
@@ -274,7 +274,7 @@ public partial class ObservationViewModel : ObservableObject
         catch (Exception ex)
         {
             App.Log($"Error getting location: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to get location", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to get location", "OK");
         }
         finally
         {
@@ -366,19 +366,19 @@ public partial class ObservationViewModel : ObservableObject
 
             if (SelectedObservationTypes.Count == 0)
             {
-                await Shell.Current.DisplayAlert("Validation Error", "Please select at least one observation type", "OK");
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please select at least one observation type", "OK");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(SelectedSeverity))
             {
-                await Shell.Current.DisplayAlert("Validation Error", "Please select a severity level", "OK");
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please select a severity level", "OK");
                 return;
             }
 
             if (Locations.Count == 0)
             {
-                await Shell.Current.DisplayAlert("Validation Error", "Please add at least one location", "OK");
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please add at least one location", "OK");
                 return;
             }
 
@@ -394,7 +394,7 @@ public partial class ObservationViewModel : ObservableObject
         catch (Exception ex)
         {
             App.Log($"Error saving observation: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to save observation", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to save observation", "OK");
         }
         finally
         {
@@ -436,14 +436,14 @@ public partial class ObservationViewModel : ObservableObject
             }
             else
             {
-                await Shell.Current.DisplayAlert("Error", "Observation not found", "OK");
+                await MauiProgram.DisplayAlertAsync("Error", "Observation not found", "OK");
                 await navigationService.GoBackAsync();
             }
         }
         catch (Exception ex)
         {
             App.Log($"Error loading observation: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observation", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observation", "OK");
         }
         finally
         {
@@ -470,7 +470,7 @@ public partial class ObservationViewModel : ObservableObject
         };
     }
 
-    public void SetViewMode()
+    public Task SetViewModeAsync()
     {
         Mode = ObservationMode.View;
         IsViewMode = true;
@@ -478,9 +478,10 @@ public partial class ObservationViewModel : ObservableObject
         IsAddMode = false;
         IsEditable = false;
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
-    public void SetAddMode()
+    public Task SetAddModeAsync()
     {
         Mode = ObservationMode.Add;
         IsAddMode = true;
@@ -489,9 +490,10 @@ public partial class ObservationViewModel : ObservableObject
         IsEditable = true;
         ClearForm();
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
-    public void SetEditMode()
+    public Task SetEditModeAsync()
     {
         Mode = ObservationMode.Edit;
         IsEditMode = true;
@@ -499,6 +501,7 @@ public partial class ObservationViewModel : ObservableObject
         IsViewMode = false;
         IsEditable = true;
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
     private void ClearForm()
@@ -533,19 +536,24 @@ public partial class ObservationViewModel : ObservableObject
             Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
         };
 
+        if (SelectedFarmLocation != null)
+            observation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
+        else
+            observation.Summary = $"{SelectedTypesDisplay}";
+
         await database.AddObservationAsync(observation);
 
         // Add metadata for each observation type
-        foreach (var observationType in SelectedObservationTypes)
+        foreach (var ObservationTypeId in SelectedObservationTypes.Select(x=>x.Id))
         {
-            if (_metadataByType.TryGetValue(observationType.Id, out var metadata))
+            if (_metadataByType.TryGetValue(ObservationTypeId, out var metadata))
             {
                 foreach (var kvp in metadata)
                 {
                     var observationMetadata = new ObservationMetadata
                     {
                         ObservationId = observation.Id,
-                        ObservationTypeId = observationType.Id,
+                        ObservationTypeId = ObservationTypeId,
                         DataPointId = kvp.Key, // Now using the actual data point ID
                         Value = kvp.Value?.ToString() ?? ""
                     };
@@ -569,7 +577,7 @@ public partial class ObservationViewModel : ObservableObject
         }
 
         App.Log($"Created new observation with ID: {observation.Id}");
-        await Shell.Current.DisplayAlert("Success", "Observation created successfully", "OK");
+        await MauiProgram.DisplayAlertAsync("Success", "Observation created successfully", "OK");
         await navigationService.GoBackAsync();
     }
 
@@ -578,6 +586,12 @@ public partial class ObservationViewModel : ObservableObject
         if (_originalObservation == null) return;
 
         // Update the original observation with new values
+
+        if (SelectedFarmLocation != null)
+            _originalObservation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
+        else
+            _originalObservation.Summary = $"{SelectedTypesDisplay}";
+
         _originalObservation.Notes = Notes;
         _originalObservation.Severity = SelectedSeverity;
         _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
@@ -596,7 +610,7 @@ public partial class ObservationViewModel : ObservableObject
         await UpdatePhotos();
 
         App.Log($"Updated observation {_originalObservation.Id}");
-        await Shell.Current.DisplayAlert("Success", "Observation updated successfully", "OK");
+        await MauiProgram.DisplayAlertAsync("Success", "Observation updated successfully", "OK");
         await navigationService.GoBackAsync();
     }
 
@@ -612,16 +626,16 @@ public partial class ObservationViewModel : ObservableObject
         }
 
         // Add new metadata
-        foreach (var observationType in SelectedObservationTypes)
+        foreach (var ObservationTypeId in SelectedObservationTypes.Select(x=>x.Id))
         {
-            if (_metadataByType.TryGetValue(observationType.Id, out var metadata))
+            if (_metadataByType.TryGetValue(ObservationTypeId, out var metadata))
             {
                 foreach (var kvp in metadata)
                 {
                     var observationMetadata = new ObservationMetadata
                     {
                         ObservationId = _originalObservation.Id,
-                        ObservationTypeId = observationType.Id,
+                        ObservationTypeId = ObservationTypeId,
                         DataPointId = kvp.Key, // Now using the actual data point ID
                         Value = kvp.Value?.ToString() ?? ""
                     };
@@ -740,7 +754,7 @@ public partial class ObservationViewModel : ObservableObject
         }
         catch (Exception)
         {
-            await Shell.Current.DisplayAlert("Warning", "Could not load farm locations", "OK");
+            await MauiProgram.DisplayAlertAsync("Warning", "Could not load farm locations", "OK");
         }
     }
 
@@ -751,7 +765,7 @@ public partial class ObservationViewModel : ObservableObject
         // For now, we'll use the last selected type
         if (SelectedObservationTypes.Any())
         {
-            var currentType = SelectedObservationTypes.Last();
+            var currentType = SelectedObservationTypes[^1];
             _metadataByType[currentType.Id] = metadata;
         }
     }

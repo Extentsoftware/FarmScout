@@ -2,9 +2,6 @@
 using FarmScout.Services;
 using FarmScout.ViewModels;
 using FarmScout.Views;
-using FarmScout.Controls;
-using System.IO;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FarmScout;
 
@@ -66,5 +63,14 @@ public static class MauiProgram
 
 		return app;
 
+    }
+    public static async Task DisplayAlertAsync(string title, string message, string cancel)
+    {
+        await Shell.Current.DisplayAlert(title, message, cancel);
+    }
+
+    public static async Task<bool> DisplayAlertAsync(string title, string message, string accept, string cancel)
+    {
+        return await Shell.Current.DisplayAlert(title, message, accept, cancel);
     }
 }

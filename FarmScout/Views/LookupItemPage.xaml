@@ -75,20 +75,19 @@
                          Spacing="16" 
                          HorizontalOptions="Fill"
                          Margin="0,16,0,0">
-                
+
                 <Button Text="Cancel" 
                         Command="{Binding CancelCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
                         TextColor="White"
                         CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"/>
-                
+                        />
+
                 <Button Text="Save" 
                         Command="{Binding SaveCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                         TextColor="White"
                         CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"
                         IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
             </StackLayout>
 

@@ -1,5 +1,4 @@
 using FarmScout.ViewModels;
-using FarmScout.Models;
 using FarmScout.Controls;
 using FarmScout.Services;
 
@@ -35,15 +34,15 @@ public partial class ObservationPage : ContentPage
                     switch (Mode.ToLower())
                     {
                         case "add":
-                            await viewModel.SetAddMode();
+                            await viewModel.SetAddModeAsync();
                             break;
                         case "edit":
                             await viewModel.LoadObservationAsync(ObservationId);
-                            await viewModel.SetEditMode();
+                            await viewModel.SetEditModeAsync();
                             break;
                         case "view":
                             await viewModel.LoadObservationAsync(ObservationId);
-                            await viewModel.SetViewMode();
+                            await viewModel.SetViewModeAsync();
                             break;
                     }
                 }
@@ -51,12 +50,12 @@ public partial class ObservationPage : ContentPage
                 {
                     // Default to edit mode if observation ID is provided
                     await viewModel.LoadObservationAsync(ObservationId);
-                    await viewModel.SetEditMode();
+                    await viewModel.SetEditModeAsync();
                 }
                 else
                 {
                     // Default to add mode
-                    await viewModel.SetAddMode();
+                    await viewModel.SetAddModeAsync();
                 }
                 Dispatcher.Dispatch(() =>(this as IView).InvalidateArrange());
             }

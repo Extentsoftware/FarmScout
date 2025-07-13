@@ -61,7 +61,7 @@
                                 
                                 <!-- Details -->
                                 <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                    <Label Text="{Binding ObservationTypesText}" 
+                                    <Label Text="{Binding Summary}" 
                                            FontAttributes="Bold" 
                                            FontSize="16"/>
                                     <Label Text="{Binding SeverityText}" 

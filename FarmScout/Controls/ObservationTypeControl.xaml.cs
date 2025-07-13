@@ -11,7 +11,7 @@ public partial class ObservationTypeControl : ContentView
     private readonly Dictionary<string, Guid> _codeToIdMap = []; // Map data point codes to IDs
     private readonly Dictionary<Guid, ControlReference> _controlReferences = [];
     
-    private class ControlReference
+    private sealed class ControlReference
     {
         public Entry? Entry { get; set; }
         public Label? Label { get; set; }
@@ -105,7 +105,7 @@ public partial class ObservationTypeControl : ContentView
         catch (Exception ex)
         {
             App.Log($"Error loading observation type control: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observation type configuration", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observation type configuration", "OK");
         }
     }
 
@@ -304,7 +304,8 @@ public partial class ObservationTypeControl : ContentView
                 var value = kvp.Value?.ToString() ?? "";
 
                 // Update entry controls
-                controlRef.Entry?.Text = value;
+                if (controlRef.Entry != null)
+                    controlRef.Entry.Text = value;
                 
                 // Update picker controls
                 if (controlRef.Picker != null)
@@ -319,9 +320,10 @@ public partial class ObservationTypeControl : ContentView
                         }
                     }
                 }
-                
+
                 // Update label controls (for view mode)
-                controlRef.Label?.Text = value;
+                if (controlRef.Label != null)
+                    controlRef.Label.Text = value;
             }
         }
     }

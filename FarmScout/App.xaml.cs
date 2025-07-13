@@ -1,8 +1,4 @@
-﻿using FarmScout.Services;
-using FarmScout.ViewModels;
-using FarmScout.Views;
-
-namespace FarmScout;
+﻿namespace FarmScout;
 
 public partial class App : Application
 {
