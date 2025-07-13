@@ -2,22 +2,22 @@ using SQLite;
 
 namespace FarmScout.Models
 {
-    [Table("LookupItems")]
-    public class LookupItem
+    [Table("LookupGroups")]
+    public class LookupGroup
     {
         [PrimaryKey]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [MaxLength(100), NotNull]
+        [MaxLength(50), NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         
-        [NotNull]
-        public Guid GroupId { get; set; }
+        [MaxLength(10)]
+        public string Icon { get; set; } = "📝";
         
-        public Guid? SubGroupId { get; set; }
+        [MaxLength(7)]
+        public string Color { get; set; } = "#607D8B";
         
-        [MaxLength(500)]
-        public string Description { get; set; } = string.Empty;
+        public int SortOrder { get; set; } = 0;
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         

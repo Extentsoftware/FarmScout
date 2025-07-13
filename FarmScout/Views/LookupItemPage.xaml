@@ -37,10 +37,11 @@
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                 <Picker Title="Select a group"
-                        SelectedItem="{Binding Group}"
+                        SelectedItem="{Binding GroupName}"
                         ItemsSource="{Binding AvailableGroups}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
-                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        IsEnabled="{Binding IsNew}"/>
             </StackLayout>
 
             <!-- SubGroup Field -->
@@ -49,7 +50,7 @@
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                 <Picker Title="Select a subgroup (optional)"
-                        SelectedItem="{Binding SubGroup}"
+                        SelectedItem="{Binding SubGroupName}"
                         ItemsSource="{Binding AvailableSubGroups}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
                         TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
