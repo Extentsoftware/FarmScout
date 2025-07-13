@@ -20,6 +20,7 @@ namespace FarmScout.Services
         Task<int> DeleteTaskAsync(TaskItem task);
         Task<List<ObservationLocation>> GetLocationsForObservationAsync(Guid observationId);
         Task<List<string>> GetLookupGroupsAsync();
+        Task<List<string>> GetLookupSubGroupsAsync(string group);
         Task<List<LookupItem>> GetLookupItemsAsync();
         Task<List<LookupItem>> GetLookupItemsByGroupAsync(string group);
         Task<List<Observation>> GetObservationsAsync();

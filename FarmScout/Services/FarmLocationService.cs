@@ -55,8 +55,6 @@ public class FarmLocationService
         }
     }
     
-
-    
     private static async Task CopyShapefileFromBundle(string targetDirectory)
     {
         try

@@ -43,23 +43,6 @@ namespace FarmScout.Models
             "Treatment Methods"
         ];
 
-        public static string[] GetSubGroupsForGroup(string group)
-        {
-            return group switch
-            {
-                "Chemicals" => ["Herbicide", "Fungicide", "Insecticide", "Fertilizer", "Growth Regulator"],
-                "Diseases" => ["Fungal", "Bacterial", "Viral", "Nematode", "Other"],
-                "Pests" => ["Insects", "Mites", "Nematodes", "Birds", "Mammals"],
-                "Fertilizers" => ["Nitrogen", "Phosphorus", "Potassium", "Micronutrients", "Organic"],
-                "Soil Types" => ["Mineral", "Organic", "Mixed"],
-                "Weather Conditions" => ["Temperature", "Precipitation", "Wind", "Humidity", "Pressure"],
-                "Growth Stages" => ["Vegetative", "Reproductive", "Maturity"],
-                "Damage Types" => ["Environmental", "Biological", "Mechanical", "Chemical"],
-                "Treatment Methods" => ["Chemical", "Biological", "Cultural", "Mechanical", "Integrated"],
-                _ => []
-            };
-        }
-
         public static string GetGroupIcon(string group)
         {
             return group switch

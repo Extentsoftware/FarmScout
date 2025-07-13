@@ -277,6 +277,34 @@ namespace FarmScout.Services
             }
         }
 
+        public Task<List<string>> GetLookupSubGroupsAsync(string group)
+        {
+            try
+            {
+                List<string> subgroups = group switch
+                {
+                    "Chemicals" => ["Herbicide", "Fungicide", "Insecticide", "Fertilizer", "Growth Regulator"],
+                    "Diseases" => ["Fungal", "Bacterial", "Viral", "Nematode", "Other"],
+                    "Pests" => ["Insects", "Mites", "Nematodes", "Birds", "Mammals"],
+                    "Fertilizers" => ["Nitrogen", "Phosphorus", "Potassium", "Micronutrients", "Organic"],
+                    "Soil Types" => ["Mineral", "Organic", "Mixed"],
+                    "Weather Conditions" => ["Temperature", "Precipitation", "Wind", "Humidity", "Pressure"],
+                    "Growth Stages" => ["Vegetative", "Reproductive", "Maturity"],
+                    "Damage Types" => ["Environmental", "Biological", "Mechanical", "Chemical"],
+                    "Treatment Methods" => ["Chemical", "Biological", "Cultural", "Mechanical", "Integrated"],
+                    _ => []
+                };
+
+                return Task.FromResult( subgroups );
+
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving lookup groups: {ex.Message}");
+                throw;
+            }
+        }
+        
         public async Task<int> UpdateLookupItemAsync(LookupItem item)
         {
             try

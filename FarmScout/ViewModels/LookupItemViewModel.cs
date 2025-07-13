@@ -1,15 +1,28 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FarmScout.Extensions;
 using FarmScout.Models;
 using FarmScout.Services;
+using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels
 {   
     [QueryProperty(nameof(IsNew), "IsNew")]
     [QueryProperty(nameof(Item), "Item")]
-    public partial class LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
+    public partial class LookupItemViewModel : ObservableObject
     {
         private LookupItem? _item;
+        private readonly IFarmScoutDatabase database;
+        private readonly INavigationService navigationService;
+
+        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
+        {
+            this.database = database;
+            this.navigationService = navigationService;
+            AvailableSubGroups = [];
+            AvailableGroups = [];
+            AvailableGroups.PopulateFrom( database.GetLookupGroupsAsync().GetAwaiter().GetResult());
+        }
 
         public static bool IsNew { get; set; }
 
@@ -43,6 +56,22 @@ namespace FarmScout.ViewModels
             OnPropertyChanged(nameof(AvailableSubGroups));
         }
 
+        partial void OnSubGroupChanged(string value)
+        {
+            database.GetLookupSubGroupsAsync(Group)
+                .ContinueWith(t => 
+                {
+                    if (t.IsCompletedSuccessfully)
+                    {
+                        AvailableSubGroups.PopulateFrom(t.Result);
+                    }
+                    else
+                    {
+                        AvailableSubGroups.Clear();
+                    }
+                });
+        }
+
         [ObservableProperty]
         public partial string SubGroup { get; set; } = "";
 
@@ -52,9 +81,11 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; }
 
-        public static string[] AvailableGroups => LookupGroups.AvailableGroups;
-        
-        public string[] AvailableSubGroups => LookupGroups.GetSubGroupsForGroup(Group);
+        [ObservableProperty]
+        public partial ObservableCollection<string> AvailableGroups { get; set; }
+
+        [ObservableProperty] 
+        public partial ObservableCollection<string> AvailableSubGroups{ get; set; }
 
         [RelayCommand]
         private async Task Save()

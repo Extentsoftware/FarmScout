@@ -111,7 +111,7 @@ public class TaskViewModel(TaskItem taskItem, Observation observation)
 {
     public TaskItem TaskItem { get; } = taskItem;
     public Observation Observation { get; } = observation;
-    public string ObservationInfo 
+    public static string ObservationInfo 
     {
         get
         {

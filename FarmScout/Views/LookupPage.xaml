@@ -28,7 +28,7 @@
                     SelectedIndexChanged="OnGroupSelectedIndexChanged"
                     ItemsSource="{Binding AvailableGroups}"
                     WidthRequest="120"
-                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                    IsVisible="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=EditMode}"
                     />
         </Grid>
 
@@ -40,7 +40,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                 TextColor="White"
                 CornerRadius="8"
-                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                IsVisible="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=EditMode}"
                 />
 
         <!-- Lookup Items List -->
@@ -95,7 +95,7 @@
                                          Spacing="2">
                                 <Button Text="☰" 
                                         HeightRequest="30" MinimumHeightRequest="30"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LookupItemActionCommand}"
+                                        Command="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=LookupItemActionCommand}"
                                         CommandParameter="{Binding}"
                                         BackgroundColor="Grey"
                                         TextColor="White"
