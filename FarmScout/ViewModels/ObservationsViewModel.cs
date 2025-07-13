@@ -17,6 +17,18 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     [ObservableProperty]
     public partial ObservableCollection<SimpleObservationViewModel> Observations { get; set; } = [];
 
+    [ObservableProperty]
+    public partial bool IsLoadingMore { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasMoreItems { get; set; } = true;
+
+    [ObservableProperty]
+    public partial int TotalObservationsCount { get; set; }
+
+    private const int PageSize = 10;
+    private int _currentPage = 0;
+
     [RelayCommand]
     public async Task LoadObservations()
     {
@@ -25,26 +37,18 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
         try
         {
             IsBusy = true;
-            App.Log("Loading observations...");
+            App.Log("Loading initial observations...");
 
-            var observations = await database.GetObservationsAsync();
-            App.Log($"Retrieved {observations.Count} observations from database");
-            
-            var observationViewModels = new List<SimpleObservationViewModel>();
-
-            foreach (var obs in observations.OrderByDescending(o => o.Timestamp))
-            {
-                App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
-                observationViewModels.Add(new SimpleObservationViewModel(obs));
-            }
-
+            // Reset pagination state
+            _currentPage = 0;
+            HasMoreItems = true;
             Observations.Clear();
-            foreach (var obs in observationViewModels)
-            {
-                Observations.Add(obs);
-            }
-            
-            App.Log($"Added {Observations.Count} observations to the UI");
+
+            // Get total count
+            TotalObservationsCount = await database.GetObservationsCountAsync();
+
+            // Load first page
+            await LoadMoreObservations();
         }
         catch (Exception ex)
         {
@@ -54,6 +58,47 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task LoadMoreObservations()
+    {
+        if (IsLoadingMore || !HasMoreItems) return;
+
+        try
+        {
+            IsLoadingMore = true;
+            App.Log($"Loading more observations (page {_currentPage + 1})...");
+
+            var observations = await database.GetObservationsAsync(_currentPage * PageSize, PageSize);
+            App.Log($"Retrieved {observations.Count} observations from database");
+            
+            if (observations.Count < PageSize)
+            {
+                HasMoreItems = false;
+                App.Log("No more observations to load");
+            }
+
+            foreach (var obs in observations)
+            {
+                App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
+                Observations.Add(new SimpleObservationViewModel(obs));
+            }
+            
+            _currentPage++;
+            App.Log($"Added {observations.Count} observations to the UI. Total: {Observations.Count}");
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error loading more observations: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load more observations", "OK");
+            // Reset loading state on error
+            HasMoreItems = false;
+        }
+        finally
+        {
+            IsLoadingMore = false;
         }
     }
 
@@ -127,6 +172,15 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     [RelayCommand]
     public async Task Refresh()
     {
+        // Reset pagination state and reload from the beginning
+        await LoadObservations();
+    }
+
+    [RelayCommand]
+    public async Task OnAppearing()
+    {
+        // Always refresh when the page appears to show any new observations
+        // This ensures new observations appear when returning from the add page
         await LoadObservations();
     }
 }

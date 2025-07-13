@@ -78,7 +78,7 @@
                                         </Border.StrokeShape>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                                <Label Text="{Binding ObservationTypesText}" 
+                                                <Label Text="{Binding Summary}" 
                                                        FontAttributes="Bold" 
                                                        FontSize="14"/>
                                                 <Label Text="{Binding TimestampText}" 

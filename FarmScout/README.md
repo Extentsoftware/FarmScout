@@ -1,4 +1,4 @@
-# Farm Scout - MAUI Mobile App
+# FarmScout - MAUI Mobile App
 
 A comprehensive mobile application for farm scouting observations, built with .NET MAUI for Android.
 
@@ -28,6 +28,30 @@ A comprehensive mobile application for farm scouting observations, built with .N
 - **GPS Services**: Location services for precise field mapping
 - **Modern UI**: Clean, intuitive interface with material design principles
 - **Cross-Platform**: Built with .NET MAUI for Android compatibility
+
+### Virtual Scrolling on Observations Page
+
+The Observations page now implements virtual scrolling for improved performance:
+
+- **Initial Load**: Only loads the 10 most recent observations when the page first appears
+- **Progressive Loading**: Automatically loads more observations as the user scrolls down
+- **Loading Indicator**: Shows a loading spinner when fetching more observations
+- **Total Count**: Displays the total number of observations in the header
+- **Pull to Refresh**: Resets the list and reloads from the beginning
+
+#### Technical Implementation
+
+- Uses `CollectionView` with `RemainingItemsThreshold="3"` to trigger loading when user approaches the end
+- Database queries use `Skip()` and `Take()` for efficient pagination
+- Observations are ordered by timestamp (newest first) for optimal user experience
+- Loading states are properly managed to prevent duplicate requests
+
+#### Performance Benefits
+
+- Faster initial page load with large datasets
+- Reduced memory usage by not loading all observations at once
+- Smooth scrolling experience even with thousands of observations
+- Efficient database queries with pagination
 
 ## Getting Started
 

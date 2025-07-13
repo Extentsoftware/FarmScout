@@ -141,6 +141,42 @@ namespace FarmScout.Services
             }
         }
 
+        public async Task<List<Observation>> GetObservationsAsync(int skip, int take)
+        {
+            try
+            {
+                App.Log($"GetObservationsAsync called with skip={skip}, take={take}");
+                var observations = await _database.Table<Observation>()
+                    .OrderByDescending(o => o.Timestamp)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync();
+                App.Log($"Retrieved {observations.Count} observations from database (skip={skip}, take={take})");
+
+                return observations;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving observations: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> GetObservationsCountAsync()
+        {
+            try
+            {
+                var count = await _database.Table<Observation>().CountAsync();
+                App.Log($"Total observations count: {count}");
+                return count;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error getting observations count: {ex.Message}");
+                throw;
+            }
+        }
+
         public Task<int> UpdateObservationAsync(Observation obs) => _database.UpdateAsync(obs);
         public Task<int> DeleteObservationAsync(Observation obs) => _database.DeleteAsync(obs);
 

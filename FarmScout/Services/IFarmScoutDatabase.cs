@@ -23,6 +23,8 @@ namespace FarmScout.Services
         Task<List<LookupItem>> GetLookupItemsAsync();
         Task<List<LookupItem>> GetLookupItemsByGroupAsync(string group);
         Task<List<Observation>> GetObservationsAsync();
+        Task<List<Observation>> GetObservationsAsync(int skip, int take);
+        Task<int> GetObservationsCountAsync();
         Task<List<ObservationPhoto>> GetPhotosForObservationAsync(Guid observationId);
         Task<List<TaskItem>> GetTasksForObservationAsync(Guid observationId);
         Task<bool> LookupItemExistsAsync(string name, string group, Guid? excludeId = null);
