@@ -25,7 +25,7 @@ public partial class ObservationTypeControl : ContentView
         BindableProperty.Create(nameof(ValuesChangedCommand), typeof(ICommand), typeof(ObservationTypeControl), null);
     
     public static readonly BindableProperty IsEditableProperty =
-        BindableProperty.Create(nameof(IsEditable), typeof(bool), typeof(ObservationTypeControl), true);
+        BindableProperty.Create(nameof(IsEditable), typeof(bool), typeof(ObservationTypeControl), true, propertyChanged: OnIsEditableChanged);
     
     public static readonly BindableProperty InitialValuesProperty =
         BindableProperty.Create(nameof(InitialValues), typeof(Dictionary<Guid, object>), typeof(ObservationTypeControl), null, propertyChanged: OnInitialValuesChanged);
@@ -71,6 +71,14 @@ public partial class ObservationTypeControl : ContentView
             control.SetValues(values);
         }
     }
+    
+    private static void OnIsEditableChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is ObservationTypeControl control && newValue is bool isEditable)
+        {
+            control.UpdateControlVisibility(isEditable);
+        }
+    }
 
     public ObservationTypeControl()
     {
@@ -99,8 +107,13 @@ public partial class ObservationTypeControl : ContentView
                     {
                         MainLayout.Children.Add(control);
                     }
+
+                    UpdateControlValues(_values[dataPoint.Id], _controlReferences[dataPoint.Id]);
                 });
             }
+
+            UpdateControlsWithValues();
+
         }
         catch (Exception ex)
         {
@@ -135,7 +148,8 @@ public partial class ObservationTypeControl : ContentView
             TextColor = Colors.Black,
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
             Margin = new Thickness(0, 0, 0, 10),
-            IsEnabled = IsEditable
+            IsEnabled = IsEditable,
+            IsVisible = IsEditable
         };
 
         var valueLabel = new Label
@@ -178,7 +192,8 @@ public partial class ObservationTypeControl : ContentView
             Placeholder = $"Enter {dataPoint.Label.ToLower()}",
             Keyboard = Keyboard.Numeric,
             Margin = new Thickness(0, 0, 0, 10),
-            IsEnabled = IsEditable
+            IsEnabled = IsEditable,
+            IsVisible = IsEditable
         };
 
         var valueLabel = new Label
@@ -227,7 +242,8 @@ public partial class ObservationTypeControl : ContentView
             TextColor = Colors.Black,
             Title = $"Select {dataPoint.Label.ToLower()}",
             Margin = new Thickness(0, 0, 0, 10),
-            IsEnabled = IsEditable
+            IsEnabled = IsEditable,
+            IsVisible = IsEditable
         };
 
         var valueLabel = new Label
@@ -301,29 +317,57 @@ public partial class ObservationTypeControl : ContentView
         {
             if (_controlReferences.TryGetValue(kvp.Key, out var controlRef))
             {
-                var value = kvp.Value?.ToString() ?? "";
+                UpdateControlValues(kvp, controlRef);
+            }
+        }
+    }
 
-                // Update entry controls
-                if (controlRef.Entry != null)
-                    controlRef.Entry.Text = value;
-                
-                // Update picker controls
-                if (controlRef.Picker != null)
+    private static void UpdateControlValues(object obj, ControlReference controlRef)
+    {
+        var value = obj?.ToString() ?? "";
+
+        // Update entry controls
+        if (controlRef.Entry != null)
+            controlRef.Entry.Text = value;
+
+        // Update picker controls
+        if (controlRef.Picker != null)
+        {
+            // Find the matching item in the picker
+            for (int i = 0; i < controlRef.Picker.Items.Count; i++)
+            {
+                if (controlRef.Picker.Items[i] == value)
                 {
-                    // Find the matching item in the picker
-                    for (int i = 0; i < controlRef.Picker.Items.Count; i++)
-                    {
-                        if (controlRef.Picker.Items[i] == value)
-                        {
-                            controlRef.Picker.SelectedIndex = i;
-                            break;
-                        }
-                    }
+                    controlRef.Picker.SelectedIndex = i;
+                    break;
                 }
+            }
+        }
 
-                // Update label controls (for view mode)
-                if (controlRef.Label != null)
-                    controlRef.Label.Text = value;
+        // Update label controls (for view mode)
+        if (controlRef.Label != null)
+            controlRef.Label.Text = value;
+    }
+
+    private void UpdateControlVisibility(bool isEditable)
+    {
+        foreach (var controlRef in _controlReferences.Values)
+        {
+            if (controlRef.Entry != null)
+            {
+                controlRef.Entry.IsEnabled = isEditable;
+                controlRef.Entry.IsVisible = isEditable;
+            }
+            
+            if (controlRef.Picker != null)
+            {
+                controlRef.Picker.IsEnabled = isEditable;
+                controlRef.Picker.IsVisible = isEditable;
+            }
+            
+            if (controlRef.Label != null)
+            {
+                controlRef.Label.IsVisible = !isEditable;
             }
         }
     }

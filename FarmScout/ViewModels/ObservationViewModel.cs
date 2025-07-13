@@ -32,6 +32,7 @@ public partial class ObservationViewModel : ObservableObject
         SeverityDisplay = "Select Severity";
 
         LoadFarmLocationsAsync().GetAwaiter().GetResult();
+        
     }
 
     public enum ObservationMode
@@ -70,7 +71,7 @@ public partial class ObservationViewModel : ObservableObject
 
     public ObservableCollection<ObservationType> AvailableObservationTypes { get; set; } = [];
     
-    public ObservableCollection<ObservationType> SelectedObservationTypes { get; set; } = [];
+    public ObservableCollection<ObservationTypeViewModel> SelectedObservationTypes { get; set; } = [];
     
     public ObservableCollection<FarmLocation> FarmLocations { get; set; } = [];
 
@@ -98,8 +99,7 @@ public partial class ObservationViewModel : ObservableObject
     [ObservableProperty]
     public partial ObservationMode Mode { get; set; }
 
-    // Metadata storage
-    private readonly Dictionary<Guid, Dictionary<Guid, object>> _metadataByType = [];
+
 
     // Computed properties
     [ObservableProperty]
@@ -159,8 +159,8 @@ public partial class ObservationViewModel : ObservableObject
                 {
                     if (!SelectedObservationTypes.Any(t => t.Id == selectedType.Id))
                     {
-                        SelectedObservationTypes.Add(selectedType);
-                        _metadataByType[selectedType.Id] = [];
+                        var observationTypeViewModel = new ObservationTypeViewModel(selectedType);
+                        SelectedObservationTypes.Add(observationTypeViewModel);
                     }
                     else
                     {
@@ -183,12 +183,11 @@ public partial class ObservationViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RemoveObservationType(ObservationType? observationType)
+    private void RemoveObservationType(ObservationTypeViewModel? observationTypeViewModel)
     {
-        if (observationType != null)
+        if (observationTypeViewModel != null)
         {
-            SelectedObservationTypes.Remove(observationType);
-            _metadataByType.Remove(observationType.Id);
+            SelectedObservationTypes.Remove(observationTypeViewModel);
             UpdateSelectedTypesDisplay();
         }
     }
@@ -518,7 +517,6 @@ public partial class ObservationViewModel : ObservableObject
         Photos.Clear();
         Locations.Clear();
         SelectedObservationTypes.Clear();
-        _metadataByType.Clear();
         
         UpdateIndicators();
         UpdateSelectedTypesDisplay();
@@ -544,21 +542,18 @@ public partial class ObservationViewModel : ObservableObject
         await database.AddObservationAsync(observation);
 
         // Add metadata for each observation type
-        foreach (var ObservationTypeId in SelectedObservationTypes.Select(x=>x.Id))
+        foreach (var observationTypeViewModel in SelectedObservationTypes)
         {
-            if (_metadataByType.TryGetValue(ObservationTypeId, out var metadata))
+            foreach (var kvp in observationTypeViewModel.Metadata)
             {
-                foreach (var kvp in metadata)
+                var observationMetadata = new ObservationMetadata
                 {
-                    var observationMetadata = new ObservationMetadata
-                    {
-                        ObservationId = observation.Id,
-                        ObservationTypeId = ObservationTypeId,
-                        DataPointId = kvp.Key, // Now using the actual data point ID
-                        Value = kvp.Value?.ToString() ?? ""
-                    };
-                    await database.AddObservationMetadataAsync(observationMetadata);
-                }
+                    ObservationId = observation.Id,
+                    ObservationTypeId = observationTypeViewModel.Id,
+                    DataPointId = kvp.Key,
+                    Value = kvp.Value?.ToString() ?? ""
+                };
+                await database.AddObservationMetadataAsync(observationMetadata);
             }
         }
 
@@ -626,21 +621,18 @@ public partial class ObservationViewModel : ObservableObject
         }
 
         // Add new metadata
-        foreach (var ObservationTypeId in SelectedObservationTypes.Select(x=>x.Id))
+        foreach (var observationTypeViewModel in SelectedObservationTypes)
         {
-            if (_metadataByType.TryGetValue(ObservationTypeId, out var metadata))
+            foreach (var kvp in observationTypeViewModel.Metadata)
             {
-                foreach (var kvp in metadata)
+                var observationMetadata = new ObservationMetadata
                 {
-                    var observationMetadata = new ObservationMetadata
-                    {
-                        ObservationId = _originalObservation.Id,
-                        ObservationTypeId = ObservationTypeId,
-                        DataPointId = kvp.Key, // Now using the actual data point ID
-                        Value = kvp.Value?.ToString() ?? ""
-                    };
-                    await database.AddObservationMetadataAsync(observationMetadata);
-                }
+                    ObservationId = _originalObservation.Id,
+                    ObservationTypeId = observationTypeViewModel.Id,
+                    DataPointId = kvp.Key,
+                    Value = kvp.Value?.ToString() ?? ""
+                };
+                await database.AddObservationMetadataAsync(observationMetadata);
             }
         }
     }
@@ -696,20 +688,24 @@ public partial class ObservationViewModel : ObservableObject
         var observationTypes = await database.GetObservationTypesAsync();
         
         SelectedObservationTypes.Clear();
-        _metadataByType.Clear();
         
-        foreach (var meta in metadata)
+        // Group metadata by observation type
+        var metadataByType = metadata.GroupBy(m => m.ObservationTypeId).ToDictionary(g => g.Key, g => g.ToList());
+        
+        foreach (var kvp in metadataByType)
         {
-            var observationType = observationTypes.FirstOrDefault(t => t.Id == meta.ObservationTypeId);
-            if (observationType != null && !SelectedObservationTypes.Any(t => t.Id == observationType.Id))
+            var observationType = observationTypes.FirstOrDefault(t => t.Id == kvp.Key);
+            if (observationType != null)
             {
-                SelectedObservationTypes.Add(observationType);
-                _metadataByType[observationType.Id] = [];
-            }
-            
-            if (_metadataByType.TryGetValue(meta.ObservationTypeId, out Dictionary<Guid, object>? value))
-            {
-                value[meta.DataPointId] = meta.Value;
+                var observationTypeViewModel = new ObservationTypeViewModel(observationType);
+                
+                // Add metadata to the view model
+                foreach (var meta in kvp.Value)
+                {
+                    observationTypeViewModel.AddMetadata(meta.DataPointId, meta.Value);
+                }
+                
+                SelectedObservationTypes.Add(observationTypeViewModel);
             }
         }
 
@@ -744,8 +740,6 @@ public partial class ObservationViewModel : ObservableObject
         try
         {
             // Load shapefile or create sample data
-            // await shapefileService.LoadShapefileAsync("farm_locations.shp");
-
             FarmLocations.Clear();
             foreach (var location in shapefileService.GetFarmLocations())
             {
@@ -766,14 +760,13 @@ public partial class ObservationViewModel : ObservableObject
         if (SelectedObservationTypes.Any())
         {
             var currentType = SelectedObservationTypes[^1];
-            _metadataByType[currentType.Id] = metadata;
+            currentType.SetMetadata(metadata);
         }
     }
 
-    public Dictionary<Guid, Dictionary<Guid, object>> MetadataByType => _metadataByType;
-
     public void UpdateMetadataForType(Guid observationTypeId, Dictionary<Guid, object> metadata)
     {
-        _metadataByType[observationTypeId] = metadata;
+        var observationTypeViewModel = SelectedObservationTypes.FirstOrDefault(t => t.Id == observationTypeId);
+        observationTypeViewModel?.SetMetadata(metadata);
     }
 }

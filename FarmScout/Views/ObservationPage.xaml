@@ -143,7 +143,7 @@
             <CollectionView ItemsSource="{Binding SelectedObservationTypes}" 
                           IsVisible="{Binding HasObservationTypes}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ObservationType">
+                    <DataTemplate x:DataType="viewmodels:ObservationTypeViewModel">
                         <Border BackgroundColor="#F5F5F5" Padding="15" Margin="0,0,0,10">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10" />
@@ -163,7 +163,7 @@
                                     <!-- Edit/Add Mode -->
                                     <Button Grid.Column="2" 
                                             Text="❌" 
-                                            Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemoveObservationTypeCommand}"
+                                            Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemoveObservationTypeCommand}"
                                             CommandParameter="{Binding}"
                                             BackgroundColor="#FF5722"
                                             TextColor="White"
@@ -179,8 +179,8 @@
                                     ObservationTypeId="{Binding Id}"
                                     ValuesChangedCommand="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=UpdateMetadataForTypeCommand}"
                                     IsEditable="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"
-                                    InitialValues="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=MetadataByType, Converter={StaticResource MetadataConverter}, ConverterParameter={Binding Id}}"/>
-                            </VerticalStackLayout>
+                                    InitialValues="{Binding Metadata}"/>
+                                </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -226,7 +226,7 @@
                                         <!-- Edit/Add Mode -->
                                         <Button Grid.Row="1" 
                                                 Text="❌ Remove" 
-                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemovePhotoCommand}"
+                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemovePhotoCommand}"
                                                 CommandParameter="{Binding}"
                                                 BackgroundColor="#FF5722"
                                                 TextColor="White"
