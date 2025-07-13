@@ -10,7 +10,7 @@ public class BoolInverterConverter : IValueConverter
         {
             return !boolValue;
         }
-        return true; // Default to enabled if value is not a boolean
+        return value;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -19,6 +19,6 @@ public class BoolInverterConverter : IValueConverter
         {
             return !boolValue;
         }
-        return false;
+        return value;
     }
 } 

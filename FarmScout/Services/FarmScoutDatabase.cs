@@ -1028,6 +1028,22 @@ namespace FarmScout.Services
             }
         }
 
+        public async Task<ObservationTypeDataPoint?> GetDataPointByIdAsync(Guid id)
+        {
+            try
+            {
+                var dataPoint = await _database.Table<ObservationTypeDataPoint>()
+                    .Where(d => d.Id == id && d.IsActive)
+                    .FirstOrDefaultAsync();
+                return dataPoint;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving data point by ID: {ex.Message}");
+                throw;
+            }
+        }
+
         // ObservationMetadata CRUD
         public Task<int> AddObservationMetadataAsync(ObservationMetadata metadata) => _database.InsertAsync(metadata);
         public Task<int> UpdateObservationMetadataAsync(ObservationMetadata metadata) => _database.UpdateAsync(metadata);

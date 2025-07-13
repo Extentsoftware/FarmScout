@@ -11,6 +11,9 @@ public partial class ObservationTypeViewModel(ObservationType observationType) :
     [ObservableProperty]
     public partial Dictionary<Guid, object> Metadata { get; set; } = [];
 
+    [ObservableProperty]
+    public partial int DataPointsCount { get; set; } = 0;
+
     public Guid Id => ObservationType.Id;
     public string Name => ObservationType.Name;
     public string Icon => ObservationType.Icon;

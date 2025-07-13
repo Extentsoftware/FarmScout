@@ -57,6 +57,7 @@ namespace FarmScout.Services
         Task<ObservationType?> GetObservationTypeByIdAsync(Guid id);
         Task<ObservationType?> GetObservationTypeByNameAsync(string name);
         Task<List<ObservationTypeDataPoint>> GetDataPointsForObservationTypeAsync(Guid observationTypeId);
+        Task<ObservationTypeDataPoint?> GetDataPointByIdAsync(Guid id);
         Task<List<ObservationMetadata>> GetMetadataForObservationAsync(Guid observationId);
         Task<List<ObservationMetadata>> GetMetadataForObservationAndTypeAsync(Guid observationId, Guid observationTypeId);
         Task<int> UpdateObservationTypeAsync(ObservationType observationType);

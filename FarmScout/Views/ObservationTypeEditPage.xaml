@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="FarmScout.Views.ObservationTypeEditPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Edit Observation Type"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:converters="clr-namespace:FarmScout.Converters">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolInverterConverter x:Key="BoolInverterConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="16">
+            
+            <!-- Header -->
+            <StackLayout Spacing="8">
+                <Label Text="{Binding IsNew, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Observation Type|Edit Observation Type'}" 
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       HorizontalOptions="Center"/>
+                <Label Text="Configure observation type properties" 
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       HorizontalOptions="Center"/>
+            </StackLayout>
+
+            <!-- Name Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Name *" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Entry Text="{Binding Name}"
+                       Placeholder="Enter observation type name"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Description Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Description" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Editor Text="{Binding Description}"
+                        Placeholder="Enter description (optional)"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="80"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Icon Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Icon" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Entry Text="{Binding Icon}"
+                       Placeholder="Enter emoji icon (e.g., 🦠, 🌱, 💧)"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Color Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Color" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Entry Text="{Binding Color}"
+                       Placeholder="Enter hex color (e.g., #F44336)"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Sort Order Field -->
+            <StackLayout Spacing="8">
+                <Label Text="Sort Order" 
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                <Entry Text="{Binding SortOrder}"
+                       Placeholder="Enter sort order (0, 1, 2, ...)"
+                       Keyboard="Numeric"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+            </StackLayout>
+
+            <!-- Active Toggle -->
+            <StackLayout Orientation="Horizontal" Spacing="12">
+                <CheckBox IsChecked="{Binding IsActive}"/>
+                <Label Text="Active" 
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+            </StackLayout>
+
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" 
+                         Spacing="16" 
+                         HorizontalOptions="Fill"
+                         Margin="0,16,0,0">
+
+                <Button Text="Cancel" 
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HorizontalOptions="FillAndExpand"/>
+
+                <Button Text="Save" 
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HorizontalOptions="FillAndExpand"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
+            </StackLayout>
+
+            <!-- Data Points Section -->
+            <StackLayout Spacing="12" Margin="0,24,0,0">
+                <StackLayout Orientation="Horizontal" Spacing="8">
+                    <Label Text="Data Points" 
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                           VerticalOptions="Center"/>
+                    <Button Text="+ Add Data Point"
+                            Command="{Binding AddDataPointCommand}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                            TextColor="White"
+                            CornerRadius="6"
+                            FontSize="12"
+                            Padding="8,4"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
+                </StackLayout>
+
+                <!-- Data Points List -->
+                <CollectionView ItemsSource="{Binding DataPoints}"
+                               HeightRequest="200">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="6" Padding="12" Margin="0,0,0,4" BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <StackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Label}" 
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                        <Label Text="{Binding DataType}" 
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                                    </StackLayout>
+                                    
+                                    <Button Grid.Column="1" 
+                                            Text="✏️" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ObservationTypeEditViewModel}}, Path=EditDataPointCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                                            CornerRadius="15"
+                                            WidthRequest="30"
+                                            HeightRequest="30"
+                                            FontSize="12"/>
+                                    
+                                    <Button Grid.Column="2" 
+                                            Text="🗑️" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ObservationTypeEditViewModel}}, Path=DeleteDataPointCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Red500}, Dark={StaticResource Red400}}"
+                                            CornerRadius="15"
+                                            WidthRequest="30"
+                                            HeightRequest="30"
+                                            FontSize="12"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              HorizontalOptions="Center"
+                              Margin="0,16,0,0"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage> 

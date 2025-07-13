@@ -35,6 +35,10 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationViewModel>();
 		builder.Services.AddTransient<LookupViewModel>();
 		builder.Services.AddTransient<LookupItemViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<ObservationTypesViewModel>();
+        builder.Services.AddTransient<ObservationTypeEditViewModel>();
+        builder.Services.AddTransient<DataPointEditViewModel>();
         builder.Services.AddSingleton<ILookupPageFactory, LookupPageFactory>();
 
         // Register pages
@@ -44,10 +48,15 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationPage>();
 		builder.Services.AddTransient<LookupPage>();
 		builder.Services.AddTransient<LookupItemPage>();
+        builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<ObservationTypesPage>();
+        builder.Services.AddTransient<ObservationTypeEditPage>();
+        builder.Services.AddTransient<DataPointEditPage>();
 
 		// Register converters
 		builder.Services.AddSingleton<Converters.BoolToColorConverter>();
 		builder.Services.AddSingleton<Converters.BoolToStringConverter>();
+		builder.Services.AddSingleton<Converters.BoolInverterConverter>();
 		builder.Services.AddSingleton<Converters.NotNullConverter>();
 		builder.Services.AddSingleton<Converters.StringContainsConverter>();
 		builder.Services.AddSingleton<Converters.StringToBoolConverter>();
