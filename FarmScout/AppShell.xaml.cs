@@ -19,10 +19,11 @@ public partial class AppShell : Shell
 			Routing.RegisterRoute("Tasks", typeof(Views.TasksPage));
 			Routing.RegisterRoute("Observation", typeof(Views.ObservationPage));
 			Routing.RegisterRoute("LookupPage", typeof(Views.LookupPage));
-			Routing.RegisterRoute("LookupItemPage", typeof(Views.LookupItemPage));
-			
-			// Set the binding context for menu commands
-			BindingContext = this;
+            Routing.RegisterRoute("LookupItemPage", typeof(Views.LookupItemPage));
+            Routing.RegisterRoute("ObservationTypesPage", typeof(Views.ObservationTypesPage));
+
+            // Set the binding context for menu commands
+            BindingContext = this;
 			
 			App.Log("AppShell constructor complete");
 		}

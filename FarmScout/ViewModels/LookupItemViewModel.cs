@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FarmScout.Extensions;
 using FarmScout.Models;
 using FarmScout.Services;
 using System.Collections.ObjectModel;
@@ -13,8 +12,7 @@ namespace FarmScout.ViewModels
     {
         private LookupItem? _item;
 
-        [ObservableProperty]
-        public partial bool IsNew { get; set; }
+        public bool IsNew { get; set; }
 
         public LookupItem? Item
         {
@@ -72,37 +70,6 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial string GroupName { get; set; } = "";
 
-        [RelayCommand]
-        public async Task LoadLookupItems()
-        {
-            try
-            {
-                IsLoading = true;
-
-                var groupId = GroupId;
-                var groups = await database.GetLookupGroupsAsync();
-                AvailableGroups.Clear();
-                foreach (var group in groups)
-                {
-                    AvailableGroups.Add(group.Name);
-                }
-                
-                if (groupId != Guid.Empty)
-                {
-                    GroupId = groupId; // Reset to previous value if it was set
-                }
-
-            }
-            catch (Exception ex)
-            {
-                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load lookup items: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
         partial void OnGroupNameChanged(string value)
         {
             // Reset SubGroup when Group changes
@@ -111,39 +78,6 @@ namespace FarmScout.ViewModels
             
             // Load subgroups for the selected group
             _ = LoadSubGroupsAsync();
-        }
-
-        private async Task LoadSubGroupsAsync()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(GroupName))
-                {
-                    AvailableSubGroups.Clear();
-                    return;
-                }
-
-                var group = await database.GetLookupGroupByNameAsync(GroupName);
-                if (group != null)
-                {
-                    GroupId = group.Id;
-                    var subgroups = await database.GetLookupSubGroupNamesAsync(group.Id);
-                    AvailableSubGroups.Clear();
-                    foreach (var subgroup in subgroups)
-                    {
-                        AvailableSubGroups.Add(subgroup);
-                    }
-                }
-                else
-                {
-                    AvailableSubGroups.Clear();
-                }
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error loading subgroups: {ex.Message}");
-                AvailableSubGroups.Clear();
-            }
         }
 
         [ObservableProperty]
@@ -160,6 +94,37 @@ namespace FarmScout.ViewModels
 
         [ObservableProperty]
         public partial ObservableCollection<string> AvailableSubGroups { get; set; } = [];
+
+        [RelayCommand]
+        public async Task LoadLookupItems()
+        {
+            try
+            {
+                IsLoading = true;
+
+                var groupId = GroupId;
+                var groups = await database.GetLookupGroupsAsync();
+                AvailableGroups.Clear();
+                foreach (var group in groups)
+                {
+                    AvailableGroups.Add(group.Name);
+                }
+
+                if (groupId != Guid.Empty)
+                {
+                    GroupId = groupId; // Reset to previous value if it was set
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load lookup items: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         [RelayCommand]
         private async Task Save()
@@ -246,5 +211,40 @@ namespace FarmScout.ViewModels
         {
             await navigationService.GoBackAsync();
         }
+
+                private async Task LoadSubGroupsAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(GroupName))
+                {
+                    AvailableSubGroups.Clear();
+                    return;
+                }
+
+                var group = await database.GetLookupGroupByNameAsync(GroupName);
+                if (group != null)
+                {
+                    GroupId = group.Id;
+                    var subgroups = await database.GetLookupSubGroupNamesAsync(group.Id);
+                    AvailableSubGroups.Clear();
+                    foreach (var subgroup in subgroups)
+                    {
+                        AvailableSubGroups.Add(subgroup);
+                    }
+                }
+                else
+                {
+                    AvailableSubGroups.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error loading subgroups: {ex.Message}");
+                AvailableSubGroups.Clear();
+            }
+        }
+
+
     }
 } 

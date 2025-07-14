@@ -26,7 +26,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            await _navigationService.NavigateToAsync("//ObservationTypesPage");
+            await _navigationService.NavigateToAsync("ObservationTypesPage");
         }
         catch (Exception ex)
         {
@@ -46,7 +46,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            await _navigationService.NavigateToAsync("//LookupPage");
+            await _navigationService.NavigateToAsync("LookupPage");
         }
         catch (Exception ex)
         {

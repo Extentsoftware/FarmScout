@@ -375,7 +375,7 @@ public partial class ObservationViewModel : ObservableObject
                 return;
             }
 
-            if (Locations.Count == 0 || FarmLocations.Count== 0)
+            if (Locations.Count == 0 && SelectedFarmLocation == null)
             {
                 await MauiProgram.DisplayAlertAsync("Validation Error", "Please add at least one location", "OK");
                 return;
