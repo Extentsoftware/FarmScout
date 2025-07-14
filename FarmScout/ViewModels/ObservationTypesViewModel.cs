@@ -62,7 +62,7 @@ public partial class ObservationTypesViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            await _navigationService.NavigateToAsync("//ObservationTypeEditPage");
+            await _navigationService.NavigateToAsync("ObservationTypeEditPage");
         }
         catch (Exception ex)
         {
@@ -86,7 +86,7 @@ public partial class ObservationTypesViewModel : ObservableObject
             {
                 { "ObservationTypeId", observationType.Id }
             };
-            await _navigationService.NavigateToAsync("//ObservationTypeEditPage", parameters);
+            await _navigationService.NavigateToAsync("ObservationTypeEditPage", parameters);
         }
         catch (Exception ex)
         {
@@ -140,10 +140,5 @@ public partial class ObservationTypesViewModel : ObservableObject
         {
             IsLoading = false;
         }
-    }
-
-    public async Task OnAppearing()
-    {
-        await LoadObservationTypes();
     }
 } 

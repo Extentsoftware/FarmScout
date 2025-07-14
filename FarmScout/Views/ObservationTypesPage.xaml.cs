@@ -9,4 +9,14 @@ public partial class ObservationTypesPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is ObservationTypesViewModel viewModel)
+        {
+            await viewModel.LoadObservationTypesCommand.ExecuteAsync(null);
+        }
+    }
 } 
