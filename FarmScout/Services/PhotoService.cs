@@ -20,9 +20,9 @@ namespace FarmScout.Services
         public static async Task<ObservationPhoto?> CapturePhotoAsync(Guid observationId, string description = "")
         {
             try
-            {
+        {
                 if (!MediaPicker.Default.IsCaptureSupported)
-                {
+            {
                     App.Log("Photo capture is not supported on this device");
                     return null;
                 }
@@ -73,7 +73,7 @@ namespace FarmScout.Services
         {
             try
             {
-                using var stream = await photo.OpenReadAsync();
+                    using var stream = await photo.OpenReadAsync();
                 var originalBytes = new byte[stream.Length];
                 await stream.ReadAsync(originalBytes, 0, (int)stream.Length);
 
@@ -286,11 +286,11 @@ namespace FarmScout.Services
                 await thumbnail.SaveAsync(outputStream, ImageFormat.Jpeg, 80);
                 
                 return outputStream.ToArray();
-            }
+                }
             catch (Exception ex)
             {
                 App.Log($"Error creating thumbnail: {ex.Message}");
-                return null;
+            return null;
             }
         }
 

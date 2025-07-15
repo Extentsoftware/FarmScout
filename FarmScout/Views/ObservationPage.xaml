@@ -260,10 +260,10 @@
                         <!-- Edit/Add Mode -->
                         <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsEditable}">
                             <Button Text="📷 Take Photo" 
-                                Command="{Binding TakePhotoCommand}"
-                                BackgroundColor="#2196F3"
-                                TextColor="White"
-                                CornerRadius="8"
+                        Command="{Binding TakePhotoCommand}"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        CornerRadius="8"
                                 HorizontalOptions="FillAndExpand"/>
                             <Button Text="🖼️ Pick Photo" 
                                 Command="{Binding PickPhotoCommand}"
@@ -286,9 +286,9 @@
                                         <Grid RowDefinitions="Auto,Auto,Auto">
                                             <Image Grid.Row="0" 
                                                 Source="{Binding PhotoData, Converter={StaticResource ByteArrayToImageSourceConverter}}" 
-                                                HeightRequest="150"
-                                                Aspect="AspectFill"
-                                                HorizontalOptions="Center"/>
+                                            HeightRequest="150"
+                                            Aspect="AspectFill"
+                                            HorizontalOptions="Center"/>
                                             <VerticalStackLayout Grid.Row="1" Spacing="2" Margin="0,5,0,0">
                                                 <Label Text="{Binding Description}" 
                                                     TextColor="#666"
@@ -305,14 +305,14 @@
                                             </VerticalStackLayout>
                                             <!-- Edit/Add Mode -->
                                             <Button Grid.Row="2" 
-                                                Text="❌ Remove" 
-                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemovePhotoCommand}"
-                                                CommandParameter="{Binding}"
-                                                BackgroundColor="#FF5722"
-                                                TextColor="White"
-                                                CornerRadius="5"
-                                                Margin="0,5,0,0"
-                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                                            Text="❌ Remove" 
+                                            Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemovePhotoCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="#FF5722"
+                                            TextColor="White"
+                                            CornerRadius="5"
+                                            Margin="0,5,0,0"
+                                            IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
