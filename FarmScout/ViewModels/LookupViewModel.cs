@@ -1,10 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FarmScout.Extensions;
 using FarmScout.Models;
 using FarmScout.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace FarmScout.ViewModels
 {
@@ -49,7 +48,8 @@ namespace FarmScout.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; }
 
-        public string[] AvailableGroups => LookupGroups.AvailableGroups;
+        [ObservableProperty]
+        public partial ObservableCollection<string> AvailableGroups { get; set; } = [];
 
         [RelayCommand]
         private async Task LoadLookupItems()
@@ -57,24 +57,23 @@ namespace FarmScout.ViewModels
             try
             {
                 IsLoading = true;
-                var items = await _database.GetLookupItemsAsync();
 
-                items = [.. items.OrderBy(x => x.SubGroup).ThenBy(x => x.Name)];
-                
-                LookupItems.Clear();
-                foreach (var item in items)
+                await LookupItems.PopulateFromAsync(
+                    async () => await _database.GetLookupItemsAsync(),
+                    (x) => x.OrderBy(x => x.Name));
+
+                var groups = await _database.GetLookupGroupsAsync();
+                AvailableGroups.Clear();
+                foreach (var group in groups)
                 {
-                    LookupItems.Add(item);
+                    AvailableGroups.Add(group.Name);
                 }
-                
+
                 await ApplyFiltersAsync();
             }
             catch (Exception ex)
             {
-                if (Shell.Current != null)
-                {
-                    await Shell.Current.DisplayAlert("Error", $"Failed to load lookup items: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load lookup items: {ex.Message}", "OK");
             }
             finally
             {
@@ -90,8 +89,8 @@ namespace FarmScout.ViewModels
                 var newItem = new LookupItem
                 {
                     Name = "",
-                    Group = AvailableGroups.FirstOrDefault() ?? "Crop Types",
-                    SubGroup = "",
+                    GroupId = Guid.Empty, // Will be set when group is selected
+                    SubGroupId = null,
                     Description = ""
                 };
 
@@ -105,10 +104,7 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Shell.Current != null)
-                {
-                    await Shell.Current.DisplayAlert("Error", $"Failed to add lookup item: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to add lookup item: {ex.Message}", "OK");
             }
         }
 
@@ -153,10 +149,7 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Shell.Current.DisplayAlert("Error", $"Failed to edit lookup item: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to edit lookup item: {ex.Message}", "OK");
             }
         }
 
@@ -167,7 +160,7 @@ namespace FarmScout.ViewModels
 
             if (Shell.Current == null) return;
 
-            var confirm = await Shell.Current.DisplayAlert(
+            var confirm = await MauiProgram.DisplayAlertAsync(
                 "Confirm Delete",
                 $"Are you sure you want to delete '{item.Name}'?",
                 "Delete",
@@ -182,7 +175,7 @@ namespace FarmScout.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Shell.Current.DisplayAlert("Error", $"Failed to delete lookup item: {ex.Message}", "OK");
+                    await MauiProgram.DisplayAlertAsync("Error", $"Failed to delete lookup item: {ex.Message}", "OK");
                 }
             }
         }
@@ -208,15 +201,19 @@ namespace FarmScout.ViewModels
                 // Filter by group
                 if (SelectedGroup != "All")
                 {
-                    filtered = filtered.Where(item => item.Group == SelectedGroup);
+                    // We need to get the group ID and filter by that
+                    var group = await _database.GetLookupGroupByNameAsync(SelectedGroup);
+                    if (group != null)
+                    {
+                        filtered = filtered.Where(item => item.GroupId == group.Id);
+                    }
                 }
 
                 // Filter by search text
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    filtered = filtered.Where(item => 
+                    filtered = filtered.Where(item =>
                         item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        item.SubGroup.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         item.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
                 }
 
@@ -228,18 +225,8 @@ namespace FarmScout.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to apply filters: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to apply filters: {ex.Message}", "OK");
             }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 } 

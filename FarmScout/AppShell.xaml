@@ -13,8 +13,8 @@
         <Tab Title="Observations">
             <ShellContent ContentTemplate="{DataTemplate views:ObservationsPage}" />
         </Tab>
-        <Tab Title="Lookups">
-            <ShellContent ContentTemplate="{DataTemplate views:LookupPage}" />
+        <Tab Title="Settings">
+            <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
         </Tab>
     </TabBar>
 

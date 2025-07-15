@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace FarmScout;
 
@@ -20,10 +19,13 @@ public partial class AppShell : Shell
 			Routing.RegisterRoute("Tasks", typeof(Views.TasksPage));
 			Routing.RegisterRoute("Observation", typeof(Views.ObservationPage));
 			Routing.RegisterRoute("LookupPage", typeof(Views.LookupPage));
-			Routing.RegisterRoute("LookupItemPage", typeof(Views.LookupItemPage));
-			
-			// Set the binding context for menu commands
-			BindingContext = this;
+            Routing.RegisterRoute("LookupItemPage", typeof(Views.LookupItemPage));
+            Routing.RegisterRoute("ObservationTypesPage", typeof(Views.ObservationTypesPage));
+            Routing.RegisterRoute("ObservationTypeEditPage", typeof(Views.ObservationTypeEditPage));
+            
+
+            // Set the binding context for menu commands
+            BindingContext = this;
 			
 			App.Log("AppShell constructor complete");
 		}

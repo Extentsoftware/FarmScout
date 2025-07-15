@@ -2,26 +2,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Models;
 using FarmScout.Services;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels
 {   
     [QueryProperty(nameof(IsNew), "IsNew")]
     [QueryProperty(nameof(Item), "Item")]
-    public partial class LookupItemViewModel : ObservableObject
+    public partial class LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
     {
-        private readonly IFarmScoutDatabase _database;
-        private readonly INavigationService _navigationService;
-        
         private LookupItem? _item;
 
-        public LookupItemViewModel(IFarmScoutDatabase database, INavigationService navigationService)
-        {
-            _database = database;
-            _navigationService = navigationService;
-        }
+        public bool IsNew { get; set; }
 
         public LookupItem? Item
         {
@@ -32,73 +23,127 @@ namespace FarmScout.ViewModels
                 if (value != null)
                 {
                     Name = value.Name;
-                    Group = value.Group;
-                    SubGroup = value.SubGroup;
+                    GroupId = value.GroupId;
+                    // We'll need to load the group name and subgroup name separately
+                    _ = LoadGroupAndSubGroupNamesAsync();
                     Description = value.Description;
                 }
                 OnPropertyChanged();
             }
         }
 
-        [ObservableProperty]
-        private partial bool IsNew { get; set; }
+        private async Task LoadGroupAndSubGroupNamesAsync()
+        {
+            try
+            {
+                if (Item != null)
+                {
+                    var group = await database.GetLookupGroupByIdAsync(Item.GroupId);
+                    if (group != null)
+                    {
+                        GroupName = group.Name;
+                    }
+
+                    if (Item.SubGroupId.HasValue)
+                    {
+                        var subgroups = await database.GetLookupSubGroupsAsync(Item.GroupId);
+                        var subgroup = subgroups.FirstOrDefault(sg => sg.Id == Item.SubGroupId.Value);
+                        if (subgroup != null)
+                        {
+                            SubGroupName = subgroup.Name;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error loading group and subgroup names: {ex.Message}");
+            }
+        }
 
         [ObservableProperty]
-        private partial string Name { get; set; } = "";
+        public partial string Name { get; set; } = "";
 
         [ObservableProperty]
-        private partial string Group { get; set; } = "";
-        //{
-        //    get => _group;
-        //    set
-        //    {
-        //        _group = value;
-        //        // Reset SubGroup when Group changes
-        //        SubGroup = "";
-        //        OnPropertyChanged();
-        //        OnPropertyChanged(nameof(AvailableSubGroups));
-        //    }
-        //}
+        public partial Guid GroupId { get; set; } = Guid.Empty;
 
         [ObservableProperty]
-        private partial string SubGroup {  get; set; } = "";
+        public partial string GroupName { get; set; } = "";
+
+        partial void OnGroupNameChanged(string value)
+        {
+            // Reset SubGroup when Group changes
+            SubGroupName = "";
+            OnPropertyChanged(nameof(AvailableSubGroups));
+            
+            // Load subgroups for the selected group
+            _ = LoadSubGroupsAsync();
+        }
 
         [ObservableProperty]
-        private partial string Description { get; set; } = "";
+        public partial string SubGroupName { get; set; } = "";
 
         [ObservableProperty]
-        private partial bool IsLoading { get; set; }
+        public partial string Description { get; set; } = "";
 
-        public string[] AvailableGroups => LookupGroups.AvailableGroups;
-        public string[] AvailableSubGroups => LookupGroups.GetSubGroupsForGroup(Group);
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+
+        [ObservableProperty]
+        public partial ObservableCollection<string> AvailableGroups { get; set; } = [];
+
+        [ObservableProperty]
+        public partial ObservableCollection<string> AvailableSubGroups { get; set; } = [];
+
+        [RelayCommand]
+        public async Task LoadLookupItems()
+        {
+            try
+            {
+                IsLoading = true;
+
+                var groupId = GroupId;
+                var groups = await database.GetLookupGroupsAsync();
+                AvailableGroups.Clear();
+                foreach (var group in groups)
+                {
+                    AvailableGroups.Add(group.Name);
+                }
+
+                if (groupId != Guid.Empty)
+                {
+                    GroupId = groupId; // Reset to previous value if it was set
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to load lookup items: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         [RelayCommand]
         private async Task Save()
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Validation Error", "Name is required.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Name is required.", "OK");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Group))
+            if (string.IsNullOrWhiteSpace(GroupName))
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Validation Error", "Group is required.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Group is required.", "OK");
                 return;
             }
 
             if (Item == null)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", "No item to save.", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", "No item to save.", "OK");
                 return;
             }
 
@@ -106,41 +151,54 @@ namespace FarmScout.ViewModels
             {
                 IsLoading = true;
 
+                // Get the group ID
+                var group = await database.GetLookupGroupByNameAsync(GroupName);
+                if (group == null)
+                {
+                    await MauiProgram.DisplayAlertAsync("Validation Error", "Selected group not found.", "OK");
+                    return;
+                }
+
+                // Get the subgroup ID if a subgroup is selected
+                Guid? subGroupId = null;
+                if (!string.IsNullOrWhiteSpace(SubGroupName))
+                {
+                    var subgroups = await database.GetLookupSubGroupsAsync(group.Id);
+                    var subgroup = subgroups.FirstOrDefault(sg => sg.Name == SubGroupName);
+                    if (subgroup != null)
+                    {
+                        subGroupId = subgroup.Id;
+                    }
+                }
+
                 // Check if item already exists (case-insensitive)
-                var exists = await _database.LookupItemExistsAsync(Name, Group, IsNew ? null : Item.Id);
+                var exists = await database.LookupItemExistsAsync(Name, GroupName, IsNew ? null : Item.Id);
                 if (exists)
                 {
-                    if (Application.Current?.MainPage != null)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Validation Error", 
-                            $"A {Group} with the name '{Name}' already exists.", "OK");
-                    }
+                    await MauiProgram.DisplayAlertAsync("Validation Error", $"A {GroupName} with the name '{Name}' already exists.", "OK");
                     return;
                 }
 
                 // Update the item
                 Item.Name = Name.Trim();
-                Item.Group = Group;
-                Item.SubGroup = SubGroup?.Trim() ?? "";
+                Item.GroupId = group.Id;
+                Item.SubGroupId = subGroupId;
                 Item.Description = Description?.Trim() ?? "";
 
                 if (IsNew)
                 {
-                    await _database.AddLookupItemAsync(Item);
+                    await database.AddLookupItemAsync(Item);
                 }
                 else
                 {
-                    await _database.UpdateLookupItemAsync(Item);
+                    await database.UpdateLookupItemAsync(Item);
                 }
 
-                await _navigationService.GoBackAsync();
+                await navigationService.GoBackAsync();
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save lookup item: {ex.Message}", "OK");
-                }
+                await MauiProgram.DisplayAlertAsync("Error", $"Failed to save lookup item: {ex.Message}", "OK");
             }
             finally
             {
@@ -151,14 +209,42 @@ namespace FarmScout.ViewModels
         [RelayCommand]
         private async Task Cancel()
         {
-            await _navigationService.GoBackAsync();
+            await navigationService.GoBackAsync();
         }
 
-        //public event PropertyChangedEventHandler? PropertyChanged;
+                private async Task LoadSubGroupsAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(GroupName))
+                {
+                    AvailableSubGroups.Clear();
+                    return;
+                }
 
-        //protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
+                var group = await database.GetLookupGroupByNameAsync(GroupName);
+                if (group != null)
+                {
+                    GroupId = group.Id;
+                    var subgroups = await database.GetLookupSubGroupNamesAsync(group.Id);
+                    AvailableSubGroups.Clear();
+                    foreach (var subgroup in subgroups)
+                    {
+                        AvailableSubGroups.Add(subgroup);
+                    }
+                }
+                else
+                {
+                    AvailableSubGroups.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error loading subgroups: {ex.Message}");
+                AvailableSubGroups.Clear();
+            }
+        }
+
+
     }
 } 

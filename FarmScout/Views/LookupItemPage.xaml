@@ -2,8 +2,19 @@
 <ContentPage x:Class="FarmScout.Views.LookupItemPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="{Binding IsNew, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Item|Edit Item'}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+             Title="Lookup Table"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             x:DataType="viewmodels:LookupItemViewModel"
+             xmlns:converters="clr-namespace:FarmScout.Converters">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:BoolInverterConverter x:Key="BoolInverterConverter" />
+            <converters:NotNullConverter x:Key="NotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <StackLayout Padding="16" Spacing="16">
@@ -26,10 +37,11 @@
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                 <Picker Title="Select a group"
-                        SelectedItem="{Binding Group}"
+                        SelectedItem="{Binding GroupName}"
                         ItemsSource="{Binding AvailableGroups}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
-                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        IsEnabled="{Binding IsNew}"/>
             </StackLayout>
 
             <!-- SubGroup Field -->
@@ -38,7 +50,7 @@
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                 <Picker Title="Select a subgroup (optional)"
-                        SelectedItem="{Binding SubGroup}"
+                        SelectedItem="{Binding SubGroupName}"
                         ItemsSource="{Binding AvailableSubGroups}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
                         TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
@@ -64,21 +76,20 @@
                          Spacing="16" 
                          HorizontalOptions="Fill"
                          Margin="0,16,0,0">
-                
+
                 <Button Text="Cancel" 
                         Command="{Binding CancelCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
                         TextColor="White"
                         CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"/>
-                
+                        />
+
                 <Button Text="Save" 
                         Command="{Binding SaveCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                         TextColor="White"
                         CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"
-                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToStringConverter}, ConverterParameter='False|True'}"/>
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
             </StackLayout>
 
             <!-- Loading Indicator -->

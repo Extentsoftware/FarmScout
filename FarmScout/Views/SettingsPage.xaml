@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="FarmScout.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Settings"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels">
+
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="16">
+            
+            <!-- Header -->
+            <StackLayout Spacing="8">
+                <Label Text="Settings" 
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                       HorizontalOptions="Center"/>
+                <Label Text="Configure your FarmScout application" 
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       HorizontalOptions="Center"/>
+            </StackLayout>
+
+            <!-- Settings Categories -->
+            <StackLayout Spacing="12">
+                
+                <!-- Observation Types Management -->
+                <Frame CornerRadius="8" Padding="16" Margin="0,0,0,12" BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}">
+                    <StackLayout Spacing="12">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Label Text="🔧" 
+                                   FontSize="24"
+                                   VerticalOptions="Center"/>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Observation Types" 
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                <Label Text="Manage observation types and their data points" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Button Text="Manage Observation Types"
+                                Command="{Binding NavigateToObservationTypesCommand}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                                TextColor="White"
+                                CornerRadius="8"
+                                HorizontalOptions="Fill"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Lookup Tables Management -->
+                <Frame CornerRadius="8" Padding="16" Margin="0,0,0,12" BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}">
+                    <StackLayout Spacing="12">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Label Text="📋" 
+                                   FontSize="24"
+                                   VerticalOptions="Center"/>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Lookup Tables" 
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                <Label Text="Manage lookup groups, subgroups, and items" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Button Text="Manage Lookup Tables"
+                                Command="{Binding NavigateToLookupsCommand}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                                TextColor="White"
+                                CornerRadius="8"
+                                HorizontalOptions="Fill"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Database Management -->
+                <Frame CornerRadius="8" Padding="16" BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}">
+                    <StackLayout Spacing="12">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Label Text="🗄️" 
+                                   FontSize="24"
+                                   VerticalOptions="Center"/>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Database" 
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                <Label Text="Database management and data export" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Button Text="Export Data"
+                                    Command="{Binding ExportDataCommand}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HorizontalOptions="FillAndExpand"/>
+                            
+                            <Button Text="Reset Database"
+                                    Command="{Binding ResetDatabaseCommand}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Red500}, Dark={StaticResource Red600}}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              HorizontalOptions="Center"
+                              Margin="0,16,0,0"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage> 

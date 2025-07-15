@@ -4,6 +4,7 @@
              x:Class="FarmScout.Views.ObservationsPage"
              x:DataType="viewmodels:ObservationsViewModel"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:converters="clr-namespace:FarmScout.Converters"
              Title="{Binding Title}" >
 
     <!--Shell.NavBarIsVisible="True"
@@ -15,13 +16,19 @@
                BackgroundColor="#E8F5E8" 
                Padding="10,10">
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Label Grid.Column="1"
-                       Text="📋 All Observations" 
-                       FontSize="18" 
-                       HorizontalTextAlignment="Center"
-                       FontAttributes="Bold" 
-                       HorizontalOptions="Center"
-                       TextColor="#2E7D32"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                    <Label Text="📋 All Observations" 
+                           FontSize="18" 
+                           HorizontalTextAlignment="Center"
+                           FontAttributes="Bold" 
+                           HorizontalOptions="Center"
+                           TextColor="#2E7D32"/>
+                    <Label Text="{Binding TotalObservationsCount, StringFormat='{0} total observations'}" 
+                           FontSize="12" 
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="Center"
+                           TextColor="#666"/>
+                </VerticalStackLayout>
                 <Button Grid.Column="2"
                         Text="📝 Add"
                         Command="{Binding AddObservationCommand}"
@@ -34,7 +41,9 @@
         
         <!-- Observations List -->
         <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}" >
-            <CollectionView ItemsSource="{Binding Observations}">
+            <CollectionView ItemsSource="{Binding Observations}"
+                          RemainingItemsThreshold="3"
+                          RemainingItemsThresholdReachedCommand="{Binding LoadMoreObservationsCommand}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:SimpleObservationViewModel">
                         <Border Margin="5,5" 
@@ -44,7 +53,7 @@
                                 <RoundRectangle CornerRadius="10" />
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
-                                <!-- Photo placeholder -->
+                                <!-- Photo -->
                                 <Border Grid.Column="0" 
                                        BackgroundColor="#F5F5F5" 
                                        WidthRequest="80" 
@@ -53,15 +62,33 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="5" />
                                     </Border.StrokeShape>
-                                    <Label Text="📷" 
-                                           FontSize="24" 
-                                           HorizontalOptions="Center" 
-                                           VerticalOptions="Center"/>
+                                    <Grid>
+                                        <!-- Loading indicator -->
+                                        <ActivityIndicator IsRunning="{Binding IsLoadingPhoto}" 
+                                                         IsVisible="{Binding IsLoadingPhoto}"
+                                                         HorizontalOptions="Center" 
+                                                         VerticalOptions="Center"
+                                                         Color="#4CAF50"/>
+                                    
+                                        <!-- Actual Image -->
+                                        <Image Source="{Binding PhotoData, Converter={StaticResource ByteArrayToImageSourceConverter}}" 
+                                               Aspect="AspectFill"
+                                               IsVisible="{Binding HasPhoto}"
+                                               HorizontalOptions="Fill"
+                                               VerticalOptions="Fill"/>
+                                    
+                                        <!-- Placeholder when no photo -->
+                                        <Label Text="📷" 
+                                               FontSize="24" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center"
+                                               IsVisible="{Binding NoPhoto}"/>
+                                    </Grid>
                                 </Border>
                                 
                                 <!-- Details -->
                                 <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                    <Label Text="{Binding ObservationTypesText}" 
+                                    <Label Text="{Binding Summary}" 
                                            FontAttributes="Bold" 
                                            FontSize="16"/>
                                     <Label Text="{Binding SeverityText}" 
@@ -104,6 +131,19 @@
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+                <CollectionView.Footer>
+                    <Grid IsVisible="{Binding IsLoadingMore}" Padding="20,10">
+                        <ActivityIndicator IsRunning="{Binding IsLoadingMore}" 
+                                         HorizontalOptions="Center" 
+                                         Color="#4CAF50"/>
+                        <Label Text="Loading more observations..." 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"
+                               Margin="0,0,0,0"
+                               TextColor="#666"
+                               FontSize="14"/>
+                    </Grid>
+                </CollectionView.Footer>
             </CollectionView>
         </RefreshView>
     </Grid>

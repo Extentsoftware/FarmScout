@@ -1,3 +1,4 @@
+using FarmScout.Services;
 using FarmScout.ViewModels;
 
 namespace FarmScout.Views;
@@ -14,7 +15,7 @@ public partial class DashboardPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is DashboardViewModel viewModel)
-        {
+        {            
             await viewModel.LoadDashboardData();
         }
     }

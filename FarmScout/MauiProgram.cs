@@ -2,9 +2,6 @@
 using FarmScout.Services;
 using FarmScout.ViewModels;
 using FarmScout.Views;
-using FarmScout.Controls;
-using System.IO;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FarmScout;
 
@@ -28,7 +25,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IFarmScoutDatabase, FarmScoutDatabase>();
 		builder.Services.AddSingleton<PhotoService>();
 		builder.Services.AddSingleton<LocationService>();
-		builder.Services.AddSingleton<ShapefileService>();
+		builder.Services.AddSingleton<FarmLocationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
 
         // Register ViewModels
@@ -38,6 +35,10 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationViewModel>();
 		builder.Services.AddTransient<LookupViewModel>();
 		builder.Services.AddTransient<LookupItemViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<ObservationTypesViewModel>();
+        builder.Services.AddTransient<ObservationTypeEditViewModel>();
+        builder.Services.AddTransient<DataPointEditViewModel>();
         builder.Services.AddSingleton<ILookupPageFactory, LookupPageFactory>();
 
         // Register pages
@@ -47,10 +48,15 @@ public static class MauiProgram
 		builder.Services.AddTransient<ObservationPage>();
 		builder.Services.AddTransient<LookupPage>();
 		builder.Services.AddTransient<LookupItemPage>();
+        builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<ObservationTypesPage>();
+        builder.Services.AddTransient<ObservationTypeEditPage>();
+        builder.Services.AddTransient<DataPointEditPage>();
 
 		// Register converters
 		builder.Services.AddSingleton<Converters.BoolToColorConverter>();
 		builder.Services.AddSingleton<Converters.BoolToStringConverter>();
+		builder.Services.AddSingleton<Converters.BoolInverterConverter>();
 		builder.Services.AddSingleton<Converters.NotNullConverter>();
 		builder.Services.AddSingleton<Converters.StringContainsConverter>();
 		builder.Services.AddSingleton<Converters.StringToBoolConverter>();
@@ -60,9 +66,20 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-
         Services = builder.Services.BuildServiceProvider();
 
-        return builder.Build();
-	}
+        var app = builder.Build();
+
+        return app;
+
+    }
+    public static async Task DisplayAlertAsync(string title, string message, string cancel)
+    {
+        await Shell.Current.DisplayAlert(title, message, cancel);
+    }
+
+    public static async Task<bool> DisplayAlertAsync(string title, string message, string accept, string cancel)
+    {
+        return await Shell.Current.DisplayAlert(title, message, accept, cancel);
+    }
 }

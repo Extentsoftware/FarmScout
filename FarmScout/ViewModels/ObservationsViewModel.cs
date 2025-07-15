@@ -17,6 +17,18 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     [ObservableProperty]
     public partial ObservableCollection<SimpleObservationViewModel> Observations { get; set; } = [];
 
+    [ObservableProperty]
+    public partial bool IsLoadingMore { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasMoreItems { get; set; } = true;
+
+    [ObservableProperty]
+    public partial int TotalObservationsCount { get; set; }
+
+    private const int PageSize = 10;
+    private int _currentPage = 0;
+
     [RelayCommand]
     public async Task LoadObservations()
     {
@@ -24,36 +36,69 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
 
         try
         {
-            // IsBusy = true;
-            App.Log("Loading observations...");
+            IsBusy = true;
+            App.Log("Loading initial observations...");
 
-            var observations = await database.GetObservationsAsync();
-            App.Log($"Retrieved {observations.Count} observations from database");
-            
-            var observationViewModels = new List<SimpleObservationViewModel>();
-
-            foreach (var obs in observations.OrderByDescending(o => o.Timestamp))
-            {
-                App.Log($"Processing observation: ID={obs.Id}, Types={obs.ObservationTypes}, Timestamp={obs.Timestamp}");
-                observationViewModels.Add(new SimpleObservationViewModel(obs));
-            }
-
+            // Reset pagination state
+            _currentPage = 0;
+            HasMoreItems = true;
             Observations.Clear();
-            foreach (var obs in observationViewModels)
-            {
-                Observations.Add(obs);
-            }
-            
-            App.Log($"Added {Observations.Count} observations to the UI");
+
+            // Get total count
+            TotalObservationsCount = await database.GetObservationsCountAsync();
+
+            // Load first page
+            await LoadMoreObservations();
         }
         catch (Exception ex)
         {
             App.Log($"Error loading observations: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observations", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observations", "OK");
         }
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task LoadMoreObservations()
+    {
+        if (IsLoadingMore || !HasMoreItems) return;
+
+        try
+        {
+            IsLoadingMore = true;
+            App.Log($"Loading more observations (page {_currentPage + 1})...");
+
+            var observations = await database.GetObservationsAsync(_currentPage * PageSize, PageSize);
+            App.Log($"Retrieved {observations.Count} observations from database");
+            
+            if (observations.Count < PageSize)
+            {
+                HasMoreItems = false;
+                App.Log("No more observations to load");
+            }
+
+            foreach (var obs in observations)
+            {
+                App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
+                Observations.Add(new SimpleObservationViewModel(obs, database));
+            }
+            
+            _currentPage++;
+            App.Log($"Added {observations.Count} observations to the UI. Total: {Observations.Count}");
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error loading more observations: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load more observations", "OK");
+            // Reset loading state on error
+            HasMoreItems = false;
+        }
+        finally
+        {
+            IsLoadingMore = false;
         }
     }
 
@@ -76,7 +121,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     {
         if (obs == null) return;
 
-        var result = await Shell.Current.DisplayAlert("Confirm Delete", 
+        var result = await MauiProgram.DisplayAlertAsync("Confirm Delete", 
             "Are you sure you want to delete this observation?", "Yes", "No");
         
         if (result)
@@ -94,11 +139,12 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
                 
                 // Delete observation
                 await database.DeleteObservationAsync(obs.Observation);
+                IsBusy = false;
                 await LoadObservations();
             }
             catch (Exception)
             {
-                await Shell.Current.DisplayAlert("Error", "Failed to delete observation", "OK");
+                await MauiProgram.DisplayAlertAsync("Error", "Failed to delete observation", "OK");
             }
             finally
             {
@@ -126,30 +172,80 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     [RelayCommand]
     public async Task Refresh()
     {
+        // Reset pagination state and reload from the beginning
+        await LoadObservations();
+    }
+
+    [RelayCommand]
+    public async Task OnAppearing()
+    {
+        // Always refresh when the page appears to show any new observations
+        // This ensures new observations appear when returning from the add page
         await LoadObservations();
     }
 }
 
-public partial class SimpleObservationViewModel(Observation observation) : ObservableObject
+public partial class SimpleObservationViewModel : ObservableObject
 {
-    public Observation Observation { get; } = observation;
+    private readonly IFarmScoutDatabase _database;
+    
+    public Observation Observation { get; }
+    
+    public SimpleObservationViewModel(Observation observation, IFarmScoutDatabase database)
+    {
+        Observation = observation;
+        _database = database;
+        _ = LoadPhotoAsync();
+    }
+    
     public string Notes => Observation.Notes;
     public string TimestampText => Observation.Timestamp.ToString("MMM dd, yyyy HH:mm");
     public string LocationText => $"📍 {Observation.Latitude:F4}, {Observation.Longitude:F4}";
-    public string ObservationTypesText 
-    {
-        get
-        {
-            var types = ObservationTypes.SplitTypes(Observation.ObservationTypes);
-            return types.Count > 0 ? string.Join(", ", types) : "No type specified";
-        }
-    }
+
+    public string Summary => $"{Observation.Summary}";
+
     public string SeverityText => $"{SeverityLevels.GetSeverityIcon(Observation.Severity)} {Observation.Severity}";
     public string SeverityColor => SeverityLevels.GetSeverityColor(Observation.Severity);
 
     [ObservableProperty] 
-    public partial bool HasPhoto { get; set; } = false; // Will be updated when we load photos
+    public partial bool HasPhoto { get; set; } = false;
 
     [ObservableProperty]
-    public partial bool NoPhoto { get; set; } = true; // Will be updated when we load photos
+    public partial bool NoPhoto { get; set; } = true;
+    
+    [ObservableProperty]
+    public partial byte[]? PhotoData { get; set; }
+    
+    [ObservableProperty]
+    public partial bool IsLoadingPhoto { get; set; } = true;
+
+    private async Task LoadPhotoAsync()
+    {
+        try
+        {
+            IsLoadingPhoto = true;
+            var photos = await _database.GetPhotosForObservationAsync(Observation.Id);
+            if (photos.Count > 0)
+            {
+                PhotoData = photos.First().PhotoData;
+                HasPhoto = true;
+                NoPhoto = false;
+            }
+            else
+            {
+                HasPhoto = false;
+                NoPhoto = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error loading photo for observation {Observation.Id}: {ex.Message}");
+            HasPhoto = false;
+            NoPhoto = true;
+        }
+        finally
+        {
+            IsLoadingPhoto = false;
+        }
+    }
 } 

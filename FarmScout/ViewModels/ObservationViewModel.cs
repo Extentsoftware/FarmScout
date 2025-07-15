@@ -12,14 +12,14 @@ public partial class ObservationViewModel : ObservableObject
     private readonly IFarmScoutDatabase database;
     private readonly PhotoService photoService;
     private readonly LocationService locationService;
-    private readonly ShapefileService shapefileService;
+    private readonly FarmLocationService shapefileService;
     private readonly INavigationService navigationService;
 
     public ObservationViewModel(
         IFarmScoutDatabase database,
         PhotoService photoService,
         LocationService locationService,
-        ShapefileService shapefileService,
+        FarmLocationService shapefileService,
         INavigationService navigationService)
     {
         this.database = database;
@@ -28,7 +28,11 @@ public partial class ObservationViewModel : ObservableObject
         this.shapefileService = shapefileService;
         this.navigationService = navigationService;
 
+        // Initialize severity display
+        SeverityDisplay = "Select Severity";
+
         LoadFarmLocationsAsync().GetAwaiter().GetResult();
+        
     }
 
     public enum ObservationMode
@@ -65,12 +69,11 @@ public partial class ObservationViewModel : ObservableObject
 
     public ObservableCollection<ObservationLocation> Locations { get; set; } = [];
 
-    public ObservableCollection<string> SelectedObservationTypes { get; set; } = [];
+    public ObservableCollection<ObservationType> AvailableObservationTypes { get; set; } = [];
+    
+    public ObservableCollection<ObservationTypeViewModel> SelectedObservationTypes { get; set; } = [];
     
     public ObservableCollection<FarmLocation> FarmLocations { get; set; } = [];
-
-    [ObservableProperty]
-    public partial double SoilMoisture { get; set; }
 
     [ObservableProperty]
     public partial string Notes { get; set; } = "";
@@ -82,6 +85,12 @@ public partial class ObservationViewModel : ObservableObject
     public partial string SelectedSeverity { get; set; } = "";
 
     [ObservableProperty]
+    public partial string SeverityDisplay { get; set; }
+
+    [ObservableProperty]
+    public partial string SeverityColor { get; set; } = "#2196F3";
+
+    [ObservableProperty]
     public partial FarmLocation? SelectedFarmLocation { get; set; }
 
     [ObservableProperty]
@@ -90,101 +99,7 @@ public partial class ObservationViewModel : ObservableObject
     [ObservableProperty]
     public partial ObservationMode Mode { get; set; }
 
-    [ObservableProperty]
-    public partial string DiseaseName { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial string DiseaseType { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DiseaseDescription { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial Guid? SelectedDiseaseId { get; set; }
-
-    [ObservableProperty]
-    public partial string PestName { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial int? PestCount { get; set; }
-
-    [ObservableProperty]
-    public partial double? AffectedAreaPercentage { get; set; }
-
-    [ObservableProperty]
-    public partial double? DamageLevel { get; set; }
-
-    [ObservableProperty]
-    public partial string DamageType { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string GrowthStage { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial double? HeightCm { get; set; }
-
-    [ObservableProperty]
-    public partial double? WeightKg { get; set; }
-
-    [ObservableProperty]
-    public partial string CropType { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial double? HarvestWeight { get; set; }
-
-    [ObservableProperty]
-    public partial double? TemperatureCelsius { get; set; }
-
-    [ObservableProperty]
-    public partial double? Temperature { get; set; }
-
-    [ObservableProperty]
-    public partial double? HumidityPercentage { get; set; }
-
-    [ObservableProperty]
-    public partial double? Humidity { get; set; }
-
-    [ObservableProperty]
-    public partial double? WindSpeed { get; set; }
-
-    [ObservableProperty]
-    public partial double? Precipitation { get; set; }
-
-    [ObservableProperty]
-    public partial double? PhLevel { get; set; }
-
-    [ObservableProperty]
-    public partial double? SoilPH { get; set; }
-
-    [ObservableProperty]
-    public partial double? NutrientLevel { get; set; }
-
-    [ObservableProperty]
-    public partial double? SoilNitrogen { get; set; }
-
-    [ObservableProperty]
-    public partial double? SoilPhosphorus { get; set; }
-
-    [ObservableProperty]
-    public partial double? SoilPotassium { get; set; }
-
-    [ObservableProperty]
-    public partial string Symptoms { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string Cause { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string Quality { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial double? HealthScore { get; set; }
-
-    [ObservableProperty]
-    public partial double? YieldPerArea { get; set; }
-
-    [ObservableProperty]
-    public partial string InfestationArea { get; set; } = string.Empty;
 
     // Computed properties
     [ObservableProperty]
@@ -200,65 +115,91 @@ public partial class ObservationViewModel : ObservableObject
     public partial string SelectedTypesDisplay { get; set; } = "";
 
     [ObservableProperty]
-    public partial string SeverityDisplay { get; set; } = "";
-    
-    [ObservableProperty]
-    public partial string SeverityColor { get; set; } = "";
+    public partial bool HasTasks { get; set; }
 
     partial void OnSelectedFarmLocationChanged(FarmLocation? value)
     {
-        SelectedFarmLocationText = value!.Name;
+        SelectedFarmLocationText = value?.Name ?? "";
     }
 
     partial void OnSelectedSeverityChanged(string value)
     {
-        SeverityDisplay = $"{SeverityLevels.GetSeverityIcon(SelectedSeverity)} {SelectedSeverity}";
-        SeverityColor = SeverityLevels.GetSeverityColor(SelectedSeverity);
+        // Update severity display
+        SeverityDisplay = string.IsNullOrWhiteSpace(value) ? "Select Severity" : $"{SeverityLevels.GetSeverityIcon(value)} {value}";
+        SeverityColor = SeverityLevels.GetSeverityColor(value);
     }
 
     [RelayCommand]
     private async Task ShowObservationTypes()
     {
-        var availableTypes = ObservationTypes.AvailableTypes.ToList();
-        var selectedTypes = SelectedObservationTypes.ToList();
+        if (IsBusy) return;
 
-        // Create display strings with icons
-        var displayOptions = availableTypes.Select(type =>
-            $"{ObservationTypes.GetTypeIcon(type)} {type}").ToArray();
-
-        var result = await Shell.Current.DisplayActionSheet(
-            "Select Observation Types",
-            "Cancel",
-            null,
-            displayOptions);
-
-        if (result != null && result != "Cancel")
+        try
         {
-            // Extract the type name from the display string (remove icon)
-            var selectedType = availableTypes.FirstOrDefault(type =>
-                result.Contains(type));
+            IsBusy = true;
 
-            if (selectedType != null)
+            // Load available observation types
+            var types = await database.GetObservationTypesAsync();
+            AvailableObservationTypes.Clear();
+            foreach (var type in types)
             {
-                if (selectedTypes.Contains(selectedType))
-                {
-                    SelectedObservationTypes.Remove(selectedType);
-                }
-                else
-                {
-                    SelectedObservationTypes.Add(selectedType);
-                }
-
-                HasObservationTypes = SelectedObservationTypes.Count > 0;
-
-                // Force UI refresh for conditional fields
-                SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
-                OnPropertyChanged(nameof(SelectedObservationTypes));
+                AvailableObservationTypes.Add(type);
             }
+
+            var action = await Shell.Current.DisplayActionSheet(
+                "Select Observation Types",
+                "Cancel",
+                null,
+                [.. AvailableObservationTypes.Select(t => $"{t.Icon} {t.Name}")]);
+
+            if (action != null && action != "Cancel")
+            {
+                var selectedType = AvailableObservationTypes.FirstOrDefault(t => $"{t.Icon} {t.Name}" == action);
+                if (selectedType != null)
+                {
+                    if (!SelectedObservationTypes.Any(t => t.Id == selectedType.Id))
+                    {
+                        var observationTypeViewModel = new ObservationTypeViewModel(selectedType);
+                        SelectedObservationTypes.Add(observationTypeViewModel);
+                    }
+                    else
+                    {
+                        await MauiProgram.DisplayAlertAsync("Info", "This observation type is already selected", "OK");
+                    }
+                }
+            }
+
+            UpdateSelectedTypesDisplay();
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error showing observation types: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observation types", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
-    // Commands
+    [RelayCommand]
+    private void RemoveObservationType(ObservationTypeViewModel? observationTypeViewModel)
+    {
+        if (observationTypeViewModel != null)
+        {
+            SelectedObservationTypes.Remove(observationTypeViewModel);
+            UpdateSelectedTypesDisplay();
+        }
+    }
+
+    private void UpdateSelectedTypesDisplay()
+    {
+        var displayText = string.Join(", ", SelectedObservationTypes.Select(t => t.Name));
+        SelectedTypesDisplay = displayText.Length > 50 ? displayText[..47] + "..." : displayText;
+        HasObservationTypes = SelectedObservationTypes.Count > 0;
+        OnPropertyChanged(nameof(SelectedObservationTypes));
+    }
+
     [RelayCommand]
     private async Task TakePhoto()
     {
@@ -267,32 +208,53 @@ public partial class ObservationViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            App.Log("TakePhoto: Starting photo capture...");
 
-            var photoPath = await photoService.CapturePhotoAsync();
-            App.Log($"TakePhoto: Photo service returned path: {photoPath}");
-
-            if (!string.IsNullOrEmpty(photoPath))
+            // Generate a temporary observation ID for the photo
+            var tempObservationId = Guid.NewGuid();
+            
+            var photo = await PhotoService.CapturePhotoAsync(tempObservationId, "Observation photo");
+            if (photo != null)
             {
-                var photo = new ObservationPhoto
-                {
-                    PhotoPath = photoPath,
-                    Timestamp = DateTime.Now,
-                    Description = $"Photo {Photos.Count + 1}"
-                };
                 Photos.Add(photo);
-                App.Log($"TakePhoto: Added photo to collection. Total photos: {Photos.Count}");
                 HasPhotos = Photos.Count > 0;
-            }
-            else
-            {
-                App.Log("TakePhoto: No photo path returned from service");
+                App.Log($"Photo taken and added: {photo.OriginalFileName} ({photo.FileSizeDisplay})");
             }
         }
         catch (Exception ex)
         {
-            App.Log($"TakePhoto: Exception occurred: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to take photo", "OK");
+            App.Log($"Error taking photo: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to take photo", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PickPhoto()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+
+            // Generate a temporary observation ID for the photo
+            var tempObservationId = Guid.NewGuid();
+            
+            var photo = await PhotoService.PickPhotoAsync(tempObservationId, "Observation photo");
+            if (photo != null)
+            {
+                Photos.Add(photo);
+                HasPhotos = Photos.Count > 0;
+                App.Log($"Photo picked and added: {photo.OriginalFileName} ({photo.FileSizeDisplay})");
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error picking photo: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to pick photo", "OK");
         }
         finally
         {
@@ -303,7 +265,7 @@ public partial class ObservationViewModel : ObservableObject
     [RelayCommand]
     private void RemovePhoto(ObservationPhoto? photo)
     {
-        if (photo != null && IsEditable)
+        if (photo != null)
         {
             Photos.Remove(photo);
             HasPhotos = Photos.Count > 0;
@@ -318,49 +280,27 @@ public partial class ObservationViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            App.Log("GetLocation: Starting location capture...");
 
             var location = await locationService.GetCurrentLocationAsync();
-            App.Log($"GetLocation: Location service returned: {location}");
-
-            if (location.HasValue)
+            if (location != null)
             {
-                var obsLocation = new ObservationLocation
+                var observationLocation = new ObservationLocation
                 {
                     Latitude = location.Value.Latitude,
                     Longitude = location.Value.Longitude,
-                    Timestamp = DateTime.Now,
-                    Description = $"Location {Locations.Count + 1}"
+                    Description = "Current location",
+                    Timestamp = DateTime.Now
                 };
-                Locations.Add(obsLocation);
-                App.Log($"GetLocation: Added location to collection. Total locations: {Locations.Count}");
+
+                Locations.Add(observationLocation);
                 HasLocations = Locations.Count > 0;
-
-                // Try to suggest farm location based on GPS
-                var suggestedFarm = shapefileService.FindNearestFarmLocation(location.Value.Latitude, location.Value.Longitude);
-                if (suggestedFarm != null)
-                {
-                    var result = await Shell.Current.DisplayAlert(
-                        "Farm Location Found",
-                        $"GPS location is near '{suggestedFarm.Name}' ({suggestedFarm.FieldType}). Would you like to select this farm location?",
-                        "Yes", "No");
-
-                    if (result)
-                    {
-                        SelectedFarmLocation = suggestedFarm;
-                    }
-                }
-            }
-            else
-            {
-                App.Log("GetLocation: No location returned from service");
-                await Shell.Current.DisplayAlert("Error", "Could not get location", "OK");
+                App.Log($"Location added: {location.Value.Latitude}, {location.Value.Longitude}");
             }
         }
         catch (Exception ex)
         {
-            App.Log($"GetLocation: Exception occurred: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to get location", "OK");
+            App.Log($"Error getting location: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to get location", "OK");
         }
         finally
         {
@@ -371,7 +311,7 @@ public partial class ObservationViewModel : ObservableObject
     [RelayCommand]
     private void RemoveLocation(ObservationLocation? location)
     {
-        if (location != null && IsEditable)
+        if (location != null)
         {
             Locations.Remove(location);
             HasLocations = Locations.Count > 0;
@@ -381,70 +321,92 @@ public partial class ObservationViewModel : ObservableObject
     [RelayCommand]
     private async Task ShowSeverityPopup()
     {
-        var availableSeverities = SeverityLevels.AvailableSeverities.ToList();
+        if (IsBusy) return;
 
-        var result = await Shell.Current.DisplayActionSheet(
+        var action = await Shell.Current.DisplayActionSheet(
             "Select Severity",
             "Cancel",
             null,
-            [.. availableSeverities]);
+            SeverityLevels.AvailableSeverities);
 
-        if (result != null && result != "Cancel")
+        if (action != null && action != "Cancel")
         {
-            SelectedSeverity = result;
+            SelectedSeverity = action;
         }
     }
 
     [RelayCommand]
     private async Task SelectFarmLocation(FarmLocation? farmLocation)
     {
-        var locations = FarmLocations.Select(x=>x.Name).ToArray();
+        if (IsBusy) return;
 
-        var result = await Shell.Current.DisplayActionSheet(
+        var action = await Shell.Current.DisplayActionSheet(
             "Select Location",
             "Cancel",
             null,
-            [..locations]);
+            [.. FarmLocations.Select(x => x.Name)]);
 
-        if (result != null && result != "Cancel")
+        if (action != null && action != "Cancel")
         {
-            SelectedFarmLocation = FarmLocations.FirstOrDefault(x => x.Name == result);
+            SelectedFarmLocation = FarmLocations.First(x => x.Name == action);
+            SelectedFarmLocationText = SelectedFarmLocation.Name;
         }
     }
 
     [RelayCommand]
     private void AddTask()
     {
-        if (!IsEditable || string.IsNullOrWhiteSpace(NewTaskDescription)) return;
-
-        var task = new TaskItem
+        if (!string.IsNullOrWhiteSpace(NewTaskDescription))
         {
-            Description = NewTaskDescription,
-            IsCompleted = false,
-            CreatedAt = DateTime.Now
-        };
+            var task = new TaskItem
+            {
+                Description = NewTaskDescription,
+                IsCompleted = false,
+                CreatedAt = DateTime.Now
+            };
 
-        Tasks.Add(task);
-        NewTaskDescription = string.Empty;
+            Tasks.Add(task);
+            NewTaskDescription = "";
+            HasTasks = Tasks.Count > 0;
+        }
     }
 
     [RelayCommand]
     private void RemoveTask(TaskItem? task)
     {
-        if (task != null && IsEditable)
+        if (task != null)
         {
             Tasks.Remove(task);
+            HasTasks = Tasks.Count > 0;
         }
     }
 
     [RelayCommand]
     private async Task SaveObservation()
     {
-        if (!IsEditable) return;
+        if (IsBusy) return;
 
         try
         {
             IsBusy = true;
+
+            if (SelectedObservationTypes.Count == 0)
+            {
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please select at least one observation type", "OK");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedSeverity))
+            {
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please select a severity level", "OK");
+                return;
+            }
+
+            if (Locations.Count == 0 && SelectedFarmLocation == null)
+            {
+                await MauiProgram.DisplayAlertAsync("Validation Error", "Please add at least one location", "OK");
+                return;
+            }
 
             if (Mode == ObservationMode.Add)
             {
@@ -454,12 +416,11 @@ public partial class ObservationViewModel : ObservableObject
             {
                 await UpdateExistingObservation();
             }
-
-            await GoBack();
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Failed to save observation: {ex.Message}", "OK");
+            App.Log($"Error saving observation: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to save observation", "OK");
         }
         finally
         {
@@ -478,31 +439,37 @@ public partial class ObservationViewModel : ObservableObject
     {
         if (Mode == ObservationMode.View)
         {
-            SetEditMode();
+            Mode = ObservationMode.Edit;
+            IsEditable = true;
+            IsViewMode = false;
+            IsEditMode = true;
+            UpdateTitle();
         }
     }
 
-    // Public methods
     public async Task LoadObservationAsync(Guid observationId)
     {
-        if (IsBusy) return;
-
         try
         {
             IsBusy = true;
+
             var observations = await database.GetObservationsAsync();
             var observation = observations.FirstOrDefault(o => o.Id == observationId);
-            
+
             if (observation != null)
             {
                 await LoadObservationForEditing(observation);
-                Mode = ObservationMode.Edit;
+            }
+            else
+            {
+                await MauiProgram.DisplayAlertAsync("Error", "Observation not found", "OK");
+                await navigationService.GoBackAsync();
             }
         }
         catch (Exception ex)
         {
             App.Log($"Error loading observation: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error", "Failed to load observation", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to load observation", "OK");
         }
         finally
         {
@@ -512,130 +479,110 @@ public partial class ObservationViewModel : ObservableObject
 
     private void UpdateIndicators()
     {
-        IsAddMode = Mode == ObservationMode.Add;
-        IsEditMode = Mode == ObservationMode.Edit;
-        IsViewMode = Mode == ObservationMode.View;
-        IsEditable = IsAddMode || IsEditMode;
+        HasPhotos = Photos.Count > 0;
+        HasLocations = Locations.Count > 0;
+        HasObservationTypes = SelectedObservationTypes.Count > 0;
+        HasTasks = Tasks.Count > 0;
     }
 
     private void UpdateTitle()
     {
         Title = Mode switch
         {
-            ObservationMode.Add => "Add New Observation",
+            ObservationMode.Add => "Add Observation",
             ObservationMode.Edit => "Edit Observation",
             ObservationMode.View => "View Observation",
             _ => "Observation"
         };
     }
 
-    public async Task SetViewMode()
+    public Task SetViewModeAsync()
     {
         Mode = ObservationMode.View;
-        UpdateIndicators();
+        IsViewMode = true;
+        IsEditMode = false;
+        IsAddMode = false;
+        IsEditable = false;
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
-    public async Task SetAddMode()
+    public Task SetAddModeAsync()
     {
         Mode = ObservationMode.Add;
+        IsAddMode = true;
+        IsEditMode = false;
+        IsViewMode = false;
+        IsEditable = true;
         ClearForm();
-        UpdateIndicators();
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
-    public async Task SetEditMode()
+    public Task SetEditModeAsync()
     {
         Mode = ObservationMode.Edit;
-        UpdateIndicators();
+        IsEditMode = true;
+        IsAddMode = false;
+        IsViewMode = false;
+        IsEditable = true;
         UpdateTitle();
+        return Task.CompletedTask;
     }
 
     private void ClearForm()
     {
-        SoilMoisture = 50;
-        Notes = string.Empty;
-        SelectedSeverity = "Information";
+        Notes = "";
+        SelectedSeverity = "";
+        SeverityDisplay = "Select Severity";
+        SeverityColor = "#2196F3";
         SelectedFarmLocation = null;
-        SelectedObservationTypes.Clear();
+        SelectedFarmLocationText = "";
+        NewTaskDescription = "";
+        
+        Tasks.Clear();
         Photos.Clear();
         Locations.Clear();
-        Tasks.Clear();
+        SelectedObservationTypes.Clear();
         
-        // Update observable properties
-        HasPhotos = false;
-        HasLocations = false;
-        HasObservationTypes = false;
-        
-        // Clear additional metrics
-        DiseaseName = string.Empty;
-        DiseaseType = string.Empty;
-        DiseaseDescription = string.Empty;
-        SelectedDiseaseId = null;
-        PestName = string.Empty;
-        PestCount = null;
-        AffectedAreaPercentage = null;
-        DamageLevel = null;
-        DamageType = string.Empty;
-        GrowthStage = string.Empty;
-        HeightCm = null;
-        WeightKg = null;
-        CropType = string.Empty;
-        HarvestWeight = null;
-        Temperature = null;
-        Humidity = null;
-        WindSpeed = null;
-        Precipitation = null;
-        SoilPH = null;
-        SoilNitrogen = null;
-        SoilPhosphorus = null;
-        SoilPotassium = null;
-        Symptoms = string.Empty;
-        Cause = string.Empty;
-        Quality = string.Empty;
-        HealthScore = null;
-        YieldPerArea = null;
-        InfestationArea = string.Empty;
+        UpdateIndicators();
+        UpdateSelectedTypesDisplay();
     }
 
     private async Task CreateNewObservation()
     {
         var observation = new Observation
         {
-            ObservationTypes = string.Join(",", SelectedObservationTypes),
-            Severity = SelectedSeverity,
-            SoilMoisture = SoilMoisture,
             Notes = Notes,
+            Severity = SelectedSeverity,
             FarmLocationId = SelectedFarmLocation?.Id,
             Timestamp = DateTime.Now,
             Latitude = Locations.FirstOrDefault()?.Latitude ?? 0,
-            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0,
-            
-            // Disease Information
-            DiseaseName = DiseaseName,
-            Disease = DiseaseType, // Using Disease property for DiseaseType
-            
-            // Pest Information
-            PestCount = PestCount,
-            PestName = PestName,
-            
-            // Harvest Information
-            CropType = CropType,
-            WeightKg = HarvestWeight,
-            
-            // Weather Information
-            TemperatureCelsius = Temperature,
-            HumidityPercentage = Humidity,
-            WindSpeed = WindSpeed,
-            
-            // Soil Information
-            PhLevel = SoilPH,
-            NutrientLevel = SoilNitrogen, // Using NutrientLevel for Nitrogen
-            SoilPhosphorus = SoilPhosphorus,
-            SoilPotassium = SoilPotassium
+            Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
         };
 
+        if (SelectedFarmLocation != null)
+            observation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
+        else
+            observation.Summary = $"{SelectedTypesDisplay}";
+
         await database.AddObservationAsync(observation);
+
+        // Add metadata for each observation type
+        foreach (var observationTypeViewModel in SelectedObservationTypes)
+        {
+            foreach (var kvp in observationTypeViewModel.Metadata)
+            {
+                var observationMetadata = new ObservationMetadata
+                {
+                    ObservationId = observation.Id,
+                    ObservationTypeId = observationTypeViewModel.Id,
+                    DataPointId = kvp.Key,
+                    Value = kvp.Value?.ToString() ?? ""
+                };
+                await database.AddObservationMetadataAsync(observationMetadata);
+            }
+        }
 
         // Add locations
         foreach (var location in Locations)
@@ -652,7 +599,7 @@ public partial class ObservationViewModel : ObservableObject
         }
 
         App.Log($"Created new observation with ID: {observation.Id}");
-        await Shell.Current.DisplayAlert("Success", "Observation created successfully", "OK");
+        await MauiProgram.DisplayAlertAsync("Success", "Observation created successfully", "OK");
         await navigationService.GoBackAsync();
     }
 
@@ -661,38 +608,22 @@ public partial class ObservationViewModel : ObservableObject
         if (_originalObservation == null) return;
 
         // Update the original observation with new values
-        _originalObservation.ObservationTypes = string.Join(",", SelectedObservationTypes);
-        _originalObservation.Severity = SelectedSeverity;
-        _originalObservation.SoilMoisture = SoilMoisture;
+
+        if (SelectedFarmLocation != null)
+            _originalObservation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
+        else
+            _originalObservation.Summary = $"{SelectedTypesDisplay}";
+
         _originalObservation.Notes = Notes;
+        _originalObservation.Severity = SelectedSeverity;
         _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
         _originalObservation.Timestamp = DateTime.Now; // Update timestamp to reflect edit
 
-        // Disease Information
-        _originalObservation.DiseaseName = DiseaseName;
-        _originalObservation.Disease = DiseaseType; // Using Disease property for DiseaseType
-
-        // Pest Information
-        _originalObservation.PestCount = PestCount;
-        _originalObservation.PestName = PestName;
-
-        // Harvest Information
-        _originalObservation.CropType = CropType;
-        _originalObservation.WeightKg = HarvestWeight;
-
-        // Weather Information
-        _originalObservation.TemperatureCelsius = Temperature;
-        _originalObservation.HumidityPercentage = Humidity;
-        _originalObservation.WindSpeed = WindSpeed;
-
-        // Soil Information
-        _originalObservation.PhLevel = SoilPH;
-        _originalObservation.NutrientLevel = SoilNitrogen; // Using NutrientLevel for Nitrogen
-        _originalObservation.SoilPhosphorus = SoilPhosphorus;
-        _originalObservation.SoilPotassium = SoilPotassium;
-
         // Save the updated observation
         await database.UpdateObservationAsync(_originalObservation);
+
+        // Update metadata
+        await UpdateMetadata();
 
         // Update locations
         await UpdateLocations();
@@ -701,9 +632,38 @@ public partial class ObservationViewModel : ObservableObject
         await UpdatePhotos();
 
         App.Log($"Updated observation {_originalObservation.Id}");
-        await Shell.Current.DisplayAlert("Success", "Observation updated successfully", "OK");
+        await MauiProgram.DisplayAlertAsync("Success", "Observation updated successfully", "OK");
         await navigationService.GoBackAsync();
     }
+
+    private async Task UpdateMetadata()
+    {
+        if (_originalObservation == null) return;
+
+        // Remove old metadata
+        var oldMetadata = await database.GetMetadataForObservationAsync(_originalObservation.Id);
+        foreach (var metadata in oldMetadata)
+        {
+            await database.DeleteObservationMetadataAsync(metadata);
+        }
+
+        // Add new metadata
+        foreach (var observationTypeViewModel in SelectedObservationTypes)
+        {
+            foreach (var kvp in observationTypeViewModel.Metadata)
+            {
+                var observationMetadata = new ObservationMetadata
+                {
+                    ObservationId = _originalObservation.Id,
+                    ObservationTypeId = observationTypeViewModel.Id,
+                    DataPointId = kvp.Key,
+                    Value = kvp.Value?.ToString() ?? ""
+                };
+                await database.AddObservationMetadataAsync(observationMetadata);
+            }
+        }
+    }
+
     private async Task UpdateLocations()
     {
         if (_originalObservation == null) return;
@@ -747,61 +707,36 @@ public partial class ObservationViewModel : ObservableObject
         _originalObservation = observation;
 
         // Load basic properties
-        SoilMoisture = observation.SoilMoisture;
         Notes = observation.Notes ?? string.Empty;
         SelectedSeverity = observation.Severity;
 
-        // Load Disease Information
-        DiseaseName = observation.DiseaseName ?? string.Empty;
-        DiseaseType = observation.Disease ?? string.Empty; // Using Disease property for DiseaseType
+        // Load observation types and metadata
+        var metadata = await database.GetMetadataForObservationAsync(observation.Id);
+        var observationTypes = await database.GetObservationTypesAsync();
         
-        // Try to load additional disease information from lookup database
-        if (!string.IsNullOrEmpty(DiseaseName))
-        {
-            try
-            {
-                var diseases = await database.GetLookupItemsByGroupAsync("Diseases");
-                var matchingDisease = diseases.FirstOrDefault(d => d.Name.Equals(DiseaseName, StringComparison.OrdinalIgnoreCase));
-                if (matchingDisease != null)
-                {
-                    DiseaseDescription = matchingDisease.Description;
-                    SelectedDiseaseId = matchingDisease.Id;
-                }
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Failed to load disease details: {ex.Message}");
-            }
-        }
-
-        // Load Pest Information
-        PestCount = observation.PestCount;
-        PestName = observation.PestName ?? string.Empty;
-
-        // Load Harvest Information
-        CropType = observation.CropType ?? string.Empty;
-        HarvestWeight = observation.WeightKg;
-
-        // Load Weather Information
-        Temperature = observation.TemperatureCelsius;
-        Humidity = observation.HumidityPercentage;
-        WindSpeed = observation.WindSpeed;
-
-        // Load Soil Information
-        SoilPH = observation.PhLevel;
-        SoilNitrogen = observation.NutrientLevel; // Using NutrientLevel for Nitrogen
-        SoilPhosphorus = observation.SoilPhosphorus;
-        SoilPotassium = observation.SoilPotassium;
-
-        // Load observation types
-        var types = ObservationTypes.SplitTypes(observation.ObservationTypes);
         SelectedObservationTypes.Clear();
-        foreach (var type in types)
+        
+        // Group metadata by observation type
+        var metadataByType = metadata.GroupBy(m => m.ObservationTypeId).ToDictionary(g => g.Key, g => g.ToList());
+        
+        foreach (var kvp in metadataByType)
         {
-            SelectedObservationTypes.Add(type);
+            var observationType = observationTypes.FirstOrDefault(t => t.Id == kvp.Key);
+            if (observationType != null)
+            {
+                var observationTypeViewModel = new ObservationTypeViewModel(observationType);
+                
+                // Add metadata to the view model
+                foreach (var meta in kvp.Value)
+                {
+                    observationTypeViewModel.AddMetadata(meta.DataPointId, meta.Value);
+                }
+                
+                SelectedObservationTypes.Add(observationTypeViewModel);
+            }
         }
-        SelectedTypesDisplay = string.Join(", ", SelectedObservationTypes.Select(type => type.Length > 20 ? type[..17] + "..." : type));
-        OnPropertyChanged(nameof(SelectedObservationTypes));
+
+        UpdateSelectedTypesDisplay();
 
         // Load locations
         var locations = await database.GetLocationsForObservationAsync(observation.Id);
@@ -822,9 +757,7 @@ public partial class ObservationViewModel : ObservableObject
         }
 
         // Update observable properties
-        HasPhotos = Photos.Count > 0;
-        HasLocations = Locations.Count > 0;
-        HasObservationTypes = SelectedObservationTypes.Count > 0;
+        UpdateIndicators();
         
         App.Log($"Loaded observation {observation.Id} for editing");
     }
@@ -834,8 +767,6 @@ public partial class ObservationViewModel : ObservableObject
         try
         {
             // Load shapefile or create sample data
-            await shapefileService.LoadShapefileAsync("farm_locations.shp");
-
             FarmLocations.Clear();
             foreach (var location in shapefileService.GetFarmLocations())
             {
@@ -844,31 +775,25 @@ public partial class ObservationViewModel : ObservableObject
         }
         catch (Exception)
         {
-            await Shell.Current.DisplayAlert("Warning", "Could not load farm locations", "OK");
+            await MauiProgram.DisplayAlertAsync("Warning", "Could not load farm locations", "OK");
         }
     }
 
-    public List<string> GetRelevantMetrics()
+    [RelayCommand]
+    private void UpdateMetadataForType(Dictionary<Guid, object> metadata)
     {
-        var metrics = new List<string>();
-        foreach (var type in SelectedObservationTypes)
+        // This is a simplified approach - we'll need to track which observation type this belongs to
+        // For now, we'll use the last selected type
+        if (SelectedObservationTypes.Any())
         {
-            metrics.AddRange(GetMetricsForType(type));
+            var currentType = SelectedObservationTypes[^1];
+            currentType.SetMetadata(metadata);
         }
-        return [.. metrics.Distinct()];
     }
 
-    private static List<string> GetMetricsForType(string type)
+    public void UpdateMetadataForType(Guid observationTypeId, Dictionary<Guid, object> metadata)
     {
-        return type.ToLower() switch
-        {
-            "disease" => ["Disease Name", "Disease Type", "Symptoms", "Cause"],
-            "pest" => ["Pest Name", "Pest Count", "Infestation Area"],
-            "harvest" => ["Crop Type", "Weight", "Quantity", "Quality"],
-            "weather" => ["Temperature", "Humidity", "Wind Speed", "Precipitation"],
-            "soil" => ["pH Level", "Nitrogen", "Phosphorus", "Potassium"],
-            "growth" => ["Growth Stage", "Height", "Health Score"],
-            _ => []
-        };
+        var observationTypeViewModel = SelectedObservationTypes.FirstOrDefault(t => t.Id == observationTypeId);
+        observationTypeViewModel?.SetMetadata(metadata);
     }
 }

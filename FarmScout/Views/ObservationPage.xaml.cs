@@ -1,5 +1,6 @@
 using FarmScout.ViewModels;
-using FarmScout.Models;
+using FarmScout.Controls;
+using FarmScout.Services;
 
 namespace FarmScout.Views;
 
@@ -9,14 +10,16 @@ public partial class ObservationPage : ContentPage
 {
     public Guid ObservationId { get; set; }
     public string? Mode { get; set; }
+    
+    private readonly Dictionary<Guid, ObservationTypeControl> _observationTypeControls = [];
 
-    public ObservationPage(ObservationViewModel viewModel)
+    public ObservationPage(ObservationViewModel viewModel, IFarmScoutDatabase database)
     {
         InitializeComponent();
         
         BindingContext = viewModel;
-        App.Log("ObservationPage ViewModel set from constructor injection");
     }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -31,15 +34,15 @@ public partial class ObservationPage : ContentPage
                     switch (Mode.ToLower())
                     {
                         case "add":
-                            await viewModel.SetAddMode();
+                            await viewModel.SetAddModeAsync();
                             break;
                         case "edit":
                             await viewModel.LoadObservationAsync(ObservationId);
-                            await viewModel.SetEditMode();
+                            await viewModel.SetEditModeAsync();
                             break;
                         case "view":
                             await viewModel.LoadObservationAsync(ObservationId);
-                            await viewModel.SetViewMode();
+                            await viewModel.SetViewModeAsync();
                             break;
                     }
                 }
@@ -47,13 +50,14 @@ public partial class ObservationPage : ContentPage
                 {
                     // Default to edit mode if observation ID is provided
                     await viewModel.LoadObservationAsync(ObservationId);
-                    await viewModel.SetEditMode();
+                    await viewModel.SetEditModeAsync();
                 }
                 else
                 {
                     // Default to add mode
-                    await viewModel.SetAddMode();
+                    await viewModel.SetAddModeAsync();
                 }
+                Dispatcher.Dispatch(() =>(this as IView).InvalidateArrange());
             }
         }
     }

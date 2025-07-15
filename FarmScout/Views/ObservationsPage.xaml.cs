@@ -17,7 +17,7 @@ public partial class ObservationsPage : ContentPage
         
         if (BindingContext is ObservationsViewModel viewModel)
         {
-            await viewModel.Refresh();
+            await viewModel.OnAppearing();
         }
     }
 } 

@@ -4,7 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="Lookup Tables"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
-             
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:models="clr-namespace:FarmScout.Models"
+             x:DataType="viewmodels:LookupViewModel"
              >
 
     <Grid RowDefinitions="Auto,Auto,Auto,*">
@@ -26,7 +28,7 @@
                     SelectedIndexChanged="OnGroupSelectedIndexChanged"
                     ItemsSource="{Binding AvailableGroups}"
                     WidthRequest="120"
-                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                    IsVisible="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=EditMode}"
                     />
         </Grid>
 
@@ -38,7 +40,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                 TextColor="White"
                 CornerRadius="8"
-                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMode}"
+                IsVisible="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=EditMode}"
                 />
 
         <!-- Lookup Items List -->
@@ -52,18 +54,16 @@
                 
                 <CollectionView.Header>
                     <Grid ColumnDefinitions="*,Auto" 
-                          Padding="16,8" 
-                          BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}">
+                          Padding="16,8" >
                         <Label Grid.Column="0" Text="Name &amp; Details" FontAttributes="Bold"/>
                         <Label Grid.Column="1" Text="Actions" FontAttributes="Bold" HorizontalOptions="Center"/>
                     </Grid>
                 </CollectionView.Header>
                 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:LookupItem">
                         <Grid ColumnDefinitions="*,Auto" 
                               Padding="16,8" 
-                              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                               Margin="0,1">
                             
                             <!-- Name, SubGroup and Description -->
@@ -71,17 +71,15 @@
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold"
                                        FontSize="Small"
-                                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                                       />
                                 <StackLayout Orientation="Horizontal" Spacing="8" IsVisible="{Binding SubGroup, Converter={StaticResource NotNullConverter}}">
                                     <Label Text="📋" FontSize="Small"/>
                                     <Label Text="{Binding SubGroup}" 
                                            FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource Blue}, Dark={StaticResource LightBlue}}"
                                            FontAttributes="Italic"/>
                                 </StackLayout>
                                 <Label Text="{Binding Description}" 
                                        FontSize="Micro"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
                                        IsVisible="{Binding Description, Converter={StaticResource NotNullConverter}}"/>
                             </StackLayout>
                             
@@ -93,7 +91,7 @@
                                          Spacing="2">
                                 <Button Text="☰" 
                                         HeightRequest="30" MinimumHeightRequest="30"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.LookupItemActionCommand}"
+                                        Command="{Binding x:DataType=viewmodels:LookupViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:LookupViewModel}}, Path=LookupItemActionCommand}"
                                         CommandParameter="{Binding}"
                                         BackgroundColor="Grey"
                                         TextColor="White"
@@ -117,11 +115,12 @@
                         <Label Text="No lookup items found" 
                                FontSize="Large" 
                                HorizontalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+
+                               />
                         <Label Text="Add your first lookup item to get started" 
                                FontSize="Medium" 
                                HorizontalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"/>
+                               />
                     </StackLayout>
                 </CollectionView.EmptyView>
             </CollectionView>

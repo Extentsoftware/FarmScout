@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.Maui.Devices.Sensors;
-
 namespace FarmScout.Services
 {
     public class LocationService

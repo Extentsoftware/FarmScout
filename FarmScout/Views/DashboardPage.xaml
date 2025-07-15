@@ -4,6 +4,7 @@
              x:Class="FarmScout.Views.DashboardPage"
              x:DataType="viewmodels:DashboardViewModel"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:converters="clr-namespace:FarmScout.Converters"
              Title="{Binding Title}">
     
     <Grid RowDefinitions="*,Auto">
@@ -76,23 +77,56 @@
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="10" />
                                         </Border.StrokeShape>
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                                <Label Text="{Binding ObservationTypesText}" 
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Photo -->
+                                            <Border Grid.Column="0" 
+                                                   BackgroundColor="#F5F5F5" 
+                                                   WidthRequest="50" 
+                                                   HeightRequest="50"
+                                                   Margin="0,0,10,0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="5" />
+                                                </Border.StrokeShape>
+                                                <Grid>
+                                                    <!-- Loading indicator -->
+                                                    <ActivityIndicator IsRunning="{Binding IsLoadingPhoto}" 
+                                                                        IsVisible="{Binding IsLoadingPhoto}"
+                                                                        HorizontalOptions="Center" 
+                                                                        VerticalOptions="Center"
+                                                                        Color="#4CAF50"/>
+                                                
+                                                    <!-- Actual Image -->
+                                                    <Image Source="{Binding PhotoData, Converter={StaticResource ByteArrayToImageSourceConverter}}" 
+                                                            Aspect="AspectFill"
+                                                            IsVisible="{Binding HasPhoto}"
+                                                            HorizontalOptions="Fill"
+                                                            VerticalOptions="Fill"/>
+                                                
+                                                    <!-- Placeholder when no photo -->
+                                                    <Label Text="📷" 
+                                                            FontSize="16" 
+                                                            HorizontalOptions="Center" 
+                                                            VerticalOptions="Center"
+                                                            IsVisible="{Binding NoPhoto}"/>
+                                            </Grid>
+                                            </Border>
+                                            
+                                            <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                                <Label Text="{Binding Summary}" 
                                                        FontAttributes="Bold" 
                                                        FontSize="14"/>
                                                 <Label Text="{Binding TimestampText}" 
                                                        FontSize="12" 
                                                        TextColor="#666"/>
                                             </VerticalStackLayout>
-                                            <Button Grid.Column="1" 
+                                            <Button Grid.Column="2" 
                                                     Text="👁️" 
                                                     BackgroundColor="#1976D2" 
                                                     TextColor="White"
                                                     CornerRadius="15"
                                                     WidthRequest="30"
                                                     HeightRequest="30"
-                                                    Command="{Binding x:DataType=viewmodels:DashboardViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewObservationCommand}"
+                                                    Command="{Binding x:DataType=viewmodels:DashboardViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:DashboardViewModel}}, Path=ViewDetailsCommand}"
                                                     CommandParameter="{Binding}"/>
                                         </Grid>
                                     </Border>

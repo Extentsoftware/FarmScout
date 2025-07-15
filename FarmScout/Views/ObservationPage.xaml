@@ -8,263 +8,228 @@
              x:DataType="viewmodels:ObservationViewModel"
              x:Name="ObservationPageRoot"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels" 
-             Title="{Binding Title}"
-             
-             >
-    <!--Shell.NavBarIsVisible="True"  Shell.PresentationMode="ModalAnimated"-->
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converters:MetadataConverter x:Key="MetadataConverter"/>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->
-            <Border Grid.Row="0" 
-               BackgroundColor="#E8F5E8" 
-               Padding="5,5">
-                <Grid ColumnDefinitions="Auto,*,Auto">                    
-                    <Label 
-                        Grid.Column="1"
-                        Text="{Binding Title}" x:Name="Header"
-                        FontSize="14" 
-                        FontAttributes="Bold" 
-                        HorizontalOptions="Center"
-                        TextColor="#2E7D32"/>
+        <Border Grid.Row="0" 
+            BackgroundColor="#E8F5E8" 
+            Padding="5,5">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Label 
+                    Grid.Column="1"
+                    Text="{Binding Title}" x:Name="Header"
+                    FontSize="14" 
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"
+                    TextColor="#2E7D32"/>
 
-                    <HorizontalStackLayout Grid.Column="2">
-                        <Button 
-                            Text="{Binding IsAddMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='💾 Save|💾 Update'}"
-                            Command="{Binding SaveObservationCommand}"
-                            BackgroundColor="{Binding IsAddMode, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4CAF50|#FF9800'}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            FontSize="16"
-                            FontAttributes="Bold"
-                            IsVisible="{Binding IsEditable}"/>
+                <HorizontalStackLayout Grid.Column="2">
+                    <Button 
+                        Text="{Binding IsAddMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='💾 Save|💾 Update'}"
+                        Command="{Binding SaveObservationCommand}"
+                        BackgroundColor="{Binding IsAddMode, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4CAF50|#FF9800'}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        IsVisible="{Binding IsEditable}"/>
 
-                        <!-- Edit Button (View Mode) -->
-                        <Button
-                            Text="✏️ Edit"
-                            Command="{Binding EditObservationCommand}"
-                            BackgroundColor="#FF9800"
-                            TextColor="White"
-                            CornerRadius="8"
-                            FontSize="16"
-                            FontAttributes="Bold"
-                            IsVisible="{Binding IsViewMode}"/>
-                    </HorizontalStackLayout>
-                </Grid>
-            </Border>
-        
+                    <!-- Edit Button (View Mode) -->
+                    <Button
+                        Text="✏️ Edit"
+                        Command="{Binding EditObservationCommand}"
+                        BackgroundColor="#FF9800"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        IsVisible="{Binding IsViewMode}"/>
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="20" Padding="20">
 
-                <!-- Observation Types -->
-            <Border BackgroundColor="#F5F5F5" Padding="15">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📝 Observation Types" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Button Text="{Binding SelectedTypesDisplay, StringFormat='Selected: {0}'}"
-                            Command="{Binding ShowObservationTypesCommand}"
-                            BackgroundColor="#E8F5E8"
-                            TextColor="#2E7D32"
-                            CornerRadius="8"
-                            HorizontalOptions="Fill"
-                            IsVisible="{Binding IsEditable}"/>
-                    
-                    <!-- View Mode -->
-                    <Label Text="{Binding SelectedTypesDisplay}" 
-                           FontSize="16" 
-                           TextColor="#666"
-                           IsVisible="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
-            
-           
-            <!-- Severity -->
-            <Border BackgroundColor="#F5F5F5" Padding="15"><Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="⚠️ Severity" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Button Text="{Binding SeverityDisplay}"
+                <!-- Severity -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="⚠️ Severity" 
+                            FontSize="18" 
+                            FontAttributes="Bold"
+                            TextColor="#2E7D32"/>
+
+                        <!-- Edit/Add Mode -->
+                        <Button Text="{Binding SeverityDisplay}"
                             Command="{Binding ShowSeverityPopupCommand}"
                             BackgroundColor="{Binding SeverityColor}"
                             TextColor="White"
                             CornerRadius="8"
                             HorizontalOptions="Fill"
                             IsVisible="{Binding IsEditable}"/>
-                    
-                    <!-- View Mode -->
-                    <Label Text="{Binding SeverityDisplay}" 
-                           FontSize="16" 
-                           TextColor="{Binding SeverityColor}"
-                           FontAttributes="Bold"
-                           IsVisible="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
-            
-            <!-- Farm Location -->
-            <Border BackgroundColor="#F5F5F5" Padding="15">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="🏠 Farm Location" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Button Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}"
+
+                        <!-- View Mode -->
+                        <Label Text="{Binding SeverityDisplay}" 
+                            FontSize="16" 
+                            TextColor="{Binding SeverityColor}"
+                            FontAttributes="Bold"
+                            IsVisible="{Binding IsViewMode}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Observation Types -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📝 Observation Types" 
+                    FontSize="18" 
+                    FontAttributes="Bold"
+                    TextColor="#2E7D32"/>
+
+                        <!-- Edit/Add Mode -->
+                        <Button Text="{Binding SelectedTypesDisplay, StringFormat='Selected: {0}'}"
+                    Command="{Binding ShowObservationTypesCommand}"
+                    BackgroundColor="#E8F5E8"
+                    TextColor="#2E7D32"
+                    CornerRadius="8"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding IsEditable}"/>
+
+                        <!-- View Mode -->
+                        <Label Text="{Binding SelectedTypesDisplay}" 
+                    FontSize="16" 
+                    TextColor="#666"
+                    IsVisible="{Binding IsViewMode}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Dynamic Observation Type Controls -->
+                <CollectionView ItemsSource="{Binding SelectedObservationTypes}" 
+                        IsVisible="{Binding HasObservationTypes}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:ObservationTypeViewModel">
+                            <Border BackgroundColor="#F5F5F5" Padding="15" Margin="0,0,0,10">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Label Grid.Column="0" 
+                                        Text="{Binding Icon}" 
+                                        FontSize="20"
+                                        VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" 
+                                        Text="{Binding Name}" 
+                                        FontSize="18" 
+                                        FontAttributes="Bold"
+                                        TextColor="#2E7D32"
+                                        VerticalOptions="Center"/>
+                                        <!-- Edit/Add Mode -->
+                                        <Button Grid.Column="2" 
+                                        Text="❌" 
+                                        Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemoveObservationTypeCommand}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="#FF5722"
+                                        TextColor="White"
+                                        CornerRadius="15"
+                                        WidthRequest="30"
+                                        HeightRequest="30"
+                                        FontSize="12"
+                                        IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                                    </Grid>
+
+                                    <!-- Dynamic ObservationTypeControl -->
+                                    <controls:ObservationTypeControl 
+                                ObservationTypeId="{Binding Id}"
+                                ValuesChangedCommand="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=UpdateMetadataForTypeCommand}"
+                                IsEditable="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"
+                                InitialValues="{Binding Metadata}"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Farm Location -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="🏠 Farm Location" 
+                            FontSize="18" 
+                            FontAttributes="Bold"
+                            TextColor="#2E7D32"/>
+
+                        <!-- Edit/Add Mode -->
+                        <Button Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}"
                             Command="{Binding SelectFarmLocationCommand}"
                             BackgroundColor="#E8F5E8"
                             TextColor="#2E7D32"
                             CornerRadius="8"
                             HorizontalOptions="Fill"
                             IsVisible="{Binding IsEditable}"/>
-                    
-                    <!-- View Mode -->
-                    <Label Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}" 
-                           FontSize="16" 
-                           TextColor="#666"
-                           IsVisible="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
-            
-            <!-- Additional Metrics -->
-            <!-- Soil Moisture -->
-            <controls:SoilMoistureControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil Moisture}"/>
-            
-            <!-- Disease Information -->
-            <controls:DiseaseControl 
-                x:Name="DiseaseControl"
-                DiseaseName="{Binding DiseaseName}"
-                DiseaseType="{Binding DiseaseType}"
-                DiseaseDescription="{Binding DiseaseDescription}"
-                SelectedDiseaseId="{Binding SelectedDiseaseId}"
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Disease}"/>
 
-            <!-- Pest Information -->
-            <controls:PestControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Pest}"/>
+                        <!-- View Mode -->
+                        <Label Text="{Binding SelectedFarmLocationText, StringFormat='Location: {0}'}" 
+                            FontSize="16" 
+                            TextColor="#666"
+                            IsVisible="{Binding IsViewMode}"/>
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- Harvest Information -->
-            <controls:HarvestControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Harvest}"/>
-
-            <!-- Weather Information -->
-            <controls:WeatherControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Weather}"/>
-
-            <!-- Soil Information -->
-            <controls:SoilControl 
-                IsVisible="{Binding SelectedObservationTypes, Converter={StaticResource StringContainsConverter}, ConverterParameter=Soil}"/>
-            
-            <!-- Photos -->
-            <Border BackgroundColor="#F5F5F5" Padding="15">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📷 Photos" 
+                <!-- Location -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📍 Location" 
                            FontSize="18" 
                            FontAttributes="Bold"
                            TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Button Text="Add Photo" 
-                            Command="{Binding TakePhotoCommand}"
-                            BackgroundColor="#2196F3"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HorizontalOptions="Fill"
-                            IsVisible="{Binding IsEditable}"/>
-                    
-                    <CollectionView ItemsSource="{Binding Photos}" 
-                                  IsVisible="{Binding HasPhotos}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:ObservationPhoto">
-                                <Border Margin="5" 
-                                       BackgroundColor="White"                                        
-                                       Padding="10">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="5" />
-                                    </Border.StrokeShape>
-                                    <Grid RowDefinitions="Auto,Auto">
-                                        <Image Grid.Row="0" 
-                                               Source="{Binding PhotoPath}" 
-                                               HeightRequest="150"
-                                               Aspect="AspectFill"
-                                               HorizontalOptions="Center"/>
-                                        <!-- Edit/Add Mode -->
-                                        <Button Grid.Row="1" 
-                                                Text="❌ Remove" 
-                                                Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemovePhotoCommand}"
-                                                CommandParameter="{Binding}"
-                                                BackgroundColor="#FF5722"
-                                                TextColor="White"
-                                                CornerRadius="5"
-                                                Margin="0,5,0,0"
-                                                IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Border>
-            
-            <!-- Location -->
-            <Border BackgroundColor="#F5F5F5" Padding="15">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📍 Location" 
-                           FontSize="18" 
-                           FontAttributes="Bold"
-                           TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Button Text="Get Current Location" 
+
+                        <!-- Edit/Add Mode -->
+                        <Button Text="Get Current Location" 
                             Command="{Binding GetLocationCommand}"
                             BackgroundColor="#FF9800"
                             TextColor="White"
                             CornerRadius="8"
                             HorizontalOptions="Fill"
                             IsVisible="{Binding IsEditable}"/>
-                    
-                    <CollectionView ItemsSource="{Binding Locations}" 
+
+                        <CollectionView ItemsSource="{Binding Locations}" 
                                   IsVisible="{Binding HasLocations}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:ObservationLocation">
-                                <Border Margin="5" 
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:ObservationLocation">
+                                    <Border Margin="5" 
                                        BackgroundColor="White"                                        
                                        Padding="10">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="5" />
-                                    </Border.StrokeShape>
-                                    <VerticalStackLayout Spacing="5">
-                                        <Label Text="{Binding Description}" 
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5" />
+                                        </Border.StrokeShape>
+                                        <VerticalStackLayout Spacing="5">
+                                            <Label Text="{Binding Description}" 
                                                TextColor="Black"
                                                FontAttributes="Bold"/>
-                                        <Label Text="{Binding Latitude, StringFormat='Latitude: {0:F6}'}" 
+                                            <Label Text="{Binding Latitude, StringFormat='Latitude: {0:F6}'}" 
                                                TextColor="#666"
                                                FontSize="12"/>
-                                        <Label Text="{Binding Longitude, StringFormat='Longitude: {0:F6}'}" 
+                                            <Label Text="{Binding Longitude, StringFormat='Longitude: {0:F6}'}" 
                                                TextColor="#666"
                                                FontSize="12"/>
-                                        <!-- Edit/Add Mode -->
-                                        <Button Text="❌ Remove" 
+                                            <!-- Edit/Add Mode -->
+                                            <Button Text="❌ Remove" 
                                                 Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={x:Reference ObservationPageRoot}, Path=RemoveLocationCommand}"
                                                 CommandParameter="{Binding}"
                                                 BackgroundColor="#FF5722"
@@ -272,27 +237,103 @@
                                                 CornerRadius="5"
                                                 Margin="0,5,0,0"
                                                 IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Border>
-            
-            <!-- Notes -->
-            <Border BackgroundColor="#F5F5F5" Padding="15">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📝 Notes" 
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Photos -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📷 Photos" 
+                        FontSize="18" 
+                        FontAttributes="Bold"
+                        TextColor="#2E7D32"/>
+
+                        <!-- Edit/Add Mode -->
+                        <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsEditable}">
+                            <Button Text="📷 Take Photo" 
+                        Command="{Binding TakePhotoCommand}"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        CornerRadius="8"
+                                HorizontalOptions="FillAndExpand"/>
+                            <Button Text="🖼️ Pick Photo" 
+                                Command="{Binding PickPhotoCommand}"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                CornerRadius="8"
+                                HorizontalOptions="FillAndExpand"/>
+                        </HorizontalStackLayout>
+
+                        <CollectionView ItemsSource="{Binding Photos}" 
+                                IsVisible="{Binding HasPhotos}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:ObservationPhoto">
+                                    <Border Margin="5" 
+                                    BackgroundColor="White"                                        
+                                    Padding="10">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5" />
+                                        </Border.StrokeShape>
+                                        <Grid RowDefinitions="Auto,Auto,Auto">
+                                            <Image Grid.Row="0" 
+                                                Source="{Binding PhotoData, Converter={StaticResource ByteArrayToImageSourceConverter}}" 
+                                            HeightRequest="150"
+                                            Aspect="AspectFill"
+                                            HorizontalOptions="Center"/>
+                                            <VerticalStackLayout Grid.Row="1" Spacing="2" Margin="0,5,0,0">
+                                                <Label Text="{Binding Description}" 
+                                                    TextColor="#666"
+                                                    FontSize="12"
+                                                    HorizontalOptions="Center"/>
+                                                <Label Text="{Binding FileSizeDisplay, StringFormat='Size: {0}'}" 
+                                                    TextColor="#999"
+                                                    FontSize="10"
+                                                    HorizontalOptions="Center"/>
+                                                <Label Text="{Binding DimensionsDisplay, StringFormat='Dimensions: {0}'}" 
+                                                    TextColor="#999"
+                                                    FontSize="10"
+                                                    HorizontalOptions="Center"/>
+                                            </VerticalStackLayout>
+                                            <!-- Edit/Add Mode -->
+                                            <Button Grid.Row="2" 
+                                            Text="❌ Remove" 
+                                            Command="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=RemovePhotoCommand}"
+                                            CommandParameter="{Binding}"
+                                            BackgroundColor="#FF5722"
+                                            TextColor="White"
+                                            CornerRadius="5"
+                                            Margin="0,5,0,0"
+                                            IsVisible="{Binding x:DataType=viewmodels:ObservationViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationViewModel}}, Path=IsEditable}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Notes -->
+                <Border BackgroundColor="#F5F5F5" Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📝 Notes" 
                            FontSize="18" 
                            FontAttributes="Bold"
                            TextColor="#2E7D32"/>
-                    
-                    <!-- Edit/Add Mode -->
-                    <Editor Placeholder="Enter additional notes..." 
+
+                        <!-- Edit/Add Mode -->
+                        <Editor Placeholder="Enter additional notes..." 
                             Text="{Binding Notes}"
                             TextColor="Black"
                             BackgroundColor="White"
@@ -300,17 +341,16 @@
                             AutoSize="TextChanges"
                             MinimumHeightRequest="100"
                             IsReadOnly="{Binding IsViewMode}"/>
-                    
-                    <!-- View Mode -->
-                    <Label Text="{Binding Notes}" 
+
+                        <!-- View Mode -->
+                        <Label Text="{Binding Notes}" 
                            FontSize="16" 
                            TextColor="#666"
                            IsVisible="{Binding IsViewMode}"/>
-                </VerticalStackLayout>
-            </Border>
-            
-            
-        </VerticalStackLayout>
-    </ScrollView>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage> 
