@@ -4,8 +4,6 @@ using FarmScout.Extensions;
 using FarmScout.Models;
 using FarmScout.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace FarmScout.ViewModels
 {

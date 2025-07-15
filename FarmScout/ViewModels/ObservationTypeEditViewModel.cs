@@ -6,44 +6,36 @@ using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationTypeEditViewModel : ObservableObject
+[QueryProperty(nameof(ObservationTypeId), "ObservationTypeId")] 
+public partial class ObservationTypeEditViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
 {
-    private readonly IFarmScoutDatabase _database;
-    private readonly INavigationService _navigationService;
-    private Guid? _observationTypeId;
-
-    public ObservationTypeEditViewModel(IFarmScoutDatabase database, INavigationService navigationService)
-    {
-        _database = database;
-        _navigationService = navigationService;
-        DataPoints = new ObservableCollection<ObservationTypeDataPoint>();
-    }
+    public Guid ObservationTypeId { get; set; } = Guid.Empty;
 
     [ObservableProperty]
-    private bool _isLoading = false;
+    public partial bool IsLoading { get; set; } = false;
 
     [ObservableProperty]
-    private bool _isNew = true;
+    public partial bool IsNew { get; set; } = true;
 
     [ObservableProperty]
-    private string _name = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _description = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _icon = string.Empty;
+    public partial string Icon { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _color = "#607D8B";
+    public partial string Color { get; set; } = "#000000";
 
     [ObservableProperty]
-    private int _sortOrder = 0;
+    public partial int SortOrder { get; set; } = 0;
 
     [ObservableProperty]
-    private bool _isActive = true;
+    public partial bool IsActive { get; set; } = true;
 
-    public ObservableCollection<ObservationTypeDataPoint> DataPoints { get; }
+    public ObservableCollection<ObservationTypeDataPoint> DataPoints { get; } = [];
 
     [RelayCommand]
     private async Task Save()
@@ -62,7 +54,7 @@ public partial class ObservationTypeEditViewModel : ObservableObject
 
             var observationType = new ObservationType
             {
-                Id = _observationTypeId ?? Guid.NewGuid(),
+                Id = ObservationTypeId,
                 Name = Name.Trim(),
                 Description = Description?.Trim() ?? string.Empty,
                 Icon = Icon?.Trim() ?? string.Empty,
@@ -75,11 +67,11 @@ public partial class ObservationTypeEditViewModel : ObservableObject
             if (IsNew)
             {
                 observationType.CreatedAt = DateTime.Now;
-                await _database.AddObservationTypeAsync(observationType);
+                await database.AddObservationTypeAsync(observationType);
             }
             else
             {
-                await _database.UpdateObservationTypeAsync(observationType);
+                await database.UpdateObservationTypeAsync(observationType);
             }
 
             // Save data points
@@ -92,16 +84,16 @@ public partial class ObservationTypeEditViewModel : ObservableObject
                 {
                     dataPoint.Id = Guid.NewGuid();
                     dataPoint.CreatedAt = DateTime.Now;
-                    await _database.AddObservationTypeDataPointAsync(dataPoint);
+                    await database.AddObservationTypeDataPointAsync(dataPoint);
                 }
                 else
                 {
-                    await _database.UpdateObservationTypeDataPointAsync(dataPoint);
+                    await database.UpdateObservationTypeDataPointAsync(dataPoint);
                 }
             }
 
             await MauiProgram.DisplayAlertAsync("Success", "Observation type saved successfully.", "OK");
-            await _navigationService.GoBackAsync();
+            await navigationService.GoBackAsync();
         }
         catch (Exception ex)
         {
@@ -116,7 +108,7 @@ public partial class ObservationTypeEditViewModel : ObservableObject
     [RelayCommand]
     private async Task Cancel()
     {
-        await _navigationService.GoBackAsync();
+        await navigationService.GoBackAsync();
     }
 
     [RelayCommand]
@@ -127,9 +119,9 @@ public partial class ObservationTypeEditViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            await _navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
+            await navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
             {
-                { "ObservationTypeId", _observationTypeId ?? Guid.Empty }
+                { "ObservationTypeId", ObservationTypeId }
             });
         }
         catch (Exception ex)
@@ -150,7 +142,7 @@ public partial class ObservationTypeEditViewModel : ObservableObject
         try
         {
             IsLoading = true;
-            await _navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
+            await navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
             {
                 { "DataPointId", dataPoint.Id }
             });
@@ -184,7 +176,7 @@ public partial class ObservationTypeEditViewModel : ObservableObject
 
             if (dataPoint.Id != Guid.Empty)
             {
-                await _database.DeleteObservationTypeDataPointAsync(dataPoint);
+                await database.DeleteObservationTypeDataPointAsync(dataPoint);
             }
 
             DataPoints.Remove(dataPoint);
@@ -214,35 +206,26 @@ public partial class ObservationTypeEditViewModel : ObservableObject
             IsLoading = true;
 
             // Check if we have an observation type ID from navigation
-            if (Shell.Current.CurrentState.Location.ToString().Contains("ObservationTypeId="))
+            if (ObservationTypeId != Guid.Empty)
             {
-                var parameters = Shell.Current.CurrentState.Location.ToString()
-                    .Split('?')[1]
-                    .Split('&')
-                    .ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
+                IsNew = false;
 
-                if (parameters.ContainsKey("ObservationTypeId") && Guid.TryParse(parameters["ObservationTypeId"], out var id))
+                var observationType = await database.GetObservationTypeByIdAsync(ObservationTypeId);
+                if (observationType != null)
                 {
-                    _observationTypeId = id;
-                    IsNew = false;
+                    Name = observationType.Name;
+                    Description = observationType.Description;
+                    Icon = observationType.Icon;
+                    Color = observationType.Color;
+                    SortOrder = observationType.SortOrder;
+                    IsActive = observationType.IsActive;
 
-                    var observationType = await _database.GetObservationTypeByIdAsync(id);
-                    if (observationType != null)
+                    // Load data points
+                    var dataPoints = await database.GetDataPointsForObservationTypeAsync(ObservationTypeId);
+                    DataPoints.Clear();
+                    foreach (var dataPoint in dataPoints.OrderBy(dp => dp.SortOrder))
                     {
-                        Name = observationType.Name;
-                        Description = observationType.Description;
-                        Icon = observationType.Icon;
-                        Color = observationType.Color;
-                        SortOrder = observationType.SortOrder;
-                        IsActive = observationType.IsActive;
-
-                        // Load data points
-                        var dataPoints = await _database.GetDataPointsForObservationTypeAsync(id);
-                        DataPoints.Clear();
-                        foreach (var dataPoint in dataPoints.OrderBy(dp => dp.SortOrder))
-                        {
-                            DataPoints.Add(dataPoint);
-                        }
+                        DataPoints.Add(dataPoint);
                     }
                 }
             }

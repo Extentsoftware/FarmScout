@@ -5,6 +5,8 @@
              Title="Edit Observation Type"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:models="clr-namespace:FarmScout.Models"
+             x:DataType="viewmodels:ObservationTypeEditViewModel"
              xmlns:converters="clr-namespace:FarmScout.Converters">
 
     <ContentPage.Resources>
@@ -15,19 +17,6 @@
 
     <ScrollView>
         <StackLayout Padding="16" Spacing="16">
-            
-            <!-- Header -->
-            <StackLayout Spacing="8">
-                <Label Text="{Binding IsNew, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Observation Type|Edit Observation Type'}" 
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                       HorizontalOptions="Center"/>
-                <Label Text="Configure observation type properties" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                       HorizontalOptions="Center"/>
-            </StackLayout>
 
             <!-- Name Field -->
             <StackLayout Spacing="8">
@@ -110,15 +99,13 @@
                         Command="{Binding CancelCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
                         TextColor="White"
-                        CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"/>
+                        CornerRadius="8" />
 
                 <Button Text="Save" 
                         Command="{Binding SaveCommand}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
                         TextColor="White"
                         CornerRadius="8"
-                        HorizontalOptions="FillAndExpand"
                         IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"/>
             </StackLayout>
 
@@ -141,11 +128,14 @@
                 </StackLayout>
 
                 <!-- Data Points List -->
-                <CollectionView ItemsSource="{Binding DataPoints}"
+                <CollectionView ItemsSource="{Binding DataPoints}" 
                                HeightRequest="200">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame CornerRadius="6" Padding="12" Margin="0,0,0,4" BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}">
+                        <DataTemplate x:DataType="models:ObservationTypeDataPoint">
+                            <Border BackgroundColor="#F5F5F5" Padding="15" Margin="0,0,0,10">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
                                 <Grid ColumnDefinitions="*,Auto,Auto">
                                     <StackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="{Binding Label}" 
@@ -178,7 +168,7 @@
                                             HeightRequest="30"
                                             FontSize="12"/>
                                 </Grid>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
