@@ -17,6 +17,7 @@
             <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
             <converters:GroupIconConverter x:Key="GroupIconConverter"/>
             <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+            <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

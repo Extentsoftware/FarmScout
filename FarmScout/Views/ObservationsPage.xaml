@@ -4,6 +4,7 @@
              x:Class="FarmScout.Views.ObservationsPage"
              x:DataType="viewmodels:ObservationsViewModel"
              xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
+             xmlns:converters="clr-namespace:FarmScout.Converters"
              Title="{Binding Title}" >
 
     <!--Shell.NavBarIsVisible="True"
@@ -70,7 +71,7 @@
                                                          Color="#4CAF50"/>
                                     
                                         <!-- Actual Image -->
-                                        <Image Source="{Binding PhotoPath}" 
+                                        <Image Source="{Binding PhotoData, Converter={StaticResource ByteArrayToImageSourceConverter}}" 
                                                Aspect="AspectFill"
                                                IsVisible="{Binding HasPhoto}"
                                                HorizontalOptions="Fill"

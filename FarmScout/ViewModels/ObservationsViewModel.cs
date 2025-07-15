@@ -214,7 +214,7 @@ public partial class SimpleObservationViewModel : ObservableObject
     public partial bool NoPhoto { get; set; } = true;
     
     [ObservableProperty]
-    public partial string? PhotoPath { get; set; }
+    public partial byte[]? PhotoData { get; set; }
     
     [ObservableProperty]
     public partial bool IsLoadingPhoto { get; set; } = true;
@@ -227,7 +227,7 @@ public partial class SimpleObservationViewModel : ObservableObject
             var photos = await _database.GetPhotosForObservationAsync(Observation.Id);
             if (photos.Count > 0)
             {
-                PhotoPath = photos.First().PhotoPath;
+                PhotoData = photos.First().PhotoData;
                 HasPhoto = true;
                 NoPhoto = false;
             }

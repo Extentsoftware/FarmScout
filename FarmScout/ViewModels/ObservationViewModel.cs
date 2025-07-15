@@ -209,25 +209,52 @@ public partial class ObservationViewModel : ObservableObject
         {
             IsBusy = true;
 
-            var photoPath = await PhotoService.CapturePhotoAsync();
-            if (!string.IsNullOrEmpty(photoPath))
+            // Generate a temporary observation ID for the photo
+            var tempObservationId = Guid.NewGuid();
+            
+            var photo = await PhotoService.CapturePhotoAsync(tempObservationId, "Observation photo");
+            if (photo != null)
             {
-                var photo = new ObservationPhoto
-                {
-                    PhotoPath = photoPath,
-                    Description = "Observation photo",
-                    Timestamp = DateTime.Now
-                };
-
                 Photos.Add(photo);
                 HasPhotos = Photos.Count > 0;
-                App.Log($"Photo taken and added: {photoPath}");
+                App.Log($"Photo taken and added: {photo.OriginalFileName} ({photo.FileSizeDisplay})");
             }
         }
         catch (Exception ex)
         {
             App.Log($"Error taking photo: {ex.Message}");
             await MauiProgram.DisplayAlertAsync("Error", "Failed to take photo", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PickPhoto()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+
+            // Generate a temporary observation ID for the photo
+            var tempObservationId = Guid.NewGuid();
+            
+            var photo = await PhotoService.PickPhotoAsync(tempObservationId, "Observation photo");
+            if (photo != null)
+            {
+                Photos.Add(photo);
+                HasPhotos = Photos.Count > 0;
+                App.Log($"Photo picked and added: {photo.OriginalFileName} ({photo.FileSizeDisplay})");
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log($"Error picking photo: {ex.Message}");
+            await MauiProgram.DisplayAlertAsync("Error", "Failed to pick photo", "OK");
         }
         finally
         {
