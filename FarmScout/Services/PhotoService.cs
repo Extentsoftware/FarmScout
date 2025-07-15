@@ -86,8 +86,8 @@ namespace FarmScout.Services
                 }
 
                 // Process and compress the image
-                var processedBytes = await ProcessImageAsync(originalBytes, imageInfo.Value);
-                if (processedBytes == null)
+                var processedResult = await ProcessImageAsync(originalBytes, imageInfo.Value);
+                if (processedResult == null)
                 {
                     App.Log("Failed to process image");
                     return null;
@@ -97,12 +97,12 @@ namespace FarmScout.Services
                 var observationPhoto = new ObservationPhoto
                 {
                     ObservationId = observationId,
-                    PhotoData = processedBytes,
+                    PhotoData = processedResult.Value.Bytes,
                     MimeType = "image/jpeg", // Always convert to JPEG for consistency
                     OriginalFileName = photo.FileName ?? "photo.jpg",
-                    FileSize = processedBytes.Length,
-                    Width = imageInfo.Value.Width,
-                    Height = imageInfo.Value.Height,
+                    FileSize = processedResult.Value.Bytes.Length,
+                    Width = processedResult.Value.Width,
+                    Height = processedResult.Value.Height,
                     Description = description,
                     Timestamp = DateTime.Now,
                     CreatedAt = DateTime.Now,
@@ -110,7 +110,7 @@ namespace FarmScout.Services
                     IsActive = true
                 };
 
-                App.Log($"Photo processed successfully: {processedBytes.Length} bytes, {imageInfo.Value.Width}x{imageInfo.Value.Height}");
+                App.Log($"Photo processed successfully: {processedResult.Value.Bytes.Length} bytes, {processedResult.Value.Width}x{processedResult.Value.Height}");
                 return observationPhoto;
             }
             catch (Exception ex)
@@ -145,7 +145,7 @@ namespace FarmScout.Services
         /// <summary>
         /// Processes and compresses an image
         /// </summary>
-        private static async Task<byte[]?> ProcessImageAsync(byte[] originalData, (int Width, int Height, string Format) imageInfo)
+        private static async Task<(byte[] Bytes, int Width, int Height)?> ProcessImageAsync(byte[] originalData, (int Width, int Height, string Format) imageInfo)
         {
             try
             {
@@ -157,9 +157,14 @@ namespace FarmScout.Services
 
                 // Resize if necessary
                 Microsoft.Maui.Graphics.IImage resizedImage = originalImage;
+                int finalWidth = imageInfo.Width;
+                int finalHeight = imageInfo.Height;
+                
                 if (imageInfo.Width > MaxPhotoWidth || imageInfo.Height > MaxPhotoHeight)
                 {
                     resizedImage = await ResizeImageAsync(originalImage, MaxPhotoWidth, MaxPhotoHeight);
+                    finalWidth = (int)resizedImage.Width;
+                    finalHeight = (int)resizedImage.Height;
                 }
 
                 // Convert to JPEG and compress
@@ -172,10 +177,15 @@ namespace FarmScout.Services
                 if (processedBytes.Length > MaxFileSizeBytes)
                 {
                     App.Log($"Image is still too large ({processedBytes.Length} bytes), attempting further compression");
-                    return await CompressImageFurtherAsync(processedBytes);
+                    var furtherCompressed = await CompressImageFurtherAsync(processedBytes);
+                    if (furtherCompressed != null)
+                    {
+                        return (furtherCompressed, finalWidth, finalHeight);
+                    }
+                    return null;
                 }
 
-                return processedBytes;
+                return (processedBytes, finalWidth, finalHeight);
             }
             catch (Exception ex)
             {
