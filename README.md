@@ -1,306 +1,260 @@
-# Generic PID Controller in C#
+# FarmScout - MAUI Mobile App
 
-A comprehensive, production-ready PID (Proportional-Integral-Derivative) controller implementation in C# with advanced features for industrial control applications.
+A comprehensive mobile application for farm scouting observations, built with .NET MAUI for Android.
 
 ## Features
 
-### 🎯 **Core PID Control**
-- **Proportional (P)**: Responds to current error
-- **Integral (I)**: Eliminates steady-state error
-- **Derivative (D)**: Provides damping and stability
-- **Thread-safe** implementation with proper locking
+### 🌱 Core Functionality
+- **Record Observations**: Capture disease/issue descriptions and soil moisture levels
+- **Camera Integration**: Take photos of affected areas
+- **GPS Location**: Automatically record the location of each observation
+- **Task Management**: Create and track tasks resulting from observations
+- **Offline Support**: All data is stored locally using SQLite database
+- **Dashboard**: Overview of farm activities and recent observations
+- **Observations**: Record and track farm observations with photos and location data
+- **Tasks**: Manage farm tasks and track completion status
+- **Lookup Tables**: Comprehensive reference system for farm-related data
 
-### 🛡️ **Advanced Features**
-- **Anti-windup protection** for integral term
-- **Output limiting** with configurable min/max values
-- **Derivative filtering** to reduce noise sensitivity
-- **Deadband** to prevent hunting around setpoint
-- **Multiple operating modes** (Manual, Automatic, Cascade)
-- **Direct/Reverse action** support
+### 📱 User Interface
+- **Dashboard**: Overview of observations and tasks with quick action buttons
+- **Add Observation**: Comprehensive form with camera and GPS integration
+- **Observations List**: View all recorded observations with photos and details
+- **Tasks List**: Manage tasks with completion status tracking
+- **Observation Details**: Full view of individual observations with associated tasks
 
-### 📊 **Monitoring & Events**
-- **Real-time statistics** and status monitoring
-- **Event-driven architecture** for output and status changes
-- **Comprehensive tuning parameter management**
-- **Performance metrics** and debugging information
+### 🔧 Technical Features
+- **Local Database**: SQLite for offline data storage
+- **Camera Access**: Built-in camera integration for photo capture
+- **GPS Services**: Location services for precise field mapping
+- **Modern UI**: Clean, intuitive interface with material design principles
+- **Cross-Platform**: Built with .NET MAUI for Android compatibility
 
-### 🔧 **Tuning Utilities**
-- **Ziegler-Nichols** tuning method
-- **Cohen-Coon** tuning method
-- **Auto-tuning** capabilities
-- **Parameter validation** and optimization
+### Virtual Scrolling on Observations Page
 
-## Quick Start
+The Observations page now implements virtual scrolling for improved performance:
 
-### Basic Usage
+- **Initial Load**: Only loads the 10 most recent observations when the page first appears
+- **Progressive Loading**: Automatically loads more observations as the user scrolls down
+- **Loading Indicator**: Shows a loading spinner when fetching more observations
+- **Total Count**: Displays the total number of observations in the header
+- **Pull to Refresh**: Resets the list and reloads from the beginning
 
-```csharp
-using ControlSystems;
+#### Technical Implementation
 
-// Create a PID controller
-var controller = new PIDController(kp: 2.0, ki: 0.5, kd: 0.1);
+- Uses `CollectionView` with `RemainingItemsThreshold="3"` to trigger loading when user approaches the end
+- Database queries use `Skip()` and `Take()` for efficient pagination
+- Observations are ordered by timestamp (newest first) for optimal user experience
+- Loading states are properly managed to prevent duplicate requests
 
-// Set target value
-controller.Setpoint = 100.0;
+#### Performance Benefits
 
-// Configure limits
-controller.SetOutputLimits(0, 100);
+- Faster initial page load with large datasets
+- Reduced memory usage by not loading all observations at once
+- Smooth scrolling experience even with thousands of observations
+- Efficient database queries with pagination
 
-// Compute control output
-double processVariable = 50.0;
-double output = controller.Compute(processVariable);
+## Getting Started
+
+### Prerequisites
+- .NET 9.0 SDK
+- Visual Studio 2022 or Visual Studio Code
+- Android SDK (for Android deployment)
+- Android device or emulator
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd FarmScout
+   ```
+
+2. **Install MAUI workloads**
+   ```bash
+   dotnet workload install maui-android
+   ```
+
+3. **Restore dependencies**
+   ```bash
+   dotnet restore FarmScout/FarmScout.csproj
+   ```
+
+### Running the App
+
+#### On Windows (for testing)
+```bash
+dotnet build FarmScout/FarmScout.csproj -t:Run -f net9.0-windows10.0.19041.0
 ```
 
-### Temperature Control Example
+#### On Android
+1. Connect an Android device or start an emulator
+2. Run the app:
+   ```bash
+   dotnet build FarmScout/FarmScout.csproj -t:Run -f net9.0-android
+   ```
 
-```csharp
-// Temperature control system
-var tempController = new PIDController(kp: 2.0, ki: 0.5, kd: 0.1, sampleTime: 0.1);
-tempController.Setpoint = 75.0; // Target 75°C
-tempController.SetOutputLimits(0, 100); // Heater 0-100%
-tempController.IntegralWindupLimit = 50.0; // Prevent windup
-
-// Control loop
-while (true)
-{
-    double currentTemp = ReadTemperature(); // Get sensor reading
-    double heaterOutput = tempController.Compute(currentTemp);
-    SetHeater(heaterOutput); // Apply to actuator
-    Thread.Sleep(100); // 100ms cycle
-}
+### Building for Release
+```bash
+dotnet build FarmScout/FarmScout.csproj -c Release -f net9.0-android
 ```
 
-### Motor Speed Control Example
+## Project Structure
 
-```csharp
-// Motor speed control
-var motorController = new PIDController(kp: 1.5, ki: 0.3, kd: 0.05, sampleTime: 0.05);
-motorController.Setpoint = 1000.0; // Target 1000 RPM
-motorController.SetOutputLimits(-12, 12); // Voltage range
-motorController.DerivativeFilterCoefficient = 0.2; // Filter noise
-
-// Control loop
-while (true)
-{
-    double currentSpeed = ReadMotorSpeed();
-    double voltage = motorController.Compute(currentSpeed);
-    SetMotorVoltage(voltage);
-    Thread.Sleep(50); // 50ms cycle
-}
+```
+FarmScout/
+├── Models/
+│   ├── Observation.cs          # Data model for farm observations
+│   └── TaskItem.cs             # Data model for tasks
+├── Services/
+│   ├── FarmScoutDatabase.cs    # SQLite database operations
+│   ├── PhotoService.cs         # Camera/photo capture service
+│   └── LocationService.cs      # GPS location service
+├── Views/
+│   ├── DashboardPage.xaml      # Main dashboard
+│   ├── ObservationsPage.xaml   # List all observations
+│   ├── TasksPage.xaml          # Manage tasks
+├── Platforms/
+│   └── Android/
+│       └── AndroidManifest.xml # Android permissions
+└── MauiProgram.cs              # App configuration and DI
 ```
 
-## Advanced Configuration
+## Permissions
 
-### Anti-Windup Protection
+The app requires the following Android permissions:
+- `CAMERA`: For taking photos of observations
+- `ACCESS_FINE_LOCATION`: For precise GPS location
+- `ACCESS_COARSE_LOCATION`: For approximate location
+- `INTERNET`: For future sync functionality
+- `ACCESS_NETWORK_STATE`: For network status checking
 
-```csharp
-// Prevent integral windup when output is saturated
-controller.IntegralWindupLimit = 25.0; // Limit integral term
-```
+## Database Schema
 
-### Derivative Filtering
+### Observation Table
+- `Id` (Primary Key, GUID): Unique identifier for the observation
+- `Disease` (Text): Description of disease or issue
+- `SoilMoisture` (Real): Soil moisture percentage
+- `PhotoPath` (Text): Path to captured photo
+- `Latitude` (Real): GPS latitude
+- `Longitude` (Real): GPS longitude
+- `Timestamp` (DateTime): When observation was recorded
+- `FarmLocationId` (GUID, Nullable): Foreign key to FarmLocation
 
-```csharp
-// Filter derivative term to reduce noise sensitivity
-controller.DerivativeFilterCoefficient = 0.3; // 0 = no filtering, 1 = no filtering
-```
+### TaskItem Table
+- `Id` (Primary Key, GUID): Unique identifier for the task
+- `ObservationId` (GUID): Foreign key to Observation
+- `Description` (Text): Task description
+- `IsCompleted` (Boolean): Task completion status
 
-### Deadband Configuration
+### ObservationPhoto Table
+- `Id` (Primary Key, GUID): Unique identifier for the photo
+- `ObservationId` (GUID): Foreign key to Observation
+- `PhotoPath` (Text): Path to the photo file
+- `Description` (Text): Photo description
+- `Timestamp` (DateTime): When photo was taken
 
-```csharp
-// Ignore small errors around setpoint
-controller.Deadband = 0.5; // ±0.5 unit deadband
-```
+### ObservationLocation Table
+- `Id` (Primary Key, GUID): Unique identifier for the location
+- `ObservationId` (GUID): Foreign key to Observation
+- `Latitude` (Real): GPS latitude
+- `Longitude` (Real): GPS longitude
+- `Description` (Text): Location description
+- `Timestamp` (DateTime): When location was recorded
 
-### Mode Switching
+### FarmLocation Table
+- `Id` (Primary Key, GUID): Unique identifier for the farm location
+- `Name` (Text): Name of the farm location
+- `Description` (Text): Description of the location
+- `Geometry` (Text): WKT geometry representation
+- `FieldType` (Text): Type of field (e.g., Corn, Soybeans)
+- `Area` (Real): Area in acres or hectares
+- `Owner` (Text): Owner of the field
+- `LastUpdated` (DateTime): Last update timestamp
 
-```csharp
-// Manual mode
-controller.SetManual(25.0); // Set manual output
+### LookupItem Table
+- `Id` (Primary Key, GUID): Unique identifier for the lookup item
+- `Name` (Text): Name of the item
+- `Group` (Text): Category group
+- `SubGroup` (Text): Sub-category
+- `Description` (Text): Item description
+- `CreatedAt` (DateTime): Creation timestamp
+- `UpdatedAt` (DateTime): Last update timestamp
+- `IsActive` (Boolean): Whether the item is active
 
-// Automatic mode
-controller.SetAutomatic(); // Return to automatic control
-```
+### Lookup Tables System
 
-## Tuning Methods
+The lookup tables feature provides a centralized reference system for various farm-related data categories:
 
-### Ziegler-Nichols Tuning
+#### Supported Categories
+- **Crop Types**: Corn, Soybeans, Wheat, Cotton, Rice, etc.
+- **Diseases**: Rust, Blight, Mildew, Root Rot, Leaf Spot, etc.
+- **Pests**: Aphids, Corn Borer, Spider Mites, Cutworms, etc.
+- **Chemicals**: Glyphosate, Atrazine, 2,4-D, Paraquat, Dicamba, etc.
+- **Fertilizers**: Urea, Ammonium Nitrate, Triple Superphosphate, etc.
+- **Soil Types**: Clay, Silt, Sandy, Loam, Peat, etc.
+- **Weather Conditions**: Sunny, Cloudy, Rainy, Windy, Foggy, etc.
+- **Growth Stages**: Germination, Vegetative, Flowering, Fruiting, Maturity
+- **Damage Types**: Hail Damage, Wind Damage, Drought Stress, etc.
+- **Treatment Methods**: Chemical Treatment, Biological Control, etc.
 
-```csharp
-using PIDControllerExamples;
+#### Features
+- **Add/Edit Items**: Users can add new items or edit existing ones
+- **Search & Filter**: Search by name or description, filter by category
+- **Data Validation**: Prevents duplicate entries within the same category
+- **Soft Delete**: Items are marked as inactive rather than permanently deleted
+- **Initial Data**: Comes pre-populated with common farm-related items
 
-// Find ultimate gain (Ku) and period (Tu) through testing
-double ku = 10.0; // Ultimate gain
-double tu = 2.0;  // Ultimate period
+#### Usage
+1. Navigate to "📚 Lookup Tables" from the main menu
+2. Use the search bar to find specific items
+3. Use the group filter to view items by category
+4. Click "Add New Item" to create new entries
+5. Use Edit/Delete buttons to modify existing items
 
-// Get tuning parameters
-var parameters = PIDTuningUtils.ZieglerNichols(ku, tu, ZNTuningType.PID);
-controller.SetTuningParameters(parameters);
-```
+## Usage Guide
 
-### Cohen-Coon Tuning
+### Adding an Observation
+1. Open the app and tap "➕ Add New Observation"
+2. Enter the disease or issue description
+3. Adjust soil moisture using the slider
+4. Tap "📷 Take Photo" to capture an image
+5. Tap "📍 Get Current Location" to record GPS coordinates
+6. Add any tasks that need to be completed
+7. Tap "💾 Save Observation"
 
-```csharp
-// Process characteristics
-double k = 2.0;    // Process gain
-double tau = 5.0;  // Time constant
-double theta = 1.0; // Dead time
+### Viewing Observations
+1. From the dashboard, tap "📋 View Observations"
+2. Browse through all recorded observations
+3. Tap the eye icon to view full details
+4. Tap the X icon to delete an observation
 
-// Get tuning parameters
-var parameters = PIDTuningUtils.CohenCoon(k, tau, theta, CCTuningType.PID);
-controller.SetTuningParameters(parameters);
-```
+### Managing Tasks
+1. From the dashboard, tap "✅ View Tasks"
+2. Check/uncheck tasks to mark them complete
+3. Tap the X icon to delete tasks
+4. Tasks show which observation they're associated with
 
-## Event Handling
+## Future Enhancements
 
-### Output Change Events
-
-```csharp
-controller.OutputChanged += (sender, e) =>
-{
-    Console.WriteLine($"Output changed to: {e.Output:F2}");
-    // Log changes, update displays, etc.
-};
-```
-
-### Status Change Events
-
-```csharp
-controller.StatusChanged += (sender, e) =>
-{
-    Console.WriteLine($"Controller status: {e.Status}");
-    // Handle mode changes, errors, etc.
-};
-```
-
-## Monitoring and Diagnostics
-
-### Get Controller Statistics
-
-```csharp
-var stats = controller.GetStatistics();
-Console.WriteLine($"Error: {stats.CurrentError:F2}");
-Console.WriteLine($"Output: {stats.CurrentOutput:F2}");
-Console.WriteLine($"P Term: {stats.ProportionalTerm:F2}");
-Console.WriteLine($"I Term: {stats.IntegralTerm:F2}");
-Console.WriteLine($"D Term: {stats.DerivativeTerm:F2}");
-```
-
-### Get Tuning Parameters
-
-```csharp
-var params = controller.GetTuningParameters();
-Console.WriteLine($"Kp: {params.Kp:F2}");
-Console.WriteLine($"Ki: {params.Ki:F2}");
-Console.WriteLine($"Kd: {params.Kd:F2}");
-```
-
-## Performance Considerations
-
-### Thread Safety
-- All public methods are thread-safe
-- Uses proper locking for concurrent access
-- Safe for multi-threaded applications
-
-### Memory Usage
-- Minimal memory footprint
-- No memory allocations during normal operation
-- Efficient event handling
-
-### Timing
-- Configurable sample time
-- Automatic time-based calculations
-- Support for both fixed and variable sample times
-
-## Best Practices
-
-### 1. **Proper Tuning**
-- Start with P-only control
-- Add I term to eliminate steady-state error
-- Add D term for stability if needed
-- Use anti-windup for systems with output limits
-
-### 2. **Sample Time Selection**
-- Sample time should be 10-20x faster than process dynamics
-- Too fast: computational overhead
-- Too slow: poor control performance
-
-### 3. **Output Limiting**
-- Always set appropriate output limits
-- Use anti-windup when limits are active
-- Consider actuator saturation
-
-### 4. **Noise Handling**
-- Use derivative filtering for noisy signals
-- Consider deadband for stable systems
-- Filter process variable if necessary
-
-### 5. **Mode Management**
-- Implement proper manual/automatic switching
-- Handle bumpless transfer between modes
-- Monitor controller status
-
-## Common Applications
-
-### Industrial Control
-- Temperature control systems
-- Pressure control
-- Flow control
-- Level control
-- Speed control
-
-### Motion Control
-- Position control
-- Velocity control
-- Torque control
-- Servo systems
-
-### Process Control
-- Chemical processes
-- HVAC systems
-- Water treatment
-- Power generation
-
-### Robotics
-- Joint position control
-- End-effector control
-- Force control
-- Trajectory following
-
-## Troubleshooting
-
-### Oscillations
-- Reduce proportional gain (Kp)
-- Increase derivative gain (Kd)
-- Check for noise in process variable
-
-### Slow Response
-- Increase proportional gain (Kp)
-- Increase integral gain (Ki)
-- Check sample time
-
-### Steady-State Error
-- Increase integral gain (Ki)
-- Check for output limits
-- Verify controller action (Direct/Reverse)
-
-### Overshoot
-- Reduce proportional gain (Kp)
-- Increase derivative gain (Kd)
-- Use setpoint weighting if available
-
-## License
-
-This PID controller implementation is provided as-is for educational and commercial use. No warranty is provided.
+- **Cloud Sync**: Upload observations to cloud storage when online
+- **Offline Maps**: Download field maps for offline use
+- **Data Export**: Export observations to CSV or PDF
+- **Push Notifications**: Reminders for incomplete tasks
+- **Field Boundaries**: Draw and save field boundaries
+- **Weather Integration**: Include weather data with observations
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## Version History
+## License
 
-- **v1.0**: Initial release with core PID functionality
-- **v1.1**: Added anti-windup and output limiting
-- **v1.2**: Added derivative filtering and deadband
-- **v1.3**: Added tuning utilities and examples
-- **v1.4**: Added event handling and monitoring 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For issues and questions, please create an issue in the repository or contact the development team. 
