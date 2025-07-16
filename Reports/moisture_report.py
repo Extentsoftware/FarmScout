@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 import numpy as np
+import base64
+from io import BytesIO
 
 def parse_date(date_str):
     """Parse date string to datetime object"""
@@ -21,8 +23,21 @@ def condition_to_numeric(condition):
     }
     return condition_map.get(condition.lower(), 0)
 
-def create_moisture_report():
-    """Create comprehensive report showing recent soil moisture conditions across sections"""
+def encode_image_to_base64(fig):
+    """Convert matplotlib figure to base64 encoded string for embedding in markdown"""
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+    buf.seek(0)
+    img_str = base64.b64encode(buf.getvalue()).decode()
+    buf.close()
+    return img_str
+
+def create_moisture_report(output_format='png'):
+    """Create comprehensive report showing recent soil moisture conditions across sections
+    
+    Args:
+        output_format (str): 'png', 'markdown', or 'all' for multiple outputs
+    """
     
     # Read the CSV file
     df = pd.read_csv('scout.csv')
@@ -168,14 +183,151 @@ def create_moisture_report():
     ax6.text(0.05, 0.95, analysis_text, transform=ax6.transAxes, fontsize=10,
              verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
     
-    # Save the report
-    plt.savefig('soil_moisture_report.png', dpi=300, bbox_inches='tight')
-    print("Soil Moisture Report saved as 'soil_moisture_report.png'")
+    # Generate outputs based on format
+    if output_format in ['png', 'all']:
+        # Save the report as PNG
+        plt.savefig('soil_moisture_report.png', dpi=300, bbox_inches='tight')
+        print("Soil Moisture Report saved as 'soil_moisture_report.png'")
+    
+    if output_format in ['markdown', 'all']:
+        # Generate markdown report with embedded graphics
+        generate_moisture_markdown_report(moisture_df, latest_moisture, fig)
     
     # Generate text report
     generate_moisture_text_report(moisture_df, latest_moisture)
     
-    plt.show()
+    if output_format == 'png':
+        plt.show()
+
+def generate_moisture_markdown_report(moisture_df, latest_moisture, fig):
+    """Generate a detailed markdown report with embedded graphics for soil moisture"""
+    
+    # Encode the figure to base64 for embedding
+    img_base64 = encode_image_to_base64(fig)
+    
+    report = []
+    report.append("# Soil Moisture Condition Report")
+    report.append("")
+    report.append(f"**Report Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  ")
+    report.append(f"**Data Range:** {moisture_df['date'].min().strftime('%Y-%m-%d')} to {moisture_df['date'].max().strftime('%Y-%m-%d')}  ")
+    report.append(f"**Total Moisture Observations:** {len(moisture_df)}  ")
+    report.append("")
+    
+    # Embedded visualization
+    report.append("## 📊 Comprehensive Moisture Analysis Dashboard")
+    report.append("")
+    report.append(f"![Soil Moisture Dashboard](data:image/png;base64,{img_base64})")
+    report.append("")
+    
+    # Summary Statistics
+    report.append("## 📈 Summary Statistics")
+    report.append("")
+    report.append(f"- **Total Sections Monitored:** {latest_moisture['section'].nunique()}")
+    report.append(f"- **Date Range:** {moisture_df['date'].min().strftime('%Y-%m-%d')} to {moisture_df['date'].max().strftime('%Y-%m-%d')}")
+    report.append(f"- **Total Observations:** {len(moisture_df)}")
+    report.append("")
+    
+    # Section Moisture Rankings
+    report.append("## 🏆 Section Moisture Rankings (Current)")
+    report.append("")
+    section_scores = latest_moisture.groupby('section')['condition_numeric'].first().sort_values(ascending=False)
+    
+    report.append("| Rank | Section | Score | Status |")
+    report.append("|------|---------|-------|--------|")
+    for i, (section, score) in enumerate(section_scores.items(), 1):
+        status = "🟢 GOOD" if score >= 2.5 else "🟡 FAIR" if score >= 1.5 else "🔴 POOR"
+        report.append(f"| {i} | {section} | {score:.1f} | {status} |")
+    report.append("")
+    
+    # Moisture Condition Distribution
+    report.append("## 📊 Moisture Condition Distribution")
+    report.append("")
+    condition_counts = latest_moisture['condition'].value_counts()
+    for condition, count in condition_counts.items():
+        percentage = (count / len(latest_moisture)) * 100
+        report.append(f"- **{condition}:** {count} sections ({percentage:.1f}%)")
+    report.append("")
+    
+    # Moisture Issues and Notes
+    report.append("## ⚠️ Moisture Issues and Notes")
+    report.append("")
+    moisture_issues = latest_moisture[latest_moisture['notes'].notna() & (latest_moisture['notes'] != '')]
+    if not moisture_issues.empty:
+        for _, row in moisture_issues.iterrows():
+            status_icon = "🔴" if row['condition'].lower() == 'fail' else "🟡" if row['condition'].lower() == 'partial' else "🟢"
+            report.append(f"### {status_icon} {row['section']}")
+            report.append(f"- **Condition:** {row['condition']}")
+            report.append(f"- **Note:** {row['notes']}")
+            report.append(f"- **Date:** {row['date'].strftime('%Y-%m-%d')}")
+            report.append("")
+    else:
+        report.append("✅ **No moisture issues with notes found.**")
+    report.append("")
+    
+    # Detailed Section Analysis
+    report.append("## 🔍 Detailed Section Moisture Analysis")
+    report.append("")
+    for section in sorted(latest_moisture['section'].unique()):
+        section_data = latest_moisture[latest_moisture['section'] == section]
+        moisture_score = section_data['condition_numeric'].iloc[0]
+        moisture_condition = section_data['condition'].iloc[0]
+        moisture_date = section_data['date'].iloc[0]
+        
+        status = "🟢 GOOD" if moisture_score >= 2.5 else "🟡 FAIR" if moisture_score >= 1.5 else "🔴 POOR"
+        report.append(f"### {section}")
+        report.append(f"- **Status:** {status} (Score: {moisture_score:.1f})")
+        report.append(f"- **Condition:** {moisture_condition}")
+        report.append(f"- **Last Updated:** {moisture_date.strftime('%Y-%m-%d')}")
+        
+        if pd.notna(section_data['notes'].iloc[0]) and str(section_data['notes'].iloc[0]).strip():
+            report.append(f"- **Note:** {section_data['notes'].iloc[0]}")
+        
+        report.append("")
+    
+    # Key Insights
+    report.append("## 💡 Key Insights")
+    report.append("")
+    
+    # Calculate insights
+    good_sections = len(latest_moisture[latest_moisture['condition_numeric'] >= 2.5])
+    fair_sections = len(latest_moisture[latest_moisture['condition_numeric'] >= 1.5]) - good_sections
+    poor_sections = len(latest_moisture) - good_sections - fair_sections
+    
+    report.append(f"- **Good Condition:** {good_sections} sections ({good_sections/len(latest_moisture)*100:.1f}%)")
+    report.append(f"- **Fair Condition:** {fair_sections} sections ({fair_sections/len(latest_moisture)*100:.1f}%)")
+    report.append(f"- **Poor Condition:** {poor_sections} sections ({poor_sections/len(latest_moisture)*100:.1f}%)")
+    report.append("")
+    
+    # Recommendations
+    report.append("## 🎯 Recommendations")
+    report.append("")
+    if poor_sections > 0:
+        report.append("🔴 **Immediate Action Required:**")
+        report.append("- Investigate sections with poor moisture conditions")
+        report.append("- Consider irrigation or drainage improvements")
+        report.append("- Monitor these sections more frequently")
+        report.append("")
+    
+    if fair_sections > 0:
+        report.append("🟡 **Monitor Closely:**")
+        report.append("- Keep track of sections with fair moisture conditions")
+        report.append("- Prepare intervention plans if conditions worsen")
+        report.append("")
+    
+    if good_sections > 0:
+        report.append("🟢 **Maintain Standards:**")
+        report.append("- Continue current management practices for good sections")
+        report.append("- Use as benchmarks for improvement in other sections")
+        report.append("")
+    
+    report.append("---")
+    report.append(f"*Report generated on {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')}*")
+    
+    # Save markdown report
+    with open('soil_moisture_report.md', 'w', encoding='utf-8') as f:
+        f.write('\n'.join(report))
+    
+    print("Markdown report saved as 'soil_moisture_report.md'")
 
 def generate_moisture_text_report(moisture_df, latest_moisture):
     """Generate a detailed text report for soil moisture"""
@@ -258,4 +410,18 @@ def generate_moisture_text_report(moisture_df, latest_moisture):
     print("\nText report saved as 'soil_moisture_report.txt'")
 
 if __name__ == "__main__":
-    create_moisture_report() 
+    import sys
+    
+    # Check command line arguments for output format
+    output_format = 'png'  # default
+    if len(sys.argv) > 1:
+        output_format = sys.argv[1].lower()
+        if output_format not in ['png', 'markdown', 'all']:
+            print("Usage: python moisture_report.py [png|markdown|all]")
+            print("  png: Generate PNG image only")
+            print("  markdown: Generate markdown report with embedded graphics")
+            print("  all: Generate both PNG and markdown")
+            sys.exit(1)
+    
+    print(f"Generating moisture report in {output_format} format...")
+    create_moisture_report(output_format) 
