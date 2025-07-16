@@ -93,6 +93,18 @@ namespace FarmScout.Services
                 // Seed initial observation types and data points
                 await SeedObservationTypesAsync();
 
+
+                // Create report groups table
+                await _database.CreateTableAsync<ReportGroup>();
+                App.Log("ReportGroup table created successfully");
+
+                // Create markdown reports table
+                await _database.CreateTableAsync<MarkdownReport>();
+                App.Log("MarkdownReport table created successfully");
+        
+                // Seed initial report groups
+                await SeedReportGroupsAsync();
+
                 App.Log("Database initialization completed successfully");
 
                 // Log the number of observations in the database
@@ -1180,6 +1192,300 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error seeding data points: {ex.Message}");
+                // Don't throw - seeding failure shouldn't prevent app startup
+            }
+        }
+
+        // MarkdownReport CRUD
+        public async Task<int> AddMarkdownReportAsync(MarkdownReport report)
+        {
+            try
+            {
+                report.CreatedAt = DateTime.Now;
+                report.UpdatedAt = DateTime.Now;
+                var result = await _database.InsertAsync(report);
+                App.Log($"MarkdownReport added with ID: {report.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error adding markdown report: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateMarkdownReportAsync(MarkdownReport report)
+        {
+            try
+            {
+                report.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(report);
+                App.Log($"MarkdownReport updated with ID: {report.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error updating markdown report: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteMarkdownReportAsync(MarkdownReport report)
+        {
+            try
+            {
+                var result = await _database.DeleteAsync(report);
+                App.Log($"MarkdownReport deleted with ID: {report.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error deleting markdown report: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<MarkdownReport>> GetMarkdownReportsAsync()
+        {
+            try
+            {
+                var reports = await _database.Table<MarkdownReport>()
+                    .Where(r => r.IsActive)
+                    .OrderByDescending(r => r.DateProduced)
+                    .ToListAsync();
+                App.Log($"Retrieved {reports.Count} markdown reports from database");
+                return reports;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving markdown reports: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<MarkdownReport>> GetMarkdownReportsByGroupAsync(Guid reportGroupId)
+        {
+            try
+            {
+                var reports = await _database.Table<MarkdownReport>()
+                    .Where(r => r.ReportGroupId == reportGroupId && r.IsActive)
+                    .OrderByDescending(r => r.DateProduced)
+                    .ToListAsync();
+                App.Log($"Retrieved {reports.Count} markdown reports for group ID '{reportGroupId}'");
+                return reports;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving markdown reports by group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<MarkdownReport>> GetMarkdownReportsAsync(int skip, int take)
+        {
+            try
+            {
+                var reports = await _database.Table<MarkdownReport>()
+                    .Where(r => r.IsActive)
+                    .OrderByDescending(r => r.DateProduced)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync();
+                App.Log($"Retrieved {reports.Count} markdown reports (skip={skip}, take={take})");
+                return reports;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving markdown reports with pagination: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> GetMarkdownReportsCountAsync()
+        {
+            try
+            {
+                var count = await _database.Table<MarkdownReport>()
+                    .Where(r => r.IsActive)
+                    .CountAsync();
+                App.Log($"Total markdown reports count: {count}");
+                return count;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error getting markdown reports count: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<MarkdownReport?> GetMarkdownReportByIdAsync(Guid id)
+        {
+            try
+            {
+                var report = await _database.Table<MarkdownReport>()
+                    .Where(r => r.Id == id && r.IsActive)
+                    .FirstOrDefaultAsync();
+                return report;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving markdown report by ID: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<MarkdownReport>> SearchMarkdownReportsAsync(string searchTerm)
+        {
+            try
+            {
+                var reports = await _database.Table<MarkdownReport>()
+                    .Where(r => r.IsActive && 
+                               (r.Title.Contains(searchTerm) || r.ReportMarkdown.Contains(searchTerm)))
+                    .OrderByDescending(r => r.DateProduced)
+                    .ToListAsync();
+                App.Log($"Found {reports.Count} markdown reports matching '{searchTerm}'");
+                return reports;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error searching markdown reports: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ReportGroup CRUD
+        public async Task<int> AddReportGroupAsync(ReportGroup group)
+        {
+            try
+            {
+                group.CreatedAt = DateTime.Now;
+                group.UpdatedAt = DateTime.Now;
+                var result = await _database.InsertAsync(group);
+                App.Log($"ReportGroup added with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error adding report group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateReportGroupAsync(ReportGroup group)
+        {
+            try
+            {
+                group.UpdatedAt = DateTime.Now;
+                var result = await _database.UpdateAsync(group);
+                App.Log($"ReportGroup updated with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error updating report group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteReportGroupAsync(ReportGroup group)
+        {
+            try
+            {
+                var result = await _database.DeleteAsync(group);
+                App.Log($"ReportGroup deleted with ID: {group.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error deleting report group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<ReportGroup>> GetReportGroupsAsync()
+        {
+            try
+            {
+                var groups = await _database.Table<ReportGroup>()
+                    .Where(g => g.IsActive)
+                    .OrderBy(g => g.SortOrder)
+                    .ThenBy(g => g.Name)
+                    .ToListAsync();
+                App.Log($"Retrieved {groups.Count} report groups from database");
+                return groups;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving report groups: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ReportGroup?> GetReportGroupByIdAsync(Guid id)
+        {
+            try
+            {
+                var group = await _database.Table<ReportGroup>()
+                    .Where(g => g.Id == id && g.IsActive)
+                    .FirstOrDefaultAsync();
+                return group;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving report group by ID: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ReportGroup?> GetReportGroupByNameAsync(string name)
+        {
+            try
+            {
+                var group = await _database.Table<ReportGroup>()
+                    .Where(g => g.Name.ToLower() == name.ToLower() && g.IsActive)
+                    .FirstOrDefaultAsync();
+                return group;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving report group by name: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task SeedReportGroupsAsync()
+        {
+            try
+            {
+                // Check if report groups already exist
+                var existingGroupsCount = await _database.Table<ReportGroup>().CountAsync();
+                if (existingGroupsCount > 0)
+                {
+                    App.Log($"Report groups already exist ({existingGroupsCount} groups), skipping seed");
+                    return;
+                }
+
+                App.Log("Seeding report groups with initial data...");
+
+                var groups = new List<ReportGroup>
+                {
+                    new() { Name = "Moisture Reports", Description = "Soil moisture analysis and monitoring reports", Icon = "💧", Color = "#00BCD4", SortOrder = 1 },
+                    new() { Name = "Scout Reports", Description = "Overall section health and condition reports", Icon = "🏥", Color = "#4CAF50", SortOrder = 2 },
+                    new() { Name = "Harvest Reports", Description = "Harvest yield and quality analysis", Icon = "🌾", Color = "#FFC107", SortOrder = 3 },
+                    new() { Name = "Warehouse Reports", Description = "Warehouse stock reports ", Icon = "🌤️", Color = "#2196F3", SortOrder = 4 },
+                    new() { Name = "Vehicle Reports", Description = "Vehicle fuel and service reports", Icon = "🐛", Color = "#FF9800", SortOrder = 5 },
+                };
+
+                foreach (var group in groups)
+                {
+                    await AddReportGroupAsync(group);
+                }
+
+                App.Log($"Successfully seeded {groups.Count} report groups");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding report groups: {ex.Message}");
                 // Don't throw - seeding failure shouldn't prevent app startup
             }
         }
