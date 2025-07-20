@@ -1,6 +1,7 @@
 using SQLite;
 using FarmScout.Models;
 using System.Text.Json;
+using System.Globalization;
 
 namespace FarmScout.Services
 {
@@ -104,6 +105,9 @@ namespace FarmScout.Services
         
                 // Seed initial report groups
                 await SeedReportGroupsAsync();
+
+                // Seed observations from CSV file
+                await SeedObservationsFromCsvAsync();
 
                 App.Log("Database initialization completed successfully");
 
@@ -220,6 +224,103 @@ namespace FarmScout.Services
             _database.Table<ObservationLocation>().Where(l => l.ObservationId == observationId).ToListAsync();
         public Task<int> UpdateLocationAsync(ObservationLocation location) => _database.UpdateAsync(location);
         public Task<int> DeleteLocationAsync(ObservationLocation location) => _database.DeleteAsync(location);
+
+        // FarmLocation CRUD
+        public async Task<int> AddFarmLocationAsync(FarmLocation farmLocation)
+        {
+            try
+            {
+                farmLocation.LastUpdated = DateTime.Now;
+                var result = await _database.InsertAsync(farmLocation);
+                App.Log($"FarmLocation added with ID: {farmLocation.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error adding farm location: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<FarmLocation>> GetFarmLocationsAsync()
+        {
+            try
+            {
+                var locations = await _database.Table<FarmLocation>()
+                    .OrderBy(l => l.Name)
+                    .ToListAsync();
+                App.Log($"Retrieved {locations.Count} farm locations from database");
+                return locations;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving farm locations: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<FarmLocation?> GetFarmLocationByIdAsync(Guid id)
+        {
+            try
+            {
+                var location = await _database.Table<FarmLocation>()
+                    .Where(l => l.Id == id)
+                    .FirstOrDefaultAsync();
+                return location;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving farm location by ID: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<FarmLocation?> GetFarmLocationByNameAsync(string name)
+        {
+            try
+            {
+                var location = await _database.Table<FarmLocation>()
+                    .Where(l => l.Name == name)
+                    .FirstOrDefaultAsync();
+                return location;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving farm location by name: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateFarmLocationAsync(FarmLocation farmLocation)
+        {
+            try
+            {
+                farmLocation.LastUpdated = DateTime.Now;
+                var result = await _database.UpdateAsync(farmLocation);
+                App.Log($"FarmLocation updated with ID: {farmLocation.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error updating farm location: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> DeleteFarmLocationAsync(FarmLocation farmLocation)
+        {
+            try
+            {
+                var result = await _database.DeleteAsync(farmLocation);
+                App.Log($"FarmLocation deleted with ID: {farmLocation.Id}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error deleting farm location: {ex.Message}");
+                throw;
+            }
+        }
 
         // LookupItem CRUD
         public async Task<int> AddLookupItemAsync(LookupItem item)
@@ -1488,6 +1589,286 @@ namespace FarmScout.Services
                 App.Log($"Error seeding report groups: {ex.Message}");
                 // Don't throw - seeding failure shouldn't prevent app startup
             }
+        }
+
+        private async Task SeedObservationsFromCsvAsync()
+        {
+            try
+            {
+                // Check if observations already exist
+                var existingCount = await _database.Table<Observation>().CountAsync();
+                if (existingCount > 0)
+                {
+                    App.Log($"Database already has {existingCount} observations, skipping CSV seed");
+                    return;
+                }
+
+                App.Log("Starting CSV seeding process...");
+
+                // Get the path to scout.csv in the app bundle
+                var csvPath = await GetCsvFilePathAsync();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    App.Log("scout.csv not found, skipping CSV seed");
+                    return;
+                }
+
+                App.Log($"Reading CSV file from: {csvPath}");
+
+                // Read and parse CSV
+                var observations = await ParseCsvFileAsync(csvPath);
+                if (observations.Count == 0)
+                {
+                    App.Log("No observations found in CSV file");
+                    return;
+                }
+
+                App.Log($"Found {observations.Count} observations in CSV file");
+
+                // Ensure farm locations exist for all sections
+                await EnsureFarmLocationsExistAsync(observations);
+
+                // Import observations
+                var importedCount = 0;
+                foreach (var observation in observations)
+                {
+                    try
+                    {
+                        await AddObservationAsync(observation);
+                        importedCount++;
+                        
+                        if (importedCount % 100 == 0)
+                        {
+                            App.Log($"Imported {importedCount} observations...");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Log($"Error importing observation {observation.Id}: {ex.Message}");
+                    }
+                }
+
+                App.Log($"Successfully imported {importedCount} observations from CSV");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error during CSV seeding: {ex.Message}");
+                App.Log($"Exception details: {ex}");
+                // Don't throw - seeding failure shouldn't prevent app startup
+            }
+        }
+
+        private async Task<string?> GetCsvFilePathAsync()
+        {
+            try
+            {
+                // Try to find scout.csv in the app bundle
+                var possiblePaths = new[]
+                {
+                    "scout.csv",
+                    "Reports/scout.csv",
+                    "Resources/scout.csv",
+                    "Assets/scout.csv"
+                };
+
+                foreach (var path in possiblePaths)
+                {
+                    if (File.Exists(path))
+                    {
+                        App.Log($"Found scout.csv at: {path}");
+                        return path;
+                    }
+                }
+
+                // Try to copy from app bundle to app data directory
+                var appDataPath = Path.Combine(FileSystem.AppDataDirectory, "scout.csv");
+                if (File.Exists(appDataPath))
+                {
+                    App.Log($"Found scout.csv in app data: {appDataPath}");
+                    return appDataPath;
+                }
+
+                App.Log("scout.csv not found in any expected location");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error finding CSV file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private async Task<List<Observation>> ParseCsvFileAsync(string csvPath)
+        {
+            var observations = new List<Observation>();
+
+            try
+            {
+                var lines = await File.ReadAllLinesAsync(csvPath);
+                
+                // Skip header line
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var line = lines[i].Trim();
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+
+                    var observation = ParseCsvLine(line, i);
+                    if (observation != null)
+                    {
+                        observations.Add(observation);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error parsing CSV file: {ex.Message}");
+            }
+
+            return observations;
+        }
+
+        private Observation? ParseCsvLine(string line, int lineNumber)
+        {
+            try
+            {
+                // Split by comma, but handle quoted fields
+                var fields = ParseCsvFields(line);
+                
+                if (fields.Length < 6)
+                {
+                    App.Log($"Line {lineNumber}: Invalid number of fields ({fields.Length})");
+                    return null;
+                }
+
+                // Parse fields
+                var id = Guid.NewGuid(); // Generate a new ID for the observation
+                var dateStr = fields[1];
+                var section = fields[2];
+                var metric = fields[3];
+                var condition = fields[4];
+                var notes = fields[5];
+
+                
+
+                // Parse date
+                if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                {
+                    App.Log($"Line {lineNumber}: Invalid date format: {dateStr}");
+                    return null;
+                }
+
+                // Map condition to severity
+                var severity = MapConditionToSeverity(condition);
+
+                // Create observation
+                var observation = new Observation
+                {
+                    Id = id,
+                    Summary = $"{metric} - {section}",
+                    Timestamp = date,
+                    Notes = notes,
+                    Severity = severity,
+                    Latitude = 0.0, // Default coordinates - could be enhanced with actual farm coordinates
+                    Longitude = 0.0,
+                    PhotoPath = string.Empty
+                };
+
+                return observation;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Line {lineNumber}: Error parsing line: {ex.Message}");
+                return null;
+            }
+        }
+
+        private string[] ParseCsvFields(string line)
+        {
+            var fields = new List<string>();
+            var currentField = "";
+            var inQuotes = false;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    fields.Add(currentField);
+                    currentField = "";
+                }
+                else
+                {
+                    currentField += c;
+                }
+            }
+
+            // Add the last field
+            fields.Add(currentField);
+
+            return fields.ToArray();
+        }
+
+        private string MapConditionToSeverity(string condition)
+        {
+            return condition.ToLower() switch
+            {
+                "pass" => "Information",
+                "partial" => "Warning",
+                "fail" => "Fail",
+                _ => "Information"
+            };
+        }
+
+        private async Task EnsureFarmLocationsExistAsync(List<Observation> observations)
+        {
+            try
+            {
+                // Get unique sections from observations
+                var sections = observations.Select(o => ExtractSectionFromSummary(o.Summary)).Distinct().ToList();
+
+                // Get existing farm locations
+                var existingLocations = await GetFarmLocationsAsync();
+                var existingSectionNames = existingLocations.Select(l => l.Name).ToHashSet();
+
+                // Create missing farm locations
+                foreach (var section in sections)
+                {
+                    if (!existingSectionNames.Contains(section))
+                    {
+                        var farmLocation = new FarmLocation
+                        {
+                            Name = section,
+                            Description = $"Farm section {section}",
+                            FieldType = "Macadamia",
+                            Area = 0.0, // Could be enhanced with actual area data
+                            Owner = "Farm Owner",
+                            Geometry = "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))" // Default geometry
+                        };
+
+                        await AddFarmLocationAsync(farmLocation);
+                        App.Log($"Created farm location for section: {section}");
+                    }
+                }
+
+                App.Log($"Ensured farm locations exist for {sections.Count} sections");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error ensuring farm locations exist: {ex.Message}");
+            }
+        }
+
+        private string ExtractSectionFromSummary(string summary)
+        {
+            // Summary format is "metric - section"
+            var parts = summary.Split(" - ");
+            return parts.Length > 1 ? parts[1] : summary;
         }
     }
 } 

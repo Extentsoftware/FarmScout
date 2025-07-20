@@ -1,0 +1,122 @@
+================================================================================
+SAMPLE OBSERVATIONS ANALYSIS REPORT
+================================================================================
+Report Generated: 2025-07-18 18:17:47
+Data Range: 2025-01-19 to 2025-07-17
+Total Observations: 200
+
+SUMMARY STATISTICS:
+----------------------------------------
+Total Observations: 200
+Unique Sections: 11
+Unique Metrics: 38
+MAUI Observation Types: 9
+
+CONDITION DISTRIBUTION:
+----------------------------------------
+• Pass: 116 (58.0%)
+• Partial: 64 (32.0%)
+• Fail: 20 (10.0%)
+
+SECTION DISTRIBUTION:
+----------------------------------------
+• B1S2: 26 (13.0%)
+• B2S1B: 25 (12.5%)
+• B2S2: 25 (12.5%)
+• B2S6: 19 (9.5%)
+• B2S5: 18 (9.0%)
+• B2S8: 17 (8.5%)
+• B2S3: 17 (8.5%)
+• B1S1: 15 (7.5%)
+• B2S1A: 14 (7.0%)
+• B2S7: 12 (6.0%)
+• B2S4: 12 (6.0%)
+
+MAUI OBSERVATION TYPES ANALYSIS:
+----------------------------------------
+
+Disease:
+  Total: 5 observations
+  • Pass: 4 (80.0%)
+  • Fail: 1 (20.0%)
+
+Dead Plant:
+  Total: 8 observations
+  • Pass: 7 (87.5%)
+  • Partial: 1 (12.5%)
+
+Pest:
+  Total: 6 observations
+  • Pass: 3 (50.0%)
+  • Partial: 2 (33.3%)
+  • Fail: 1 (16.7%)
+
+Damage:
+  Total: 6 observations
+  • Partial: 3 (50.0%)
+  • Pass: 2 (33.3%)
+  • Fail: 1 (16.7%)
+
+Growth:
+  Total: 4 observations
+  • Partial: 2 (50.0%)
+  • Pass: 2 (50.0%)
+
+Harvest:
+  Total: 11 observations
+  • Pass: 6 (54.5%)
+  • Partial: 3 (27.3%)
+  • Fail: 2 (18.2%)
+
+Weather:
+  Total: 6 observations
+  • Partial: 3 (50.0%)
+  • Pass: 2 (33.3%)
+  • Fail: 1 (16.7%)
+
+Soil:
+  Total: 6 observations
+  • Pass: 6 (100.0%)
+
+Soil Moisture:
+  Total: 7 observations
+  • Pass: 5 (71.4%)
+  • Partial: 2 (28.6%)
+
+TOP TRADITIONAL METRICS:
+----------------------------------------
+• inrows: 9 (4.5%)
+• diseases: 8 (4.0%)
+• fire guard: 8 (4.0%)
+• leaf colour: 8 (4.0%)
+• Insect pests: 7 (3.5%)
+• bud break: 7 (3.5%)
+• moisture: 7 (3.5%)
+• plant growth: 6 (3.0%)
+• health status: 6 (3.0%)
+• nutsetting: 6 (3.0%)
+
+SAMPLE OBSERVATIONS (First 20):
+----------------------------------------
+  1. 2025-02-01 | B2S3 | Damage | fail | Critical issues detected
+  2. 2025-02-01 | B2S5 | Harvest | fail | Failed inspection
+  3. 2025-05-01 | B2S3 | Disease | fail | Multiple infected plants
+  4. 2025-06-01 | B2S1A | pipes | partial | Some improvement needed
+  5. 2025-07-01 | B2S6 | destumping | partial | Moderate condition - Low priority
+  6. 2025-07-01 | B1S2 | moisture | partial | Partial irrigation
+  7. 2025-02-02 | B2S3 | diseases | pass | No disease symptoms
+  8. 2025-03-02 | B1S2 | leaf colour | partial | Some areas need attention - Low priority
+  9. 2025-05-02 | B2S7 | Soil | pass | Optimal soil health - East section
+ 10. 2025-05-02 | B1S2 | fire guard | pass | Excellent performance - North section
+ 11. 2025-02-03 | B2S7 | Soil | pass | Fertile soil - 17% area coverage
+ 12. 2025-03-03 | B2S8 | health status | pass | No intervention needed
+ 13. 2025-04-03 | B2S1A | flowering | partial | In progress
+ 14. 2025-04-03 | B1S2 | drippers | partial | Partial completion - 88% severity
+ 15. 2025-04-03 | B2S1A | remaining nuts | fail | Urgent action required
+ 16. 2025-05-03 | B2S1B | nutdrop | pass | Healthy growth observed
+ 17. 2025-05-03 | B1S2 | plant growth | pass | Good condition maintained
+ 18. 2025-05-03 | B2S2 | Harvest | pass | Excellent performance
+ 19. 2025-06-03 | B1S2 | Insect pests | partial | Some pest activity - High priority
+ 20. 2025-06-03 | B2S1B | health status | pass | Excellent performance
+
+================================================================================

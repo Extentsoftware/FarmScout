@@ -33,6 +33,14 @@ namespace FarmScout.Services
         Task<int> UpdateLocationAsync(ObservationLocation location);
         Task<int> DeleteLocationAsync(ObservationLocation location);
 
+        // FarmLocation CRUD
+        Task<int> AddFarmLocationAsync(FarmLocation farmLocation);
+        Task<List<FarmLocation>> GetFarmLocationsAsync();
+        Task<FarmLocation?> GetFarmLocationByIdAsync(Guid id);
+        Task<FarmLocation?> GetFarmLocationByNameAsync(string name);
+        Task<int> UpdateFarmLocationAsync(FarmLocation farmLocation);
+        Task<int> DeleteFarmLocationAsync(FarmLocation farmLocation);
+
         // LookupItem CRUD
         Task<int> AddLookupItemAsync(LookupItem item);
         Task<List<LookupItem>> GetLookupItemsAsync();
