@@ -1775,11 +1775,17 @@ namespace FarmScout.Services
 
                 App.Log($"Found {observations.Count} observations in CSV file");
 
+                // Create Scout observation type with data points
+                var scoutObservationType = await CreateScoutObservationTypeAsync(observations);
+
                 // Ensure farm locations exist for all sections
                 await EnsureFarmLocationsExistAsync(observations);
 
                 // Link observations to farm locations
                 await LinkObservationsToFarmLocationsAsync(observations);
+
+                // Link observations to Scout observation type and create metadata
+                await LinkObservationsToScoutTypeAsync(observations, scoutObservationType);
 
                 // Import observations
                 var importedCount = 0;
@@ -2053,6 +2059,169 @@ namespace FarmScout.Services
             {
                 App.Log($"Error linking observations to farm locations: {ex.Message}");
             }
+        }
+
+        private async Task<ObservationType> CreateScoutObservationTypeAsync(List<Observation> observations)
+        {
+            try
+            {
+                // Check if Scout observation type already exists
+                var existingScoutType = await GetObservationTypeByNameAsync("Scout");
+                if (existingScoutType != null)
+                {
+                    App.Log("Scout observation type already exists");
+                    return existingScoutType;
+                }
+
+                // Create Scout observation type
+                var scoutType = new ObservationType
+                {
+                    Name = "Scout",
+                    Description = "Farm scouting observations for various metrics",
+                    Icon = "🔍",
+                    Color = "#4CAF50",
+                    IsActive = true,
+                    SortOrder = 1
+                };
+
+                await AddObservationTypeAsync(scoutType);
+                App.Log($"Created Scout observation type with ID: {scoutType.Id}");
+
+                // Extract unique metrics from observations
+                var metrics = observations
+                    .Select(o => ExtractMetricFromSummary(o.Summary))
+                    .Distinct()
+                    .OrderBy(m => m)
+                    .ToList();
+
+                App.Log($"Found {metrics.Count} unique metrics: {string.Join(", ", metrics)}");
+
+                // Create data points for each metric
+                var sortOrder = 1;
+                foreach (var metric in metrics)
+                {
+                    var dataPoint = new ObservationTypeDataPoint
+                    {
+                        ObservationTypeId = scoutType.Id,
+                        Code = metric.ToLower().Replace(" ", "_"),
+                        Label = metric,
+                        DataType = "Lookup",
+                        LookupGroupName = "Scout Conditions",
+                        Description = $"Scout observation for {metric}",
+                        SortOrder = sortOrder++,
+                        IsRequired = true,
+                        IsActive = true
+                    };
+
+                    await AddObservationTypeDataPointAsync(dataPoint);
+                    App.Log($"Created data point for metric: {metric}");
+                }
+
+                return scoutType;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error creating Scout observation type: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task LinkObservationsToScoutTypeAsync(List<Observation> observations, ObservationType scoutType)
+        {
+            try
+            {
+                // Get data points for the Scout observation type
+                var dataPoints = await GetDataPointsForObservationTypeAsync(scoutType.Id);
+                var dataPointByLabel = dataPoints.ToDictionary(dp => dp.Label, dp => dp.Id);
+
+                // Create lookup items for conditions if they don't exist
+                await EnsureScoutConditionsExistAsync();
+
+                // Link each observation to the Scout observation type and create metadata
+                foreach (var observation in observations)
+                {
+                    var metric = ExtractMetricFromSummary(observation.Summary);
+                    
+                    if (dataPointByLabel.TryGetValue(metric, out var dataPointId))
+                    {
+                        // Create observation metadata
+                        var metadata = new ObservationMetadata
+                        {
+                            ObservationId = observation.Id,
+                            ObservationTypeId = scoutType.Id,
+                            DataPointId = dataPointId,
+                            Value = observation.Severity, // Use severity as the value
+                            CreatedAt = observation.Timestamp,
+                            UpdatedAt = observation.Timestamp
+                        };
+
+                        await AddObservationMetadataAsync(metadata);
+                        App.Log($"Created metadata for observation {observation.Id} - {metric}: {observation.Severity}");
+                    }
+                    else
+                    {
+                        App.Log($"Warning: Could not find data point for metric {metric}");
+                    }
+                }
+
+                App.Log($"Linked {observations.Count} observations to Scout observation type");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error linking observations to Scout type: {ex.Message}");
+            }
+        }
+
+        private async Task EnsureScoutConditionsExistAsync()
+        {
+            try
+            {
+                // Check if Scout Conditions lookup group exists
+                var existingGroup = await GetLookupGroupByNameAsync("Scout Conditions");
+                if (existingGroup != null)
+                {
+                    App.Log("Scout Conditions lookup group already exists");
+                    return;
+                }
+
+                // Create Scout Conditions lookup group
+                var scoutConditionsGroup = new LookupGroup
+                {
+                    Name = "Scout Conditions",
+                    Icon = "🔍",
+                    Color = "#4CAF50",
+                    IsActive = true,
+                    SortOrder = 1
+                };
+
+                await AddLookupGroupAsync(scoutConditionsGroup);
+                App.Log($"Created Scout Conditions lookup group with ID: {scoutConditionsGroup.Id}");
+
+                // Create lookup items for conditions
+                var conditions = new[]
+                {
+                    new LookupItem { Name = "Pass", Description = "Condition is acceptable", GroupId = scoutConditionsGroup.Id, IsActive = true },
+                    new LookupItem { Name = "Partial", Description = "Condition needs attention", GroupId = scoutConditionsGroup.Id, IsActive = true },
+                    new LookupItem { Name = "Fail", Description = "Condition requires immediate action", GroupId = scoutConditionsGroup.Id, IsActive = true }
+                };
+
+                foreach (var condition in conditions)
+                {
+                    await AddLookupItemAsync(condition);
+                    App.Log($"Created lookup item: {condition.Name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error ensuring Scout conditions exist: {ex.Message}");
+            }
+        }
+
+        private string ExtractMetricFromSummary(string summary)
+        {
+            // Summary format is "metric - section"
+            var parts = summary.Split(" - ");
+            return parts.Length > 0 ? parts[0] : summary;
         }
     }
 } 
