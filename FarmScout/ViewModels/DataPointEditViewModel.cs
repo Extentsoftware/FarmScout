@@ -18,7 +18,7 @@ public partial class DataPointEditViewModel : ObservableObject
         _database = database;
         _navigationService = navigationService;
         AvailableDataTypes = new ObservableCollection<string>(DataTypes.AvailableTypes);
-        AvailableLookupGroups = new ObservableCollection<string>();
+        AvailableLookupGroups = [];
     }
 
     [ObservableProperty]

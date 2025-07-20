@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FarmScout.Models;
 using FarmScout.Services;
 using System.Collections.ObjectModel;
 
@@ -15,7 +14,7 @@ public partial class ObservationTypesViewModel : ObservableObject
     {
         _database = database;
         _navigationService = navigationService;
-        ObservationTypes = new ObservableCollection<ObservationTypeViewModel>();
+        ObservationTypes = [];
     }
 
     [ObservableProperty]

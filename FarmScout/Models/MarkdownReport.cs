@@ -1,4 +1,3 @@
-using System;
 using SQLite;
 
 namespace FarmScout.Models

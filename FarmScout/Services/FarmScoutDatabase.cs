@@ -2,6 +2,7 @@ using SQLite;
 using FarmScout.Models;
 using System.Text.Json;
 using System.Globalization;
+using System.Text;
 
 namespace FarmScout.Services
 {
@@ -208,10 +209,10 @@ namespace FarmScout.Services
                 if (!string.IsNullOrWhiteSpace(filterParams.SearchText))
                 {
                     var searchText = filterParams.SearchText.ToLower();
-                    query = query.Where(o => 
-                        o.Notes.ToLower().Contains(searchText) || 
-                        o.Summary.ToLower().Contains(searchText) ||
-                        o.Severity.ToLower().Contains(searchText));
+                    query = query.Where(o =>
+                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                        o.Summary.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                        o.Severity.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
                 }
 
                 if (filterParams.FieldId.HasValue)
@@ -309,10 +310,10 @@ namespace FarmScout.Services
                 if (!string.IsNullOrWhiteSpace(filterParams.SearchText))
                 {
                     var searchText = filterParams.SearchText.ToLower();
-                    query = query.Where(o => 
-                        o.Notes.ToLower().Contains(searchText) || 
-                        o.Summary.ToLower().Contains(searchText) ||
-                        o.Severity.ToLower().Contains(searchText));
+                    query = query.Where(o =>
+                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                        o.Summary.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                        o.Severity.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
                 }
 
                 if (filterParams.FieldId.HasValue)
@@ -519,7 +520,7 @@ namespace FarmScout.Services
                 if (group == null)
                 {
                     App.Log($"Group '{groupName}' not found");
-                    return new List<LookupItem>();
+                    return [];
                 }
 
                 var items = await _database.Table<LookupItem>()
@@ -848,121 +849,121 @@ namespace FarmScout.Services
                 var chemicalsGroup = await GetLookupGroupByNameAsync("Chemicals");
                 if (chemicalsGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Herbicide", GroupId = chemicalsGroup.Id, SortOrder = 1 },
                         new() { Name = "Fungicide", GroupId = chemicalsGroup.Id, SortOrder = 2 },
                         new() { Name = "Insecticide", GroupId = chemicalsGroup.Id, SortOrder = 3 },
                         new() { Name = "Fertilizer", GroupId = chemicalsGroup.Id, SortOrder = 4 },
                         new() { Name = "Growth Regulator", GroupId = chemicalsGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Diseases subgroups
                 var diseasesGroup = await GetLookupGroupByNameAsync("Diseases");
                 if (diseasesGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Fungal", GroupId = diseasesGroup.Id, SortOrder = 1 },
                         new() { Name = "Bacterial", GroupId = diseasesGroup.Id, SortOrder = 2 },
                         new() { Name = "Viral", GroupId = diseasesGroup.Id, SortOrder = 3 },
                         new() { Name = "Nematode", GroupId = diseasesGroup.Id, SortOrder = 4 },
                         new() { Name = "Other", GroupId = diseasesGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Pests subgroups
                 var pestsGroup = await GetLookupGroupByNameAsync("Pests");
                 if (pestsGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Insects", GroupId = pestsGroup.Id, SortOrder = 1 },
                         new() { Name = "Mites", GroupId = pestsGroup.Id, SortOrder = 2 },
                         new() { Name = "Nematodes", GroupId = pestsGroup.Id, SortOrder = 3 },
                         new() { Name = "Birds", GroupId = pestsGroup.Id, SortOrder = 4 },
                         new() { Name = "Mammals", GroupId = pestsGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Fertilizers subgroups
                 var fertilizersGroup = await GetLookupGroupByNameAsync("Fertilizers");
                 if (fertilizersGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Nitrogen", GroupId = fertilizersGroup.Id, SortOrder = 1 },
                         new() { Name = "Phosphorus", GroupId = fertilizersGroup.Id, SortOrder = 2 },
                         new() { Name = "Potassium", GroupId = fertilizersGroup.Id, SortOrder = 3 },
                         new() { Name = "Micronutrients", GroupId = fertilizersGroup.Id, SortOrder = 4 },
                         new() { Name = "Organic", GroupId = fertilizersGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Soil Types subgroups
                 var soilTypesGroup = await GetLookupGroupByNameAsync("Soil Types");
                 if (soilTypesGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Mineral", GroupId = soilTypesGroup.Id, SortOrder = 1 },
                         new() { Name = "Organic", GroupId = soilTypesGroup.Id, SortOrder = 2 },
                         new() { Name = "Mixed", GroupId = soilTypesGroup.Id, SortOrder = 3 }
-                    });
+                    ]);
                 }
 
                 // Weather Conditions subgroups
                 var weatherGroup = await GetLookupGroupByNameAsync("Weather Conditions");
                 if (weatherGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Temperature", GroupId = weatherGroup.Id, SortOrder = 1 },
                         new() { Name = "Precipitation", GroupId = weatherGroup.Id, SortOrder = 2 },
                         new() { Name = "Wind", GroupId = weatherGroup.Id, SortOrder = 3 },
                         new() { Name = "Humidity", GroupId = weatherGroup.Id, SortOrder = 4 },
                         new() { Name = "Pressure", GroupId = weatherGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Growth Stages subgroups
                 var growthStagesGroup = await GetLookupGroupByNameAsync("Growth Stages");
                 if (growthStagesGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Vegetative", GroupId = growthStagesGroup.Id, SortOrder = 1 },
                         new() { Name = "Reproductive", GroupId = growthStagesGroup.Id, SortOrder = 2 },
                         new() { Name = "Maturity", GroupId = growthStagesGroup.Id, SortOrder = 3 }
-                    });
+                    ]);
                 }
 
                 // Damage Types subgroups
                 var damageTypesGroup = await GetLookupGroupByNameAsync("Damage Types");
                 if (damageTypesGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Environmental", GroupId = damageTypesGroup.Id, SortOrder = 1 },
                         new() { Name = "Biological", GroupId = damageTypesGroup.Id, SortOrder = 2 },
                         new() { Name = "Mechanical", GroupId = damageTypesGroup.Id, SortOrder = 3 },
                         new() { Name = "Chemical", GroupId = damageTypesGroup.Id, SortOrder = 4 }
-                    });
+                    ]);
                 }
 
                 // Treatment Methods subgroups
                 var treatmentMethodsGroup = await GetLookupGroupByNameAsync("Treatment Methods");
                 if (treatmentMethodsGroup != null)
                 {
-                    subgroups.AddRange(new LookupSubGroup[]
-                    {
+                    subgroups.AddRange(
+                    [
                         new() { Name = "Chemical", GroupId = treatmentMethodsGroup.Id, SortOrder = 1 },
                         new() { Name = "Biological", GroupId = treatmentMethodsGroup.Id, SortOrder = 2 },
                         new() { Name = "Cultural", GroupId = treatmentMethodsGroup.Id, SortOrder = 3 },
                         new() { Name = "Mechanical", GroupId = treatmentMethodsGroup.Id, SortOrder = 4 },
                         new() { Name = "Integrated", GroupId = treatmentMethodsGroup.Id, SortOrder = 5 }
-                    });
+                    ]);
                 }
 
                 // Add subgroups to database
@@ -999,22 +1000,18 @@ namespace FarmScout.Services
 
                 var seedData = new List<LookupItem>();
 
-                // Get all groups and subgroups for reference
-                var groups = await GetLookupGroupsAsync();
-                var groupDict = groups.ToDictionary(g => g.Name, g => g.Id);
-
                 // Crop Types (no subgroups)
                 var cropTypesGroup = await GetLookupGroupByNameAsync("Crop Types");
                 if (cropTypesGroup != null)
                 {
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Corn", GroupId = cropTypesGroup.Id, Description = "Maize crop for grain or silage" },
                         new() { Name = "Soybeans", GroupId = cropTypesGroup.Id, Description = "Legume crop for oil and protein" },
                         new() { Name = "Wheat", GroupId = cropTypesGroup.Id, Description = "Cereal grain crop" },
                         new() { Name = "Cotton", GroupId = cropTypesGroup.Id, Description = "Fiber crop" },
                         new() { Name = "Rice", GroupId = cropTypesGroup.Id, Description = "Staple grain crop" }
-                    });
+                    ]);
                 }
 
                 // Diseases
@@ -1025,14 +1022,14 @@ namespace FarmScout.Services
                     var fungalSubgroup = diseasesSubgroups.FirstOrDefault(sg => sg.Name == "Fungal");
                     var bacterialSubgroup = diseasesSubgroups.FirstOrDefault(sg => sg.Name == "Bacterial");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Rust", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease affecting leaves and stems" },
                         new() { Name = "Blight", GroupId = diseasesGroup.Id, SubGroupId = bacterialSubgroup?.Id, Description = "Rapid plant disease causing wilting" },
                         new() { Name = "Mildew", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal growth on plant surfaces" },
                         new() { Name = "Root Rot", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease affecting plant roots" },
                         new() { Name = "Leaf Spot", GroupId = diseasesGroup.Id, SubGroupId = fungalSubgroup?.Id, Description = "Fungal disease causing spots on leaves" }
-                    });
+                    ]);
                 }
 
                 // Pests
@@ -1043,14 +1040,14 @@ namespace FarmScout.Services
                     var insectsSubgroup = pestsSubgroups.FirstOrDefault(sg => sg.Name == "Insects");
                     var mitesSubgroup = pestsSubgroups.FirstOrDefault(sg => sg.Name == "Mites");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Aphids", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Small sap-sucking insects" },
                         new() { Name = "Corn Borer", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Larva that bores into corn stalks" },
                         new() { Name = "Spider Mites", GroupId = pestsGroup.Id, SubGroupId = mitesSubgroup?.Id, Description = "Tiny arachnids that feed on plant sap" },
                         new() { Name = "Cutworms", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Caterpillars that cut plant stems" },
                         new() { Name = "Wireworms", GroupId = pestsGroup.Id, SubGroupId = insectsSubgroup?.Id, Description = "Click beetle larvae that damage roots" }
-                    });
+                    ]);
                 }
 
                 // Chemicals
@@ -1063,8 +1060,8 @@ namespace FarmScout.Services
                     var insecticideSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Insecticide");
                     var growthRegulatorSubgroup = chemicalsSubgroups.FirstOrDefault(sg => sg.Name == "Growth Regulator");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Glyphosate", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Broad-spectrum herbicide" },
                         new() { Name = "Atrazine", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Selective herbicide for corn" },
                         new() { Name = "2,4-D", GroupId = chemicalsGroup.Id, SubGroupId = herbicideSubgroup?.Id, Description = "Selective herbicide for broadleaf weeds" },
@@ -1075,7 +1072,7 @@ namespace FarmScout.Services
                         new() { Name = "Malathion", GroupId = chemicalsGroup.Id, SubGroupId = insecticideSubgroup?.Id, Description = "Organophosphate insecticide" },
                         new() { Name = "Carbaryl", GroupId = chemicalsGroup.Id, SubGroupId = insecticideSubgroup?.Id, Description = "Carbamate insecticide for pest control" },
                         new() { Name = "Gibberellic Acid", GroupId = chemicalsGroup.Id, SubGroupId = growthRegulatorSubgroup?.Id, Description = "Plant growth regulator" }
-                    });
+                    ]);
                 }
 
                 // Fertilizers
@@ -1088,15 +1085,15 @@ namespace FarmScout.Services
                     var potassiumSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Potassium");
                     var organicSubgroup = fertilizersSubgroups.FirstOrDefault(sg => sg.Name == "Organic");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Urea", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Nitrogen fertilizer (46-0-0)" },
                         new() { Name = "Ammonium Nitrate", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Nitrogen fertilizer (34-0-0)" },
                         new() { Name = "Triple Superphosphate", GroupId = fertilizersGroup.Id, SubGroupId = phosphorusSubgroup?.Id, Description = "Phosphorus fertilizer (0-46-0)" },
                         new() { Name = "Potassium Chloride", GroupId = fertilizersGroup.Id, SubGroupId = potassiumSubgroup?.Id, Description = "Potassium fertilizer (0-0-60)" },
                         new() { Name = "NPK 10-10-10", GroupId = fertilizersGroup.Id, SubGroupId = nitrogenSubgroup?.Id, Description = "Balanced fertilizer" },
                         new() { Name = "Compost", GroupId = fertilizersGroup.Id, SubGroupId = organicSubgroup?.Id, Description = "Organic soil amendment" }
-                    });
+                    ]);
                 }
 
                 // Soil Types
@@ -1108,14 +1105,14 @@ namespace FarmScout.Services
                     var organicSubgroup = soilTypesSubgroups.FirstOrDefault(sg => sg.Name == "Organic");
                     var mixedSubgroup = soilTypesSubgroups.FirstOrDefault(sg => sg.Name == "Mixed");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Clay", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Fine-grained soil with high water retention" },
                         new() { Name = "Silt", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Medium-grained soil" },
                         new() { Name = "Sandy", GroupId = soilTypesGroup.Id, SubGroupId = mineralSubgroup?.Id, Description = "Coarse-grained soil with good drainage" },
                         new() { Name = "Loam", GroupId = soilTypesGroup.Id, SubGroupId = mixedSubgroup?.Id, Description = "Well-balanced soil mixture" },
                         new() { Name = "Peat", GroupId = soilTypesGroup.Id, SubGroupId = organicSubgroup?.Id, Description = "Organic-rich soil" }
-                    });
+                    ]);
                 }
 
                 // Weather Conditions
@@ -1129,14 +1126,14 @@ namespace FarmScout.Services
                     var humiditySubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Humidity");
                     var pressureSubgroup = weatherSubgroups.FirstOrDefault(sg => sg.Name == "Pressure");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Sunny", GroupId = weatherGroup.Id, SubGroupId = temperatureSubgroup?.Id, Description = "Clear skies with full sun" },
                         new() { Name = "Cloudy", GroupId = weatherGroup.Id, SubGroupId = pressureSubgroup?.Id, Description = "Overcast conditions" },
                         new() { Name = "Rainy", GroupId = weatherGroup.Id, SubGroupId = precipitationSubgroup?.Id, Description = "Precipitation occurring" },
                         new() { Name = "Windy", GroupId = weatherGroup.Id, SubGroupId = windSubgroup?.Id, Description = "High wind conditions" },
                         new() { Name = "Foggy", GroupId = weatherGroup.Id, SubGroupId = humiditySubgroup?.Id, Description = "Low visibility due to fog" }
-                    });
+                    ]);
                 }
 
                 // Growth Stages
@@ -1148,14 +1145,14 @@ namespace FarmScout.Services
                     var reproductiveSubgroup = growthStagesSubgroups.FirstOrDefault(sg => sg.Name == "Reproductive");
                     var maturitySubgroup = growthStagesSubgroups.FirstOrDefault(sg => sg.Name == "Maturity");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Germination", GroupId = growthStagesGroup.Id, SubGroupId = vegetativeSubgroup?.Id, Description = "Seed sprouting and root development" },
                         new() { Name = "Vegetative", GroupId = growthStagesGroup.Id, SubGroupId = vegetativeSubgroup?.Id, Description = "Leaf and stem growth" },
                         new() { Name = "Flowering", GroupId = growthStagesGroup.Id, SubGroupId = reproductiveSubgroup?.Id, Description = "Flower development and pollination" },
                         new() { Name = "Fruiting", GroupId = growthStagesGroup.Id, SubGroupId = reproductiveSubgroup?.Id, Description = "Fruit or grain development" },
                         new() { Name = "Maturity", GroupId = growthStagesGroup.Id, SubGroupId = maturitySubgroup?.Id, Description = "Full development and harvest ready" }
-                    });
+                    ]);
                 }
 
                 // Damage Types
@@ -1165,14 +1162,14 @@ namespace FarmScout.Services
                     var damageTypesSubgroups = await GetLookupSubGroupsAsync(damageTypesGroup.Id);
                     var environmentalSubgroup = damageTypesSubgroups.FirstOrDefault(sg => sg.Name == "Environmental");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Hail Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Physical damage from hail stones" },
                         new() { Name = "Wind Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from high winds" },
                         new() { Name = "Drought Stress", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from lack of water" },
                         new() { Name = "Flood Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from excess water" },
                         new() { Name = "Frost Damage", GroupId = damageTypesGroup.Id, SubGroupId = environmentalSubgroup?.Id, Description = "Damage from freezing temperatures" }
-                    });
+                    ]);
                 }
 
                 // Treatment Methods
@@ -1186,14 +1183,14 @@ namespace FarmScout.Services
                     var mechanicalSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Mechanical");
                     var integratedSubgroup = treatmentMethodsSubgroups.FirstOrDefault(sg => sg.Name == "Integrated");
 
-                    seedData.AddRange(new LookupItem[]
-                    {
+                    seedData.AddRange(
+                    [
                         new() { Name = "Chemical Treatment", GroupId = treatmentMethodsGroup.Id, SubGroupId = chemicalSubgroup?.Id, Description = "Application of pesticides or herbicides" },
                         new() { Name = "Biological Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = biologicalSubgroup?.Id, Description = "Use of natural predators or beneficial organisms" },
                         new() { Name = "Cultural Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = culturalSubgroup?.Id, Description = "Management practices to prevent problems" },
                         new() { Name = "Mechanical Control", GroupId = treatmentMethodsGroup.Id, SubGroupId = mechanicalSubgroup?.Id, Description = "Physical removal or barriers" },
                         new() { Name = "Integrated Pest Management", GroupId = treatmentMethodsGroup.Id, SubGroupId = integratedSubgroup?.Id, Description = "Combined approach using multiple methods" }
-                    });
+                    ]);
                 }
 
                 // Add all lookup items to database
@@ -1496,24 +1493,6 @@ namespace FarmScout.Services
             }
         }
 
-        public async Task<List<MarkdownReport>> GetMarkdownReportsAsync()
-        {
-            try
-            {
-                var reports = await _database.Table<MarkdownReport>()
-                    .Where(r => r.IsActive)
-                    .OrderByDescending(r => r.DateProduced)
-                    .ToListAsync();
-                App.Log($"Retrieved {reports.Count} markdown reports from database");
-                return reports;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error retrieving markdown reports: {ex.Message}");
-                throw;
-            }
-        }
-
         public async Task<List<MarkdownReport>> GetMarkdownReportsByGroupAsync(Guid reportGroupId)
         {
             try
@@ -1528,6 +1507,24 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error retrieving markdown reports by group: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<MarkdownReport>> GetMarkdownReportsAsync()
+        {
+            try
+            {
+                var reports = await _database.Table<MarkdownReport>()
+                    .Where(r => r.IsActive)
+                    .OrderByDescending(r => r.DateProduced)
+                    .ToListAsync();
+                App.Log($"Retrieved {reports.Count} markdown reports from database");
+                return reports;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving markdown reports: {ex.Message}");
                 throw;
             }
         }
@@ -1693,7 +1690,7 @@ namespace FarmScout.Services
             try
             {
                 var group = await _database.Table<ReportGroup>()
-                    .Where(g => g.Name.ToLower() == name.ToLower() && g.IsActive)
+                    .Where(g => g.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && g.IsActive)
                     .FirstOrDefaultAsync();
                 return group;
             }
@@ -1756,7 +1753,7 @@ namespace FarmScout.Services
                 App.Log("Starting CSV seeding process...");
 
                 // Get the path to scout.csv in the app bundle
-                var csvPath = await GetCsvFilePathAsync();
+                var csvPath = GetCsvFilePath();
                 if (string.IsNullOrEmpty(csvPath))
                 {
                     App.Log("scout.csv not found, skipping CSV seed");
@@ -1817,7 +1814,7 @@ namespace FarmScout.Services
             }
         }
 
-        private async Task<string?> GetCsvFilePathAsync()
+        private static string? GetCsvFilePath()
         {
             try
             {
@@ -1829,14 +1826,10 @@ namespace FarmScout.Services
                     "Resources/scout.csv",
                     "Assets/scout.csv"
                 };
-
-                foreach (var path in possiblePaths)
+                foreach (var path in possiblePaths.Where(File.Exists))
                 {
-                    if (File.Exists(path))
-                    {
-                        App.Log($"Found scout.csv at: {path}");
-                        return path;
-                    }
+                    App.Log($"Found scout.csv at: {path}");
+                    return path;
                 }
 
                 // Try to copy from app bundle to app data directory
@@ -1857,7 +1850,7 @@ namespace FarmScout.Services
             }
         }
 
-        private async Task<List<Observation>> ParseCsvFileAsync(string csvPath)
+        private static async Task<List<Observation>> ParseCsvFileAsync(string csvPath)
         {
             var observations = new List<Observation>();
 
@@ -1887,7 +1880,7 @@ namespace FarmScout.Services
             return observations;
         }
 
-        private Observation? ParseCsvLine(string line, int lineNumber)
+        private static Observation? ParseCsvLine(string line, int lineNumber)
         {
             try
             {
@@ -1942,10 +1935,10 @@ namespace FarmScout.Services
             }
         }
 
-        private string[] ParseCsvFields(string line)
+        private static string[] ParseCsvFields(string line)
         {
             var fields = new List<string>();
-            var currentField = "";
+            var currentField = new StringBuilder();
             var inQuotes = false;
 
             for (int i = 0; i < line.Length; i++)
@@ -1958,22 +1951,22 @@ namespace FarmScout.Services
                 }
                 else if (c == ',' && !inQuotes)
                 {
-                    fields.Add(currentField);
-                    currentField = "";
+                    fields.Add(currentField.ToString());
+                    currentField.Clear();
                 }
                 else
                 {
-                    currentField += c;
+                    currentField.Append(c);
                 }
             }
 
             // Add the last field
-            fields.Add(currentField);
+            fields.Add(currentField.ToString());
 
-            return fields.ToArray();
+            return [.. fields];
         }
 
-        private string MapConditionToSeverity(string condition)
+        private static string MapConditionToSeverity(string condition)
         {
             return condition.ToLower() switch
             {
@@ -1994,25 +1987,20 @@ namespace FarmScout.Services
                 // Get existing farm locations
                 var existingLocations = await GetFarmLocationsAsync();
                 var existingSectionNames = existingLocations.Select(l => l.Name).ToHashSet();
-
                 // Create missing farm locations
-                foreach (var section in sections)
+                foreach (var section in sections.Where(section => !existingSectionNames.Contains(section)))
                 {
-                    if (!existingSectionNames.Contains(section))
+                    var farmLocation = new FarmLocation
                     {
-                        var farmLocation = new FarmLocation
-                        {
-                            Name = section,
-                            Description = $"Farm section {section}",
-                            FieldType = "Macadamia",
-                            Area = 0.0, // Could be enhanced with actual area data
-                            Owner = "Farm Owner",
-                            Geometry = "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))" // Default geometry
-                        };
-
-                        await AddFarmLocationAsync(farmLocation);
-                        App.Log($"Created farm location for section: {section}");
-                    }
+                        Name = section,
+                        Description = $"Farm section {section}",
+                        FieldType = "Macadamia",
+                        Area = 0.0, // Could be enhanced with actual area data
+                        Owner = "Farm Owner",
+                        Geometry = "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))" // Default geometry
+                    };
+                    await AddFarmLocationAsync(farmLocation);
+                    App.Log($"Created farm location for section: {section}");
                 }
 
                 App.Log($"Ensured farm locations exist for {sections.Count} sections");
@@ -2023,7 +2011,7 @@ namespace FarmScout.Services
             }
         }
 
-        private string ExtractSectionFromSummary(string summary)
+        private static string ExtractSectionFromSummary(string summary)
         {
             // Summary format is "metric - section"
             var parts = summary.Split(" - ");
@@ -2217,7 +2205,7 @@ namespace FarmScout.Services
             }
         }
 
-        private string ExtractMetricFromSummary(string summary)
+        private static string ExtractMetricFromSummary(string summary)
         {
             // Summary format is "metric - section"
             var parts = summary.Split(" - ");

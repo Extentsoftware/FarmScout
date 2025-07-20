@@ -396,7 +396,7 @@ Based on current conditions and historical data, projected yields are:
     {
         public int TotalReports { get; set; }
         public int TotalGroups { get; set; }
-        public Dictionary<string, int> ReportsByGroup { get; set; } = new();
+        public Dictionary<string, int> ReportsByGroup { get; set; } = [];
         public DateTime LatestReportDate { get; set; }
         public long TotalFileSize { get; set; }
     }

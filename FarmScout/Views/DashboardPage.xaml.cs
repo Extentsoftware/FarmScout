@@ -1,4 +1,3 @@
-using FarmScout.Services;
 using FarmScout.ViewModels;
 
 namespace FarmScout.Views;

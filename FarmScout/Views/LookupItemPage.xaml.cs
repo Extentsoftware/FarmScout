@@ -1,4 +1,3 @@
-using CommunityToolkit.Mvvm.Input;
 using FarmScout.ViewModels;
 
 namespace FarmScout.Views;

@@ -3,7 +3,7 @@ namespace FarmScout.Models;
 public static class ObservationTypes
 {
     public static readonly string[] AvailableTypes = 
-    {
+    [
         "Disease",
         "Dead Plant", 
         "Pest",
@@ -13,7 +13,7 @@ public static class ObservationTypes
         "Weather",
         "Soil",
         "Soil Moisture"
-    };
+    ];
 
     public static string GetTypeIcon(string observationType)
     {
@@ -83,11 +83,11 @@ public static class ObservationTypes
 public static class SeverityLevels
 {
     public static readonly string[] AvailableSeverities = 
-    {
+    [
         "Information",
         "Warning", 
         "Fail"
-    };
+    ];
 
     public static string GetSeverityColor(string severity)
     {

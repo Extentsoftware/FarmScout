@@ -1,5 +1,4 @@
 using FarmScout.Services;
-using FarmScout.Models;
 
 namespace FarmScout.Tests
 {

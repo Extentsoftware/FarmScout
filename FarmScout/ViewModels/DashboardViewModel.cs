@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FarmScout.Services;
-using FarmScout.Models;
 
 namespace FarmScout.ViewModels;
 
