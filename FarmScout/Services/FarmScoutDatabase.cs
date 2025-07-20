@@ -186,6 +186,92 @@ namespace FarmScout.Services
             }
         }
 
+        public async Task<List<Observation>> GetObservationsAsync(int skip, int take, FilterParameters filterParams)
+        {
+            try
+            {
+                App.Log($"GetObservationsAsync called with skip={skip}, take={take}, filters={JsonSerializer.Serialize(filterParams)}");
+                
+                var query = _database.Table<Observation>();
+
+                // Apply filters
+                if (filterParams.StartDate.HasValue)
+                {
+                    query = query.Where(o => o.Timestamp >= filterParams.StartDate.Value);
+                }
+
+                if (filterParams.EndDate.HasValue)
+                {
+                    query = query.Where(o => o.Timestamp <= filterParams.EndDate.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(filterParams.SearchText))
+                {
+                    var searchText = filterParams.SearchText.ToLower();
+                    query = query.Where(o => 
+                        o.Notes.ToLower().Contains(searchText) || 
+                        o.Summary.ToLower().Contains(searchText) ||
+                        o.Severity.ToLower().Contains(searchText));
+                }
+
+                if (filterParams.FieldId.HasValue)
+                {
+                    query = query.Where(o => o.FarmLocationId == filterParams.FieldId.Value);
+                }
+
+                if (filterParams.ObservationTypeId.HasValue)
+                {
+                    // Filter by observation type using ObservationMetadata join
+                    var observationIdsWithType = await _database.Table<ObservationMetadata>()
+                        .Where(om => om.ObservationTypeId == filterParams.ObservationTypeId.Value)
+                        .ToListAsync();
+                    
+                    var observationIds = observationIdsWithType.Select(om => om.ObservationId).ToList();
+                    
+                    if (observationIds.Count > 0)
+                    {
+                        query = query.Where(o => observationIds.Contains(o.Id));
+                    }
+                    else
+                    {
+                        // If no observations have this type, return empty result
+                        query = query.Where(o => false);
+                    }
+                }
+
+                // Apply sorting
+                query = filterParams.SortBy.ToLower() switch
+                {
+                    "timestamp" => filterParams.SortAscending 
+                        ? query.OrderBy(o => o.Timestamp)
+                        : query.OrderByDescending(o => o.Timestamp),
+                    "severity" => filterParams.SortAscending 
+                        ? query.OrderBy(o => o.Severity)
+                        : query.OrderByDescending(o => o.Severity),
+                    "summary" => filterParams.SortAscending 
+                        ? query.OrderBy(o => o.Summary)
+                        : query.OrderByDescending(o => o.Summary),
+                    _ => filterParams.SortAscending 
+                        ? query.OrderBy(o => o.Timestamp)
+                        : query.OrderByDescending(o => o.Timestamp)
+                };
+
+                var observations = await query
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync();
+                
+                App.Log($"Retrieved {observations.Count} observations from database with filters (skip={skip}, take={take})");
+
+                return observations;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error retrieving observations with filters: {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<int> GetObservationsCountAsync()
         {
             try
@@ -197,6 +283,70 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error getting observations count: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> GetObservationsCountAsync(FilterParameters filterParams)
+        {
+            try
+            {
+                App.Log($"GetObservationsCountAsync called with filters: {JsonSerializer.Serialize(filterParams)}");
+                
+                var query = _database.Table<Observation>();
+
+                // Apply filters
+                if (filterParams.StartDate.HasValue)
+                {
+                    query = query.Where(o => o.Timestamp >= filterParams.StartDate.Value);
+                }
+
+                if (filterParams.EndDate.HasValue)
+                {
+                    query = query.Where(o => o.Timestamp <= filterParams.EndDate.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(filterParams.SearchText))
+                {
+                    var searchText = filterParams.SearchText.ToLower();
+                    query = query.Where(o => 
+                        o.Notes.ToLower().Contains(searchText) || 
+                        o.Summary.ToLower().Contains(searchText) ||
+                        o.Severity.ToLower().Contains(searchText));
+                }
+
+                if (filterParams.FieldId.HasValue)
+                {
+                    query = query.Where(o => o.FarmLocationId == filterParams.FieldId.Value);
+                }
+
+                if (filterParams.ObservationTypeId.HasValue)
+                {
+                    // Filter by observation type using ObservationMetadata join
+                    var observationIdsWithType = await _database.Table<ObservationMetadata>()
+                        .Where(om => om.ObservationTypeId == filterParams.ObservationTypeId.Value)
+                        .ToListAsync();
+                    
+                    var observationIds = observationIdsWithType.Select(om => om.ObservationId).ToList();
+                    
+                    if (observationIds.Count > 0)
+                    {
+                        query = query.Where(o => observationIds.Contains(o.Id));
+                    }
+                    else
+                    {
+                        // If no observations have this type, return empty result
+                        query = query.Where(o => false);
+                    }
+                }
+
+                var count = await query.CountAsync();
+                App.Log($"Filtered observations count: {count}");
+                return count;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error getting filtered observations count: {ex.Message}");
                 throw;
             }
         }
@@ -1628,6 +1778,9 @@ namespace FarmScout.Services
                 // Ensure farm locations exist for all sections
                 await EnsureFarmLocationsExistAsync(observations);
 
+                // Link observations to farm locations
+                await LinkObservationsToFarmLocationsAsync(observations);
+
                 // Import observations
                 var importedCount = 0;
                 foreach (var observation in observations)
@@ -1869,6 +2022,37 @@ namespace FarmScout.Services
             // Summary format is "metric - section"
             var parts = summary.Split(" - ");
             return parts.Length > 1 ? parts[1] : summary;
+        }
+
+        private async Task LinkObservationsToFarmLocationsAsync(List<Observation> observations)
+        {
+            try
+            {
+                // Get all farm locations
+                var farmLocations = await GetFarmLocationsAsync();
+                var locationByName = farmLocations.ToDictionary(l => l.Name, l => l.Id);
+
+                // Link each observation to its corresponding farm location
+                foreach (var observation in observations)
+                {
+                    var section = ExtractSectionFromSummary(observation.Summary);
+                    if (locationByName.TryGetValue(section, out var locationId))
+                    {
+                        observation.FarmLocationId = locationId;
+                        App.Log($"Linked observation {observation.Id} to farm location {section} ({locationId})");
+                    }
+                    else
+                    {
+                        App.Log($"Warning: Could not find farm location for section {section}");
+                    }
+                }
+
+                App.Log($"Linked {observations.Count} observations to farm locations");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error linking observations to farm locations: {ex.Message}");
+            }
         }
     }
 } 

@@ -11,7 +11,9 @@ namespace FarmScout.Services
         Task<int> AddObservationAsync(Observation obs);
         Task<List<Observation>> GetObservationsAsync();
         Task<List<Observation>> GetObservationsAsync(int skip, int take);
+        Task<List<Observation>> GetObservationsAsync(int skip, int take, FilterParameters filterParams);
         Task<int> GetObservationsCountAsync();
+        Task<int> GetObservationsCountAsync(FilterParameters filterParams);
         Task<int> UpdateObservationAsync(Observation obs);
         Task<int> DeleteObservationAsync(Observation obs);
 
