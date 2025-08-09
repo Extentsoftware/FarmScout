@@ -54,26 +54,149 @@ namespace FarmScout.Services
                     return;
                 }
 
-                App.Log("Seeding lookup data from CSV file...");
+                App.Log("Seeding lookup data...");
 
-                // Parse lookup data from CSV
-                var lookupData = await ParseLookupCsvFileAsync();
-                if (lookupData == null || !lookupData.Any())
+                // Try to load from JSON first, then CSV, then fallback
+                var jsonData = await ParseLookupDataJsonFileAsync();
+                
+                if (jsonData != null && jsonData.LookupGroups.Count > 0)
                 {
-                    App.Log("No lookup data found in CSV file, using fallback hardcoded data");
-                    await SeedLookupDataFallbackAsync();
-                    return;
+                    App.Log($"Loading {jsonData.LookupGroups.Count} lookup groups from JSON...");
+                    await SeedLookupDataFromJsonAsync(jsonData);
                 }
+                else
+                {
+                    App.Log("JSON not found or empty, trying CSV...");
+                    // Parse lookup data from CSV
+                    var lookupData = await ParseLookupCsvFileAsync();
+                    if (lookupData == null || !lookupData.Any())
+                    {
+                        App.Log("No lookup data found in CSV file, using fallback data");
+                        await SeedLookupDataFallbackAsync();
+                        return;
+                    }
+
+                    App.Log("Seeding lookup data from CSV file...");
+                    await SeedLookupDataFromCsvAsync(lookupData);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding lookup data: {ex.Message}");
+            }
+        }
+
+        private async Task SeedLookupDataFromJsonAsync(LookupDataJsonData jsonData)
+        {
+            try
+            {
+                App.Log("Seeding lookup data from JSON...");
+
+                foreach (var groupJson in jsonData.LookupGroups)
+                {
+                    if (!Guid.TryParse(groupJson.Id, out var groupId))
+                    {
+                        App.Log($"Invalid GUID for lookup group: {groupJson.Id}");
+                        continue;
+                    }
+
+                    // Create and seed the group
+                    var group = new LookupGroup
+                    {
+                        Id = groupId,
+                        Name = groupJson.Name,
+                        Icon = groupJson.Icon,
+                        Color = groupJson.Color,
+                        SortOrder = groupJson.SortOrder,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+
+                    await _database.InsertAsync(group);
+                    App.Log($"Seeded group from JSON: {group.Name} (ID: {group.Id})");
+
+                    // Seed subgroups for this group
+                    foreach (var subGroupJson in groupJson.SubGroups)
+                    {
+                        if (!Guid.TryParse(subGroupJson.Id, out var subGroupId))
+                        {
+                            App.Log($"Invalid GUID for lookup subgroup: {subGroupJson.Id}");
+                            continue;
+                        }
+
+                        var subGroup = new LookupSubGroup
+                        {
+                            Id = subGroupId,
+                            Name = subGroupJson.Name,
+                            GroupId = groupId,
+                            SortOrder = subGroupJson.SortOrder,
+                            IsActive = true,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now
+                        };
+
+                        await _database.InsertAsync(subGroup);
+                        App.Log($"Seeded subgroup from JSON: {subGroup.Name} (ID: {subGroup.Id}) in group {group.Name}");
+
+                        // Seed items for this subgroup
+                        foreach (var itemJson in subGroupJson.Items)
+                        {
+                            if (!Guid.TryParse(itemJson.Id, out var itemId))
+                            {
+                                App.Log($"Invalid GUID for lookup item: {itemJson.Id}");
+                                continue;
+                            }
+
+                            var item = new LookupItem
+                            {
+                                Id = itemId,
+                                Name = itemJson.Name,
+                                Description = itemJson.Description,
+                                GroupId = groupId,
+                                SubGroupId = subGroupId,
+                                IsActive = true,
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
+                            };
+
+                            await _database.InsertAsync(item);
+                            App.Log($"Seeded item from JSON: {item.Name} (ID: {item.Id}) in subgroup {subGroup.Name}");
+                        }
+                    }
+                }
+
+                App.Log($"Successfully seeded {jsonData.LookupGroups.Count} lookup groups with their subgroups and items from JSON");
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error seeding lookup data from JSON: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task SeedLookupDataFromCsvAsync(List<LookupCsvRow> lookupData)
+        {
+            try
+            {
+                App.Log("Seeding lookup data from CSV...");
 
                 // Extract unique groups from CSV data
                 var groups = lookupData
-                    .GroupBy(row => new { row.Group, row.Icon, row.Color, row.SortOrder })
+                    .Where(row => row.GroupId.HasValue && !string.IsNullOrEmpty(row.Group))
+                    .GroupBy(row => new { row.GroupId, row.Group, row.Icon, row.Color, row.SortOrder })
                     .Select(g => new LookupGroup
                     {
+                        Id = g.Key.GroupId!.Value,
                         Name = g.Key.Group,
                         Icon = g.Key.Icon,
                         Color = g.Key.Color,
-                        SortOrder = g.Key.SortOrder
+                        SortOrder = g.Key.SortOrder,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     })
                     .OrderBy(g => g.SortOrder)
                     .ToList();
@@ -82,32 +205,35 @@ namespace FarmScout.Services
                 foreach (var group in groups)
                 {
                     await _database.InsertAsync(group);
+                    App.Log($"Seeded group from CSV: {group.Name} (ID: {group.Id})");
                 }
 
                 App.Log($"Successfully seeded {groups.Count} groups from CSV");
 
                 // Extract unique subgroups from CSV data
-                var subgroups = new List<LookupSubGroup>();
-                foreach (var group in groups)
-                {
-                    var groupSubgroups = lookupData
-                        .Where(row => row.Group == group.Name && !string.IsNullOrEmpty(row.SubGroup))
-                        .GroupBy(row => row.SubGroup)
-                        .Select((g, index) => new LookupSubGroup
-                        {
-                            Name = g.Key,
-                            GroupId = group.Id,
-                            SortOrder = index + 1
-                        })
-                        .ToList();
-
-                    subgroups.AddRange(groupSubgroups);
-                }
+                var subgroups = lookupData
+                    .Where(row => row.SubGroupId.HasValue && !string.IsNullOrEmpty(row.SubGroup))
+                    .GroupBy(row => new { row.SubGroupId, row.SubGroup, row.GroupId })
+                    .Select(g => new LookupSubGroup
+                    {
+                        Id = g.Key.SubGroupId!.Value,
+                        Name = g.Key.SubGroup,
+                        GroupId = g.Key.GroupId!.Value,
+                        SortOrder = g.Min(row => row.SortOrder), // Use the minimum sort order from the group
+                        IsActive = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    })
+                    .OrderBy(sg => sg.GroupId)
+                    .ThenBy(sg => sg.SortOrder)
+                    .ToList();
 
                 // Add subgroups to database
                 foreach (var subgroup in subgroups)
                 {
                     await _database.InsertAsync(subgroup);
+                    var groupName = groups.FirstOrDefault(g => g.Id == subgroup.GroupId)?.Name ?? "Unknown";
+                    App.Log($"Seeded subgroup from CSV: {subgroup.Name} (ID: {subgroup.Id}) in group {groupName}");
                 }
 
                 App.Log($"Successfully seeded {subgroups.Count} subgroups from CSV");
@@ -118,8 +244,7 @@ namespace FarmScout.Services
             catch (Exception ex)
             {
                 App.Log($"Error seeding lookup data from CSV: {ex.Message}");
-                App.Log("Falling back to hardcoded data...");
-                await SeedLookupDataFallbackAsync();
+                throw;
             }
         }
 
@@ -127,168 +252,32 @@ namespace FarmScout.Services
         {
             try
             {
-                App.Log("Seeding lookup groups and subgroups with fallback hardcoded data...");
+                App.Log("Seeding lookup data with hardcoded fallback...");
 
-                // Create groups with their icons and colors
+                // Create basic fallback groups
                 var groups = new List<LookupGroup>
                 {
-                    new() { Name = "Crop Types", Icon = "🌾", Color = "#4CAF50", SortOrder = 1 },
-                    new() { Name = "Diseases", Icon = "🦠", Color = "#F44336", SortOrder = 2 },
-                    new() { Name = "Pests", Icon = "🐛", Color = "#FF9800", SortOrder = 3 },
-                    new() { Name = "Chemicals", Icon = "🧪", Color = "#9C27B0", SortOrder = 4 },
-                    new() { Name = "Fertilizers", Icon = "🌱", Color = "#8BC34A", SortOrder = 5 },
-                    new() { Name = "Soil Types", Icon = "🌍", Color = "#8D6E63", SortOrder = 6 },
-                    new() { Name = "Weather Conditions", Icon = "🌤️", Color = "#2196F3", SortOrder = 7 },
-                    new() { Name = "Growth Stages", Icon = "📈", Color = "#00BCD4", SortOrder = 8 },
-                    new() { Name = "Damage Types", Icon = "💥", Color = "#795548", SortOrder = 9 },
-                    new() { Name = "Treatment Methods", Icon = "💊", Color = "#607D8B", SortOrder = 10 }
+                    new() { Name = "Diseases", Icon = "🦠", Color = "#F44336", SortOrder = 1 },
+                    new() { Name = "Pests", Icon = "🐛", Color = "#FF9800", SortOrder = 2 },
+                    new() { Name = "Crop Types", Icon = "🌾", Color = "#FFC107", SortOrder = 3 },
+                    new() { Name = "Conditions", Icon = "🏥", Color = "#4CAF50", SortOrder = 4 }
                 };
 
-                // Add groups to database
                 foreach (var group in groups)
                 {
+                    group.IsActive = true;
+                    group.CreatedAt = DateTime.Now;
+                    group.UpdatedAt = DateTime.Now;
                     await _database.InsertAsync(group);
+                    App.Log($"Seeded fallback group: {group.Name} (ID: {group.Id})");
                 }
 
-                // Create subgroups for each group
-                var subgroups = new List<LookupSubGroup>();
-
-                // Chemicals subgroups
-                var chemicalsGroup = await GetLookupGroupByNameAsync("Chemicals");
-                if (chemicalsGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Herbicide", GroupId = chemicalsGroup.Id, SortOrder = 1 },
-                        new() { Name = "Fungicide", GroupId = chemicalsGroup.Id, SortOrder = 2 },
-                        new() { Name = "Insecticide", GroupId = chemicalsGroup.Id, SortOrder = 3 },
-                        new() { Name = "Fertilizer", GroupId = chemicalsGroup.Id, SortOrder = 4 },
-                        new() { Name = "Growth Regulator", GroupId = chemicalsGroup.Id, SortOrder = 5 },
-                        new() { Name = "Other", GroupId = chemicalsGroup.Id, SortOrder = 6 }
-                    ]);
-                }
-
-                // Diseases subgroups
-                var diseasesGroup = await GetLookupGroupByNameAsync("Diseases");
-                if (diseasesGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Fungal", GroupId = diseasesGroup.Id, SortOrder = 1 },
-                        new() { Name = "Bacterial", GroupId = diseasesGroup.Id, SortOrder = 2 },
-                        new() { Name = "Viral", GroupId = diseasesGroup.Id, SortOrder = 3 },
-                        new() { Name = "Nematode", GroupId = diseasesGroup.Id, SortOrder = 4 },
-                        new() { Name = "Other", GroupId = diseasesGroup.Id, SortOrder = 5 }
-                    ]);
-                }
-
-                // Pests subgroups
-                var pestsGroup = await GetLookupGroupByNameAsync("Pests");
-                if (pestsGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Insects", GroupId = pestsGroup.Id, SortOrder = 1 },
-                        new() { Name = "Mites", GroupId = pestsGroup.Id, SortOrder = 2 },
-                        new() { Name = "Nematodes", GroupId = pestsGroup.Id, SortOrder = 3 },
-                        new() { Name = "Birds", GroupId = pestsGroup.Id, SortOrder = 4 },
-                        new() { Name = "Mammals", GroupId = pestsGroup.Id, SortOrder = 5 }
-                    ]);
-                }
-
-                // Fertilizers subgroups
-                var fertilizersGroup = await GetLookupGroupByNameAsync("Fertilizers");
-                if (fertilizersGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Compound", GroupId = fertilizersGroup.Id, SortOrder = 1 },
-                        new() { Name = "Straights", GroupId = fertilizersGroup.Id, SortOrder = 2 },
-                        new() { Name = "Micronutrients", GroupId = fertilizersGroup.Id, SortOrder = 3 },
-                        new() { Name = "Organic", GroupId = fertilizersGroup.Id, SortOrder = 4 }
-                    ]);
-                }
-
-                // Soil Types subgroups
-                var soilTypesGroup = await GetLookupGroupByNameAsync("Soil Types");
-                if (soilTypesGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Mineral", GroupId = soilTypesGroup.Id, SortOrder = 1 },
-                        new() { Name = "Organic", GroupId = soilTypesGroup.Id, SortOrder = 2 },
-                        new() { Name = "Mixed", GroupId = soilTypesGroup.Id, SortOrder = 3 }
-                    ]);
-                }
-
-                // Weather Conditions subgroups
-                var weatherGroup = await GetLookupGroupByNameAsync("Weather Conditions");
-                if (weatherGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Temperature", GroupId = weatherGroup.Id, SortOrder = 1 },
-                        new() { Name = "Precipitation", GroupId = weatherGroup.Id, SortOrder = 2 },
-                        new() { Name = "Wind", GroupId = weatherGroup.Id, SortOrder = 3 },
-                        new() { Name = "Humidity", GroupId = weatherGroup.Id, SortOrder = 4 },
-                        new() { Name = "Pressure", GroupId = weatherGroup.Id, SortOrder = 5 }
-                    ]);
-                }
-
-                // Growth Stages subgroups
-                var growthStagesGroup = await GetLookupGroupByNameAsync("Growth Stages");
-                if (growthStagesGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Vegetative", GroupId = growthStagesGroup.Id, SortOrder = 1 },
-                        new() { Name = "Reproductive", GroupId = growthStagesGroup.Id, SortOrder = 2 },
-                        new() { Name = "Maturity", GroupId = growthStagesGroup.Id, SortOrder = 3 }
-                    ]);
-                }
-
-                // Damage Types subgroups
-                var damageTypesGroup = await GetLookupGroupByNameAsync("Damage Types");
-                if (damageTypesGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Environmental", GroupId = damageTypesGroup.Id, SortOrder = 1 },
-                        new() { Name = "Biological", GroupId = damageTypesGroup.Id, SortOrder = 2 },
-                        new() { Name = "Mechanical", GroupId = damageTypesGroup.Id, SortOrder = 3 },
-                        new() { Name = "Chemical", GroupId = damageTypesGroup.Id, SortOrder = 4 }
-                    ]);
-                }
-
-                // Treatment Methods subgroups
-                var treatmentMethodsGroup = await GetLookupGroupByNameAsync("Treatment Methods");
-                if (treatmentMethodsGroup != null)
-                {
-                    subgroups.AddRange(
-                    [
-                        new() { Name = "Chemical", GroupId = treatmentMethodsGroup.Id, SortOrder = 1 },
-                        new() { Name = "Biological", GroupId = treatmentMethodsGroup.Id, SortOrder = 2 },
-                        new() { Name = "Cultural", GroupId = treatmentMethodsGroup.Id, SortOrder = 3 },
-                        new() { Name = "Mechanical", GroupId = treatmentMethodsGroup.Id, SortOrder = 4 },
-                        new() { Name = "Integrated", GroupId = treatmentMethodsGroup.Id, SortOrder = 5 }
-                    ]);
-                }
-
-                // Add subgroups to database
-                foreach (var subgroup in subgroups)
-                {
-                    await _database.InsertAsync(subgroup);
-                }
-
-                App.Log($"Successfully seeded {groups.Count} groups and {subgroups.Count} subgroups");
-
-                // Now seed the lookup items
-                await SeedLookupItemsAsync();
+                App.Log($"Successfully seeded {groups.Count} fallback lookup groups");
             }
             catch (Exception ex)
             {
-                App.Log($"Error seeding lookup data: {ex.Message}");
-                // Don't throw - seeding failure shouldn't prevent app startup
+                App.Log($"Error seeding fallback lookup data: {ex.Message}");
+                throw;
             }
         }
 
@@ -390,21 +379,44 @@ namespace FarmScout.Services
             try
             {
                 var fields = ParseCsvFields(line);
-                if (fields.Length < 7)
+                if (fields.Length < 10)
                 {
-                    App.Log($"Warning: Line {lineNumber} has insufficient fields ({fields.Length}), skipping");
+                    App.Log($"Warning: Line {lineNumber} has insufficient fields ({fields.Length}), expected 10, skipping");
                     return null;
+                }
+
+                // Parse GUIDs - they can be empty for group-only or subgroup-only rows
+                Guid? groupId = null;
+                Guid? subGroupId = null;
+                Guid? itemId = null;
+
+                if (!string.IsNullOrEmpty(fields[0]) && Guid.TryParse(fields[0].Trim(), out var parsedGroupId))
+                {
+                    groupId = parsedGroupId;
+                }
+
+                if (!string.IsNullOrEmpty(fields[1]) && Guid.TryParse(fields[1].Trim(), out var parsedSubGroupId))
+                {
+                    subGroupId = parsedSubGroupId;
+                }
+
+                if (!string.IsNullOrEmpty(fields[2]) && Guid.TryParse(fields[2].Trim(), out var parsedItemId))
+                {
+                    itemId = parsedItemId;
                 }
 
                 return new LookupCsvRow
                 {
-                    Group = fields[0].Trim(),
-                    SubGroup = fields[1].Trim(),
-                    ItemName = fields[2].Trim(),
-                    Description = fields[3].Trim(),
-                    Icon = fields[4].Trim(),
-                    Color = fields[5].Trim(),
-                    SortOrder = int.TryParse(fields[6].Trim(), out var sortOrder) ? sortOrder : 0
+                    GroupId = groupId,
+                    SubGroupId = subGroupId,
+                    ItemId = itemId,
+                    Group = fields[3].Trim(),
+                    SubGroup = fields[4].Trim(),
+                    ItemName = fields[5].Trim(),
+                    Description = fields[6].Trim(),
+                    Icon = fields[7].Trim(),
+                    Color = fields[8].Trim(),
+                    SortOrder = int.TryParse(fields[9].Trim(), out var sortOrder) ? sortOrder : 0
                 };
             }
             catch (Exception ex)
@@ -416,6 +428,9 @@ namespace FarmScout.Services
 
         private class LookupCsvRow
         {
+            public Guid? GroupId { get; set; }
+            public Guid? SubGroupId { get; set; }
+            public Guid? ItemId { get; set; }
             public string Group { get; set; } = string.Empty;
             public string SubGroup { get; set; } = string.Empty;
             public string ItemName { get; set; } = string.Empty;
@@ -478,30 +493,51 @@ namespace FarmScout.Services
 
                 foreach (var row in lookupData)
                 {
-                    // Skip rows without item names (these are just subgroup placeholders)
-                    if (string.IsNullOrEmpty(row.ItemName)) continue;
+                    // Skip rows without item names or item IDs (these are just group/subgroup placeholders)
+                    if (string.IsNullOrEmpty(row.ItemName) || !row.ItemId.HasValue) continue;
 
-                    var group = groups.FirstOrDefault(g => g.Name == row.Group);
+                    // Verify that the group ID exists
+                    if (!row.GroupId.HasValue)
+                    {
+                        App.Log($"Warning: No group ID specified for item '{row.ItemName}'");
+                        continue;
+                    }
+
+                    var group = groups.FirstOrDefault(g => g.Id == row.GroupId.Value);
                     if (group == null)
                     {
-                        App.Log($"Warning: Group '{row.Group}' not found for item '{row.ItemName}'");
+                        App.Log($"Warning: Group ID '{row.GroupId}' not found for item '{row.ItemName}'");
                         continue;
                     }
 
                     Guid? subgroupId = null;
-                    if (!string.IsNullOrEmpty(row.SubGroup))
+                    if (row.SubGroupId.HasValue)
                     {
-                        var subgroup = subgroups.FirstOrDefault(sg => sg.GroupId == group.Id && sg.Name == row.SubGroup);
-                        subgroupId = subgroup?.Id;
+                        var subgroup = subgroups.FirstOrDefault(sg => sg.Id == row.SubGroupId.Value);
+                        if (subgroup != null)
+                        {
+                            subgroupId = subgroup.Id;
+                        }
+                        else
+                        {
+                            App.Log($"Warning: Subgroup ID '{row.SubGroupId}' not found for item '{row.ItemName}'");
+                        }
                     }
 
-                    seedData.Add(new LookupItem
+                    var lookupItem = new LookupItem
                     {
+                        Id = row.ItemId.Value,
                         Name = row.ItemName,
                         GroupId = group.Id,
                         SubGroupId = subgroupId,
-                        Description = row.Description
-                    });
+                        Description = row.Description,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+
+                    seedData.Add(lookupItem);
+                    App.Log($"Processed lookup item from CSV: {lookupItem.Name} (ID: {lookupItem.Id}) in group {group.Name}");
                 }
 
                 App.Log($"Successfully processed {seedData.Count} items from CSV data");
@@ -510,24 +546,6 @@ namespace FarmScout.Services
             {
                 App.Log($"Error seeding lookup items from CSV: {ex.Message}");
                 throw;
-            }
-        }
-
-        private async Task<List<LookupSubGroup>> GetLookupSubGroupsAsync(Guid groupId)
-        {
-            try
-            {
-                var subgroups = await _database.Table<LookupSubGroup>()
-                    .Where(sg => sg.GroupId == groupId && sg.IsActive)
-                    .OrderBy(sg => sg.SortOrder)
-                    .ThenBy(sg => sg.Name)
-                    .ToListAsync();
-                return subgroups;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error retrieving lookup subgroups: {ex.Message}");
-                return new List<LookupSubGroup>();
             }
         }
 
@@ -543,28 +561,37 @@ namespace FarmScout.Services
                     return;
                 }
 
-                App.Log("Seeding observation types with initial data...");
+                App.Log("Seeding observation types...");
 
-                var observationTypes = new List<ObservationType>
-                {
-                    new() { Name = "Disease", Description = "Plant disease observations", Icon = "🦠", Color = "#F44336", SortOrder = 1 },
-                    new() { Name = "Dead Plant", Description = "Dead or dying plant observations", Icon = "💀", Color = "#9E9E9E", SortOrder = 2 },
-                    new() { Name = "Pest", Description = "Pest infestation observations", Icon = "🐛", Color = "#FF9800", SortOrder = 3 },
-                    new() { Name = "Damage", Description = "Plant damage observations", Icon = "💥", Color = "#795548", SortOrder = 4 },
-                    new() { Name = "Growth", Description = "Plant growth observations", Icon = "🌱", Color = "#4CAF50", SortOrder = 5 },
-                    new() { Name = "Harvest", Description = "Harvest observations", Icon = "🌾", Color = "#FFC107", SortOrder = 6 },
-                    new() { Name = "Weather", Description = "Weather condition observations", Icon = "🌤️", Color = "#2196F3", SortOrder = 7 },
-                    new() { Name = "Soil", Description = "Soil condition observations", Icon = "🌍", Color = "#8D6E63", SortOrder = 8 },
-                    new() { Name = "Soil Moisture", Description = "Soil moisture observations", Icon = "💧", Color = "#00BCD4", SortOrder = 9 }
-                };
+                // Try to load from JSON first, then CSV, then fallback
+                var jsonData = await ParseObservationTypesJsonFileAsync();
+                List<ObservationType> observationTypes;
 
-                foreach (var type in observationTypes)
+                if (jsonData != null && jsonData.ObservationTypes.Count > 0)
                 {
-                    await _database.InsertAsync(type);
+                    App.Log($"Loading {jsonData.ObservationTypes.Count} observation types from JSON...");
+                    observationTypes = await SeedObservationTypesFromJsonAsync(jsonData);
                 }
-
-                // Seed data points for each observation type
-                await SeedDataPointsAsync(observationTypes);
+                else
+                {
+                    App.Log("JSON not found or empty, trying CSV...");
+                    var csvData = await ParseObservationTypesCsvFileAsync();
+                    
+                    if (csvData != null && csvData.Count > 0)
+                    {
+                        App.Log($"Loading {csvData.Count} observation types from CSV...");
+                        observationTypes = await SeedObservationTypesFromCsvAsync(csvData);
+                        // Seed data points separately for CSV
+                        await SeedDataPointsAsync(observationTypes);
+                    }
+                    else
+                    {
+                        App.Log("CSV not found or empty, using fallback hardcoded data...");
+                        observationTypes = await SeedObservationTypesFallbackAsync();
+                        // Seed data points separately for fallback
+                        await SeedDataPointsAsync(observationTypes);
+                    }
+                }
 
                 App.Log($"Successfully seeded {observationTypes.Count} observation types");
             }
@@ -575,61 +602,229 @@ namespace FarmScout.Services
             }
         }
 
+        private async Task<List<ObservationType>> SeedObservationTypesFromJsonAsync(ObservationTypesJsonData jsonData)
+        {
+            var observationTypes = new List<ObservationType>();
+
+            foreach (var typeJson in jsonData.ObservationTypes)
+            {
+                if (!Guid.TryParse(typeJson.Id, out var typeId))
+                {
+                    App.Log($"Invalid GUID for observation type: {typeJson.Id}");
+                    continue;
+                }
+
+                var observationType = new ObservationType
+                {
+                    Id = typeId,
+                    Name = typeJson.Name,
+                    Description = typeJson.Description,
+                    Icon = typeJson.Icon,
+                    Color = typeJson.Color,
+                    SortOrder = typeJson.SortOrder,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    IsActive = true
+                };
+
+                await _database.InsertAsync(observationType);
+                observationTypes.Add(observationType);
+                App.Log($"Seeded observation type from JSON: {observationType.Name} (ID: {observationType.Id})");
+
+                // Seed data points for this observation type
+                foreach (var dataPointJson in typeJson.DataPoints)
+                {
+                    if (!Guid.TryParse(dataPointJson.Id, out var dataPointId))
+                    {
+                        App.Log($"Invalid GUID for data point: {dataPointJson.Id}");
+                        continue;
+                    }
+
+                    var dataPoint = new ObservationTypeDataPoint
+                    {
+                        Id = dataPointId,
+                        ObservationTypeId = typeId,
+                        Code = dataPointJson.Code,
+                        Label = dataPointJson.Label,
+                        DataType = dataPointJson.DataType,
+                        LookupGroupName = dataPointJson.LookupGroupName ?? string.Empty,
+                        IsRequired = dataPointJson.IsRequired,
+                        SortOrder = dataPointJson.SortOrder,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        IsActive = true
+                    };
+
+                    await _database.InsertAsync(dataPoint);
+                    App.Log($"Seeded data point from JSON: {dataPoint.Code} (ID: {dataPoint.Id}) for observation type {observationType.Name}");
+                }
+            }
+
+            App.Log($"Successfully seeded {observationTypes.Count} observation types with their data points from JSON");
+            return observationTypes;
+        }
+
+        private async Task<List<ObservationType>> SeedObservationTypesFromCsvAsync(List<ObservationTypeCsvRow> csvData)
+        {
+            var observationTypes = new List<ObservationType>();
+
+            foreach (var row in csvData)
+            {
+                var observationType = new ObservationType
+                {
+                    Id = row.Id,
+                    Name = row.Name,
+                    Description = row.Description,
+                    Icon = row.Icon,
+                    Color = row.Color,
+                    SortOrder = row.SortOrder,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    IsActive = true
+                };
+
+                await _database.InsertAsync(observationType);
+                observationTypes.Add(observationType);
+                App.Log($"Seeded observation type from CSV: {observationType.Name} (ID: {observationType.Id})");
+            }
+
+            return observationTypes;
+        }
+
+        private async Task<List<ObservationType>> SeedObservationTypesFallbackAsync()
+        {
+            var observationTypes = new List<ObservationType>
+            {
+                new() { Name = "Disease", Description = "Plant disease observations", Icon = "🦠", Color = "#F44336", SortOrder = 1 },
+                new() { Name = "Dead Plant", Description = "Dead or dying plant observations", Icon = "💀", Color = "#9E9E9E", SortOrder = 2 },
+                new() { Name = "Pest", Description = "Pest infestation observations", Icon = "🐛", Color = "#FF9800", SortOrder = 3 },
+                new() { Name = "Damage", Description = "Plant damage observations", Icon = "💥", Color = "#795548", SortOrder = 4 },
+                new() { Name = "Growth", Description = "Plant growth observations", Icon = "🌱", Color = "#4CAF50", SortOrder = 5 },
+                new() { Name = "Harvest", Description = "Harvest observations", Icon = "🌾", Color = "#FFC107", SortOrder = 6 },
+                new() { Name = "Weather", Description = "Weather condition observations", Icon = "🌤️", Color = "#2196F3", SortOrder = 7 },
+                new() { Name = "Soil", Description = "Soil condition observations", Icon = "🌍", Color = "#8D6E63", SortOrder = 8 },
+                new() { Name = "Soil Moisture", Description = "Soil moisture observations", Icon = "💧", Color = "#00BCD4", SortOrder = 9 }
+            };
+
+            foreach (var type in observationTypes)
+            {
+                await _database.InsertAsync(type);
+            }
+
+            return observationTypes;
+        }
+
         private async Task SeedDataPointsAsync(List<ObservationType> observationTypes)
         {
             try
             {
-                var diseaseType = observationTypes.First(t => t.Name == "Disease");
-                var pestType = observationTypes.First(t => t.Name == "Pest");
-                var harvestType = observationTypes.First(t => t.Name == "Harvest");
-                var weatherType = observationTypes.First(t => t.Name == "Weather");
-                var soilType = observationTypes.First(t => t.Name == "Soil");
+                App.Log("Seeding observation type data points...");
 
-                var dataPoints = new List<ObservationTypeDataPoint>
+                // Try to load from CSV first
+                var csvData = await ParseObservationTypeDataPointsCsvFileAsync();
+                
+                if (csvData != null && csvData.Count > 0)
                 {
-                    // Disease data points
-                    new() { ObservationTypeId = diseaseType.Id, Code = "disease_name", Label = "Disease Name", DataType = DataTypes.Lookup, LookupGroupName = "Diseases", IsRequired = true, SortOrder = 1 },
-                    new() { ObservationTypeId = diseaseType.Id, Code = "affected_area", Label = "Affected Area %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
-                    new() { ObservationTypeId = diseaseType.Id, Code = "plant_count", Label = "Plant Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
-                    new() { ObservationTypeId = diseaseType.Id, Code = "symptoms", Label = "Symptoms", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
-
-                    // Pest data points
-                    new() { ObservationTypeId = pestType.Id, Code = "pest_name", Label = "Pest Name", DataType = DataTypes.Lookup, LookupGroupName = "Pests", IsRequired = true, SortOrder = 1 },
-                    new() { ObservationTypeId = pestType.Id, Code = "pest_count", Label = "Pest Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
-                    new() { ObservationTypeId = pestType.Id, Code = "damage_level", Label = "Damage Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
-                    new() { ObservationTypeId = pestType.Id, Code = "infestation_area", Label = "Infestation Area", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
-
-                    // Harvest data points
-                    new() { ObservationTypeId = harvestType.Id, Code = "crop_type", Label = "Crop Type", DataType = DataTypes.Lookup, LookupGroupName = "Crop Types", IsRequired = true, SortOrder = 1 },
-                    new() { ObservationTypeId = harvestType.Id, Code = "weight_kg", Label = "Weight (kg)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
-                    new() { ObservationTypeId = harvestType.Id, Code = "quality", Label = "Quality", DataType = DataTypes.String, IsRequired = false, SortOrder = 3 },
-                    new() { ObservationTypeId = harvestType.Id, Code = "yield_per_area", Label = "Yield per Area", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
-
-                    // Weather data points
-                    new() { ObservationTypeId = weatherType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
-                    new() { ObservationTypeId = weatherType.Id, Code = "humidity", Label = "Humidity (%)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
-                    new() { ObservationTypeId = weatherType.Id, Code = "wind_speed", Label = "Wind Speed", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
-                    new() { ObservationTypeId = weatherType.Id, Code = "precipitation", Label = "Precipitation", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
-
-                    // Soil data points
-                    new() { ObservationTypeId = soilType.Id, Code = "ph_level", Label = "pH Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
-                    new() { ObservationTypeId = soilType.Id, Code = "moisture", Label = "Moisture %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
-                    new() { ObservationTypeId = soilType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
-                    new() { ObservationTypeId = soilType.Id, Code = "nutrient_level", Label = "Nutrient Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 }
-                };
-
-                foreach (var dataPoint in dataPoints)
-                {
-                    await _database.InsertAsync(dataPoint);
+                    App.Log($"Loading {csvData.Count} data points from CSV...");
+                    await SeedDataPointsFromCsvAsync(csvData, observationTypes);
                 }
-
-                App.Log($"Successfully seeded {dataPoints.Count} data points");
+                else
+                {
+                    App.Log("CSV not found or empty, using fallback hardcoded data...");
+                    await SeedDataPointsFallbackAsync(observationTypes);
+                }
             }
             catch (Exception ex)
             {
                 App.Log($"Error seeding data points: {ex.Message}");
                 // Don't throw - seeding failure shouldn't prevent app startup
             }
+        }
+
+        private async Task SeedDataPointsFromCsvAsync(List<ObservationTypeDataPointCsvRow> csvData, List<ObservationType> observationTypes)
+        {
+            var dataPointsSeeded = 0;
+            var observationTypeDict = observationTypes.ToDictionary(ot => ot.Id, ot => ot);
+
+            foreach (var row in csvData)
+            {
+                // Verify that the observation type exists
+                if (!observationTypeDict.ContainsKey(row.ObservationTypeId))
+                {
+                    App.Log($"Warning: Observation type ID {row.ObservationTypeId} not found for data point {row.Code}");
+                    continue;
+                }
+
+                var dataPoint = new ObservationTypeDataPoint
+                {
+                    Id = row.Id,
+                    ObservationTypeId = row.ObservationTypeId,
+                    Code = row.Code,
+                    Label = row.Label,
+                    DataType = row.DataType,
+                    LookupGroupName = row.LookupGroupName ?? string.Empty,
+                    IsRequired = row.IsRequired,
+                    SortOrder = row.SortOrder,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    IsActive = true
+                };
+
+                await _database.InsertAsync(dataPoint);
+                dataPointsSeeded++;
+                App.Log($"Seeded data point from CSV: {dataPoint.Code} (ID: {dataPoint.Id}) for observation type {observationTypeDict[row.ObservationTypeId].Name}");
+            }
+
+            App.Log($"Successfully seeded {dataPointsSeeded} data points from CSV");
+        }
+
+        private async Task SeedDataPointsFallbackAsync(List<ObservationType> observationTypes)
+        {
+            var diseaseType = observationTypes.First(t => t.Name == "Disease");
+            var pestType = observationTypes.First(t => t.Name == "Pest");
+            var harvestType = observationTypes.First(t => t.Name == "Harvest");
+            var weatherType = observationTypes.First(t => t.Name == "Weather");
+            var soilType = observationTypes.First(t => t.Name == "Soil");
+
+            var dataPoints = new List<ObservationTypeDataPoint>
+            {
+                // Disease data points
+                new() { ObservationTypeId = diseaseType.Id, Code = "disease_name", Label = "Disease Name", DataType = DataTypes.Lookup, LookupGroupName = "Diseases", IsRequired = true, SortOrder = 1 },
+                new() { ObservationTypeId = diseaseType.Id, Code = "affected_area", Label = "Affected Area %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                new() { ObservationTypeId = diseaseType.Id, Code = "plant_count", Label = "Plant Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                new() { ObservationTypeId = diseaseType.Id, Code = "symptoms", Label = "Symptoms", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
+
+                // Pest data points
+                new() { ObservationTypeId = pestType.Id, Code = "pest_name", Label = "Pest Name", DataType = DataTypes.Lookup, LookupGroupName = "Pests", IsRequired = true, SortOrder = 1 },
+                new() { ObservationTypeId = pestType.Id, Code = "pest_count", Label = "Pest Count", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                new() { ObservationTypeId = pestType.Id, Code = "damage_level", Label = "Damage Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                new() { ObservationTypeId = pestType.Id, Code = "infestation_area", Label = "Infestation Area", DataType = DataTypes.String, IsRequired = false, SortOrder = 4 },
+
+                // Harvest data points
+                new() { ObservationTypeId = harvestType.Id, Code = "crop_type", Label = "Crop Type", DataType = DataTypes.Lookup, LookupGroupName = "Crop Types", IsRequired = true, SortOrder = 1 },
+                new() { ObservationTypeId = harvestType.Id, Code = "weight_kg", Label = "Weight (kg)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                new() { ObservationTypeId = harvestType.Id, Code = "quality", Label = "Quality", DataType = DataTypes.String, IsRequired = false, SortOrder = 3 },
+                new() { ObservationTypeId = harvestType.Id, Code = "yield_per_area", Label = "Yield per Area", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
+
+                // Weather data points
+                new() { ObservationTypeId = weatherType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
+                new() { ObservationTypeId = weatherType.Id, Code = "humidity", Label = "Humidity (%)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                new() { ObservationTypeId = weatherType.Id, Code = "wind_speed", Label = "Wind Speed", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                new() { ObservationTypeId = weatherType.Id, Code = "precipitation", Label = "Precipitation", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 },
+
+                // Soil data points
+                new() { ObservationTypeId = soilType.Id, Code = "ph_level", Label = "pH Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 1 },
+                new() { ObservationTypeId = soilType.Id, Code = "moisture", Label = "Moisture %", DataType = DataTypes.Long, IsRequired = false, SortOrder = 2 },
+                new() { ObservationTypeId = soilType.Id, Code = "temperature", Label = "Temperature (°C)", DataType = DataTypes.Long, IsRequired = false, SortOrder = 3 },
+                new() { ObservationTypeId = soilType.Id, Code = "nutrient_level", Label = "Nutrient Level", DataType = DataTypes.Long, IsRequired = false, SortOrder = 4 }
+            };
+
+            foreach (var dataPoint in dataPoints)
+            {
+                await _database.InsertAsync(dataPoint);
+            }
+
+            App.Log($"Successfully seeded {dataPoints.Count} data points from fallback data");
         }
 
         private async Task SeedReportGroupsAsync()
@@ -1151,5 +1346,476 @@ namespace FarmScout.Services
             var parts = summary.Split(" - ");
             return parts.Length > 0 ? parts[0] : summary;
         }
+
+        #region JSON Parsing for Observation Types and Data Points
+
+        private static async Task<ObservationTypesJsonData?> ParseObservationTypesJsonFileAsync()
+        {
+            try
+            {
+                var jsonPath = GetObservationTypesJsonFilePath();
+                if (string.IsNullOrEmpty(jsonPath))
+                {
+                    App.Log("observation_types_seeding.json not found");
+                    return null;
+                }
+
+                App.Log($"Reading observation types JSON from: {jsonPath}");
+                
+                var jsonContent = await File.ReadAllTextAsync(jsonPath);
+                if (string.IsNullOrEmpty(jsonContent))
+                {
+                    App.Log("Observation types JSON file is empty");
+                    return null;
+                }
+
+                var jsonData = JsonSerializer.Deserialize<ObservationTypesJsonData>(jsonContent, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (jsonData?.ObservationTypes == null || jsonData.ObservationTypes.Count == 0)
+                {
+                    App.Log("No observation types found in JSON file");
+                    return null;
+                }
+
+                App.Log($"Successfully parsed {jsonData.ObservationTypes.Count} observation types from JSON");
+                return jsonData;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error reading observation types JSON file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static string? GetObservationTypesJsonFilePath()
+        {
+            var fileName = "observation_types_seeding.json";
+            var searchPaths = new[]
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Raw", fileName),
+                Path.Combine(FileSystem.AppDataDirectory, fileName),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName),
+                fileName // Current directory
+            };
+
+            foreach (var path in searchPaths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            return null;
+        }
+
+        private class ObservationTypesJsonData
+        {
+            public List<ObservationTypeJson> ObservationTypes { get; set; } = new();
+        }
+
+        private class ObservationTypeJson
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public string Color { get; set; } = string.Empty;
+            public int SortOrder { get; set; }
+            public List<ObservationTypeDataPointJson> DataPoints { get; set; } = new();
+        }
+
+        private class ObservationTypeDataPointJson
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Code { get; set; } = string.Empty;
+            public string Label { get; set; } = string.Empty;
+            public string DataType { get; set; } = string.Empty;
+            public string? LookupGroupName { get; set; }
+            public bool IsRequired { get; set; }
+            public int SortOrder { get; set; }
+        }
+
+        #endregion
+
+        #region JSON Parsing for Lookup Data
+
+        private static async Task<LookupDataJsonData?> ParseLookupDataJsonFileAsync()
+        {
+            try
+            {
+                var jsonPath = GetLookupDataJsonFilePath();
+                if (string.IsNullOrEmpty(jsonPath))
+                {
+                    App.Log("lookup_data_seeding.json not found");
+                    return null;
+                }
+
+                App.Log($"Reading lookup data JSON from: {jsonPath}");
+                
+                var jsonContent = await File.ReadAllTextAsync(jsonPath);
+                if (string.IsNullOrEmpty(jsonContent))
+                {
+                    App.Log("Lookup data JSON file is empty");
+                    return null;
+                }
+
+                var jsonData = JsonSerializer.Deserialize<LookupDataJsonData>(jsonContent, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (jsonData?.LookupGroups == null || jsonData.LookupGroups.Count == 0)
+                {
+                    App.Log("No lookup groups found in JSON file");
+                    return null;
+                }
+
+                App.Log($"Successfully parsed {jsonData.LookupGroups.Count} lookup groups from JSON");
+                return jsonData;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error reading lookup data JSON file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static string? GetLookupDataJsonFilePath()
+        {
+            var fileName = "lookup_data_seeding.json";
+            var searchPaths = new[]
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Raw", fileName),
+                Path.Combine(FileSystem.AppDataDirectory, fileName),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName),
+                fileName // Current directory
+            };
+
+            foreach (var path in searchPaths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            return null;
+        }
+
+        private class LookupDataJsonData
+        {
+            public List<LookupGroupJson> LookupGroups { get; set; } = new();
+        }
+
+        private class LookupGroupJson
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public string Color { get; set; } = string.Empty;
+            public int SortOrder { get; set; }
+            public List<LookupSubGroupJson> SubGroups { get; set; } = new();
+        }
+
+        private class LookupSubGroupJson
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public string Color { get; set; } = string.Empty;
+            public int SortOrder { get; set; }
+            public List<LookupItemJson> Items { get; set; } = new();
+        }
+
+        private class LookupItemJson
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public string Color { get; set; } = string.Empty;
+            public int SortOrder { get; set; }
+        }
+
+        #endregion
+
+        #region CSV Parsing for Observation Types and Data Points
+
+        private static async Task<List<ObservationTypeCsvRow>?> ParseObservationTypesCsvFileAsync()
+        {
+            try
+            {
+                var csvPath = GetObservationTypesCsvFilePath();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    App.Log("observation_types_seeding.csv not found");
+                    return null;
+                }
+
+                App.Log($"Reading observation types CSV from: {csvPath}");
+                
+                var lines = await File.ReadAllLinesAsync(csvPath);
+                if (lines.Length <= 1)
+                {
+                    App.Log("Observation types CSV file is empty or only contains header");
+                    return null;
+                }
+
+                var observationTypes = new List<ObservationTypeCsvRow>();
+                
+                // Skip header row
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var line = lines[i].Trim();
+                    if (string.IsNullOrEmpty(line)) continue;
+
+                    try
+                    {
+                        var row = ParseObservationTypeCsvLine(line, i + 1);
+                        if (row != null)
+                        {
+                            observationTypes.Add(row);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Log($"Error parsing observation type CSV line {i + 1}: {ex.Message}");
+                    }
+                }
+
+                App.Log($"Successfully parsed {observationTypes.Count} observation types from CSV");
+                return observationTypes;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error reading observation types CSV file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static async Task<List<ObservationTypeDataPointCsvRow>?> ParseObservationTypeDataPointsCsvFileAsync()
+        {
+            try
+            {
+                var csvPath = GetObservationTypeDataPointsCsvFilePath();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    App.Log("observation_type_datapoints_seeding.csv not found");
+                    return null;
+                }
+
+                App.Log($"Reading observation type data points CSV from: {csvPath}");
+                
+                var lines = await File.ReadAllLinesAsync(csvPath);
+                if (lines.Length <= 1)
+                {
+                    App.Log("Observation type data points CSV file is empty or only contains header");
+                    return null;
+                }
+
+                var dataPoints = new List<ObservationTypeDataPointCsvRow>();
+                
+                // Skip header row
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var line = lines[i].Trim();
+                    if (string.IsNullOrEmpty(line)) continue;
+
+                    try
+                    {
+                        var row = ParseObservationTypeDataPointCsvLine(line, i + 1);
+                        if (row != null)
+                        {
+                            dataPoints.Add(row);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Log($"Error parsing observation type data point CSV line {i + 1}: {ex.Message}");
+                    }
+                }
+
+                App.Log($"Successfully parsed {dataPoints.Count} observation type data points from CSV");
+                return dataPoints;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error reading observation type data points CSV file: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static string? GetObservationTypesCsvFilePath()
+        {
+            var fileName = "observation_types_seeding.csv";
+            var searchPaths = new[]
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Raw", fileName),
+                Path.Combine(FileSystem.AppDataDirectory, fileName),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName),
+                fileName // Current directory
+            };
+
+            foreach (var path in searchPaths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            return null;
+        }
+
+        private static string? GetObservationTypeDataPointsCsvFilePath()
+        {
+            var fileName = "observation_type_datapoints_seeding.csv";
+            var searchPaths = new[]
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Raw", fileName),
+                Path.Combine(FileSystem.AppDataDirectory, fileName),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName),
+                fileName // Current directory
+            };
+
+            foreach (var path in searchPaths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            return null;
+        }
+
+        private static ObservationTypeCsvRow? ParseObservationTypeCsvLine(string line, int lineNumber)
+        {
+            try
+            {
+                var fields = ParseCsvFields(line);
+                if (fields.Length < 6)
+                {
+                    App.Log($"Observation type CSV line {lineNumber} has insufficient fields ({fields.Length} found, 6 expected)");
+                    return null;
+                }
+
+                if (!Guid.TryParse(fields[0], out var id))
+                {
+                    App.Log($"Invalid GUID in observation type CSV line {lineNumber}: {fields[0]}");
+                    return null;
+                }
+
+                if (!int.TryParse(fields[5], out var sortOrder))
+                {
+                    App.Log($"Invalid sort order in observation type CSV line {lineNumber}: {fields[5]}");
+                    sortOrder = 0;
+                }
+
+                return new ObservationTypeCsvRow
+                {
+                    Id = id,
+                    Name = fields[1],
+                    Description = fields[2],
+                    Icon = fields[3],
+                    Color = fields[4],
+                    SortOrder = sortOrder
+                };
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error parsing observation type CSV line {lineNumber}: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static ObservationTypeDataPointCsvRow? ParseObservationTypeDataPointCsvLine(string line, int lineNumber)
+        {
+            try
+            {
+                var fields = ParseCsvFields(line);
+                if (fields.Length < 8)
+                {
+                    App.Log($"Observation type data point CSV line {lineNumber} has insufficient fields ({fields.Length} found, 8 expected)");
+                    return null;
+                }
+
+                if (!Guid.TryParse(fields[0], out var id))
+                {
+                    App.Log($"Invalid GUID in observation type data point CSV line {lineNumber}: {fields[0]}");
+                    return null;
+                }
+
+                if (!Guid.TryParse(fields[1], out var observationTypeId))
+                {
+                    App.Log($"Invalid observation type GUID in data point CSV line {lineNumber}: {fields[1]}");
+                    return null;
+                }
+
+                if (!bool.TryParse(fields[6], out var isRequired))
+                {
+                    App.Log($"Invalid boolean value for IsRequired in data point CSV line {lineNumber}: {fields[6]}");
+                    isRequired = false;
+                }
+
+                if (!int.TryParse(fields[7], out var sortOrder))
+                {
+                    App.Log($"Invalid sort order in data point CSV line {lineNumber}: {fields[7]}");
+                    sortOrder = 0;
+                }
+
+                return new ObservationTypeDataPointCsvRow
+                {
+                    Id = id,
+                    ObservationTypeId = observationTypeId,
+                    Code = fields[2],
+                    Label = fields[3],
+                    DataType = fields[4],
+                    LookupGroupName = string.IsNullOrEmpty(fields[5]) ? null : fields[5],
+                    IsRequired = isRequired,
+                    SortOrder = sortOrder
+                };
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Error parsing observation type data point CSV line {lineNumber}: {ex.Message}");
+                return null;
+            }
+        }
+
+        private class ObservationTypeCsvRow
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public string Color { get; set; } = string.Empty;
+            public int SortOrder { get; set; }
+        }
+
+        private class ObservationTypeDataPointCsvRow
+        {
+            public Guid Id { get; set; }
+            public Guid ObservationTypeId { get; set; }
+            public string Code { get; set; } = string.Empty;
+            public string Label { get; set; } = string.Empty;
+            public string DataType { get; set; } = string.Empty;
+            public string? LookupGroupName { get; set; }
+            public bool IsRequired { get; set; }
+            public int SortOrder { get; set; }
+        }
+
+        #endregion
     }
 } 

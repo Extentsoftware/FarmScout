@@ -1,0 +1,10 @@
+Id,Name,Description,Icon,Color,SortOrder
+550e8400-e29b-41d4-a716-446655440001,Disease,Plant disease observations,🦠,#F44336,1
+550e8400-e29b-41d4-a716-446655440002,Dead Plant,Dead or dying plant observations,💀,#9E9E9E,2
+550e8400-e29b-41d4-a716-446655440003,Pest,Pest infestation observations,🐛,#FF9800,3
+550e8400-e29b-41d4-a716-446655440004,Damage,Plant damage observations,💥,#795548,4
+550e8400-e29b-41d4-a716-446655440005,Growth,Plant growth observations,🌱,#4CAF50,5
+550e8400-e29b-41d4-a716-446655440006,Harvest,Harvest observations,🌾,#FFC107,6
+550e8400-e29b-41d4-a716-446655440007,Weather,Weather condition observations,🌤️,#2196F3,7
+550e8400-e29b-41d4-a716-446655440008,Soil,Soil condition observations,🌍,#8D6E63,8
+550e8400-e29b-41d4-a716-446655440009,Soil Moisture,Soil moisture observations,💧,#00BCD4,9

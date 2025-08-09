@@ -1,0 +1,270 @@
+{
+  "observationTypes": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Disease",
+      "description": "Plant disease observations",
+      "icon": "🦠",
+      "color": "#F44336",
+      "sortOrder": 1,
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440001",
+          "code": "disease_name",
+          "label": "Disease Name",
+          "dataType": "Lookup",
+          "lookupGroupName": "Diseases",
+          "isRequired": true,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440002",
+          "code": "affected_area",
+          "label": "Affected Area %",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440003",
+          "code": "plant_count",
+          "label": "Plant Count",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440004",
+          "code": "symptoms",
+          "label": "Symptoms",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Dead Plant",
+      "description": "Dead or dying plant observations",
+      "icon": "💀",
+      "color": "#9E9E9E",
+      "sortOrder": 2,
+      "dataPoints": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "name": "Pest",
+      "description": "Pest infestation observations",
+      "icon": "🐛",
+      "color": "#FF9800",
+      "sortOrder": 3,
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440005",
+          "code": "pest_name",
+          "label": "Pest Name",
+          "dataType": "Lookup",
+          "lookupGroupName": "Pests",
+          "isRequired": true,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440006",
+          "code": "pest_count",
+          "label": "Pest Count",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440007",
+          "code": "damage_level",
+          "label": "Damage Level",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440008",
+          "code": "infestation_area",
+          "label": "Infestation Area",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "name": "Damage",
+      "description": "Plant damage observations",
+      "icon": "💥",
+      "color": "#795548",
+      "sortOrder": 4,
+      "dataPoints": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "name": "Growth",
+      "description": "Plant growth observations",
+      "icon": "🌱",
+      "color": "#4CAF50",
+      "sortOrder": 5,
+      "dataPoints": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440006",
+      "name": "Harvest",
+      "description": "Harvest observations",
+      "icon": "🌾",
+      "color": "#FFC107",
+      "sortOrder": 6,
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440009",
+          "code": "crop_type",
+          "label": "Crop Type",
+          "dataType": "Lookup",
+          "lookupGroupName": "Crop Types",
+          "isRequired": true,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440010",
+          "code": "weight_kg",
+          "label": "Weight (kg)",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440011",
+          "code": "quality",
+          "label": "Quality",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440012",
+          "code": "yield_per_area",
+          "label": "Yield per Area",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440007",
+      "name": "Weather",
+      "description": "Weather condition observations",
+      "icon": "🌤️",
+      "color": "#2196F3",
+      "sortOrder": 7,
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440013",
+          "code": "temperature",
+          "label": "Temperature (°C)",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440014",
+          "code": "humidity",
+          "label": "Humidity (%)",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440015",
+          "code": "wind_speed",
+          "label": "Wind Speed",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440016",
+          "code": "precipitation",
+          "label": "Precipitation",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440008",
+      "name": "Soil",
+      "description": "Soil condition observations",
+      "icon": "🌍",
+      "color": "#8D6E63",
+      "sortOrder": 8,
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440017",
+          "code": "ph_level",
+          "label": "pH Level",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440018",
+          "code": "moisture",
+          "label": "Moisture %",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440019",
+          "code": "temperature",
+          "label": "Temperature (°C)",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440020",
+          "code": "nutrient_level",
+          "label": "Nutrient Level",
+          "dataType": "Long",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440009",
+      "name": "Soil Moisture",
+      "description": "Soil moisture observations",
+      "icon": "💧",
+      "color": "#00BCD4",
+      "sortOrder": 9,
+      "dataPoints": []
+    }
+  ]
+}

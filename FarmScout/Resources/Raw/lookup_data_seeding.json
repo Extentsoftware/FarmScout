@@ -1,0 +1,1002 @@
+{
+  "lookupGroups": [
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440001",
+      "name": "Diseases",
+      "description": "Disease types and conditions",
+      "icon": "🦠",
+      "color": "#F44336",
+      "sortOrder": 1,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440001",
+          "name": "Fungal",
+          "icon": "🍄",
+          "color": "#8D6E63",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440001",
+              "name": "Powdery Mildew",
+              "description": "White powdery coating on leaves",
+              "icon": "🍄",
+              "color": "#FFEB3B",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440002",
+              "name": "Rust",
+              "description": "Orange-brown spots on leaves",
+              "icon": "🦠",
+              "color": "#FF5722",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440003",
+              "name": "Blight",
+              "description": "Dark spots spreading on foliage",
+              "icon": "💀",
+              "color": "#424242",
+              "sortOrder": 3
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440002",
+          "name": "Bacterial",
+          "icon": "🦠",
+          "color": "#795548",
+          "sortOrder": 2,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440004",
+              "name": "Fire Blight",
+              "description": "Blackened branches and leaves",
+              "icon": "🔥",
+              "color": "#D32F2F",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440005",
+              "name": "Crown Gall",
+              "description": "Tumor-like growths on roots",
+              "icon": "🎭",
+              "color": "#8BC34A",
+              "sortOrder": 2
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440003",
+          "name": "Viral",
+          "icon": "🔬",
+          "color": "#607D8B",
+          "sortOrder": 3,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440006",
+              "name": "Mosaic Virus",
+              "description": "Mottled yellow patterns on leaves",
+              "icon": "🌿",
+              "color": "#4CAF50",
+              "sortOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440002",
+      "name": "Pests",
+      "description": "Insect and animal pests",
+      "icon": "🐛",
+      "color": "#FF9800",
+      "sortOrder": 2,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440004",
+          "name": "Insects",
+          "icon": "🦗",
+          "color": "#FFC107",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440007",
+              "name": "Aphids",
+              "description": "Small green insects on stems",
+              "icon": "🐛",
+              "color": "#4CAF50",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440008",
+              "name": "Caterpillars",
+              "description": "Leaf-eating larvae",
+              "icon": "🐛",
+              "color": "#8BC34A",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440009",
+              "name": "Spider Mites",
+              "description": "Tiny red/yellow mites",
+              "icon": "🕷️",
+              "color": "#F44336",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440010",
+              "name": "Thrips",
+              "description": "Small flying insects",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 4
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440005",
+          "name": "Mammals",
+          "icon": "🐭",
+          "color": "#795548",
+          "sortOrder": 2,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440011",
+              "name": "Rabbits",
+              "description": "Vegetation damage from rabbits",
+              "icon": "🐰",
+              "color": "#CDDC39",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440012",
+              "name": "Deer",
+              "description": "Browsing damage from deer",
+              "icon": "🦌",
+              "color": "#8D6E63",
+              "sortOrder": 2
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440006",
+          "name": "Birds",
+          "icon": "🐦",
+          "color": "#03A9F4",
+          "sortOrder": 3,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440013",
+              "name": "Crows",
+              "description": "Seed and fruit damage",
+              "icon": "🐦",
+              "color": "#424242",
+              "sortOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440003",
+      "name": "Crop Types",
+      "description": "Types of crops grown",
+      "icon": "🌾",
+      "color": "#FFC107",
+      "sortOrder": 3,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440007",
+          "name": "Grains",
+          "icon": "🌾",
+          "color": "#FF8F00",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440014",
+              "name": "Wheat",
+              "description": "Winter and spring wheat",
+              "icon": "🌾",
+              "color": "#FFB300",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440015",
+              "name": "Corn",
+              "description": "Field corn and sweet corn",
+              "icon": "🌽",
+              "color": "#FFEB3B",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440016",
+              "name": "Barley",
+              "description": "Malting and feed barley",
+              "icon": "🌾",
+              "color": "#FF8F00",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440017",
+              "name": "Oats",
+              "description": "Feed and milling oats",
+              "icon": "🌾",
+              "color": "#FFC107",
+              "sortOrder": 4
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440008",
+          "name": "Vegetables",
+          "icon": "🥕",
+          "color": "#4CAF50",
+          "sortOrder": 2,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440018",
+              "name": "Tomatoes",
+              "description": "Fresh market tomatoes",
+              "icon": "🍅",
+              "color": "#F44336",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440019",
+              "name": "Carrots",
+              "description": "Fresh and processing carrots",
+              "icon": "🥕",
+              "color": "#FF9800",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440020",
+              "name": "Lettuce",
+              "description": "Head and leaf lettuce",
+              "icon": "🥬",
+              "color": "#4CAF50",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440021",
+              "name": "Potatoes",
+              "description": "Seed and table potatoes",
+              "icon": "🥔",
+              "color": "#8D6E63",
+              "sortOrder": 4
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440009",
+          "name": "Fruits",
+          "icon": "🍎",
+          "color": "#E91E63",
+          "sortOrder": 3,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440022",
+              "name": "Apples",
+              "description": "Various apple varieties",
+              "icon": "🍎",
+              "color": "#F44336",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440023",
+              "name": "Grapes",
+              "description": "Wine and table grapes",
+              "icon": "🍇",
+              "color": "#9C27B0",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440024",
+              "name": "Berries",
+              "description": "Strawberries and blueberries",
+              "icon": "🫐",
+              "color": "#3F51B5",
+              "sortOrder": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440004",
+      "name": "Conditions",
+      "description": "Field and crop conditions",
+      "icon": "🏥",
+      "color": "#4CAF50",
+      "sortOrder": 4,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440010",
+          "name": "Health",
+          "icon": "💚",
+          "color": "#4CAF50",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440025",
+              "name": "Excellent",
+              "description": "Optimal growing conditions",
+              "icon": "💚",
+              "color": "#4CAF50",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440026",
+              "name": "Good",
+              "description": "Healthy with minor issues",
+              "icon": "✅",
+              "color": "#8BC34A",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440027",
+              "name": "Fair",
+              "description": "Some concerns present",
+              "icon": "⚖️",
+              "color": "#CDDC39",
+              "sortOrder": 3
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440011",
+          "name": "Stress",
+          "icon": "⚠️",
+          "color": "#FF9800",
+          "sortOrder": 2,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440028",
+              "name": "Drought Stress",
+              "description": "Water deficiency symptoms",
+              "icon": "🌵",
+              "color": "#FF8F00",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440029",
+              "name": "Nutrient Deficiency",
+              "description": "Lacking essential nutrients",
+              "icon": "🧪",
+              "color": "#FF5722",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440030",
+              "name": "Heat Stress",
+              "description": "Temperature-related damage",
+              "icon": "🌡️",
+              "color": "#F44336",
+              "sortOrder": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440005",
+      "name": "Chemicals",
+      "description": "Agricultural chemicals and treatments",
+      "icon": "🧪",
+      "color": "#673AB7",
+      "sortOrder": 5,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440012",
+          "name": "Fertilisers",
+          "icon": "🌱",
+          "color": "#4CAF50",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440031",
+              "name": "AN",
+              "description": "Ammonium Nitrate - Nitrate (N)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440032",
+              "name": "Calcium Nitrate",
+              "description": "Nitrate (N) - $31.00",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440033",
+              "name": "Clearwater Blend",
+              "description": "Mix - $37.00",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440034",
+              "name": "Compost",
+              "description": "Mix",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440035",
+              "name": "Compound D",
+              "description": "Phosphate (P)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440036",
+              "name": "Compound J",
+              "description": "Mix",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440037",
+              "name": "Cow Manure",
+              "description": "Mix",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440038",
+              "name": "Etidot-67",
+              "description": "Boron (B)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 8
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440039",
+              "name": "Foliar Fert",
+              "description": "Mix",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 9
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440040",
+              "name": "Grow",
+              "description": "",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 10
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440041",
+              "name": "Husks",
+              "description": "",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 11
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440042",
+              "name": "Kelp-P-Max",
+              "description": "Mix",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 12
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440043",
+              "name": "Lime (Calcitic)",
+              "description": "$9.00",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 13
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440044",
+              "name": "Lime (Dolomite)",
+              "description": "Soil conditioning - Lime",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 14
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440045",
+              "name": "MAP",
+              "description": "Mono Ammonium Phosphate - Phosphate (P) - $110.00",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 15
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440046",
+              "name": "MOP",
+              "description": "Muriate of Potash - Potassium (K)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 16
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440047",
+              "name": "Phosphoric Acid",
+              "description": "",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 17
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440048",
+              "name": "SSP",
+              "description": "Super Single Phosphate - Phosphate (P)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 18
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440049",
+              "name": "Urea",
+              "description": "Nitrate (N)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 19
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440050",
+              "name": "Zinc Oxide",
+              "description": "Zinc (Zn)",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 20
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440051",
+              "name": "Zinc Sulphate",
+              "description": "Zinc (Zn) - preferably before the summer rains, or in early summer",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 21
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440013",
+          "name": "Foliar Feeds",
+          "icon": "🍃",
+          "color": "#8BC34A",
+          "sortOrder": 2,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440052",
+              "name": "Kynosol k max / best bloom",
+              "description": "Flowering foliar - Potassium k max",
+              "icon": "🍃",
+              "color": "#8BC34A",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440053",
+              "name": "Omniboost",
+              "description": "Post-flowering - Mix",
+              "icon": "🍃",
+              "color": "#8BC34A",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440054",
+              "name": "Solubor",
+              "description": "Apply vegetative growth and nut development",
+              "icon": "🍃",
+              "color": "#8BC34A",
+              "sortOrder": 3
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440014",
+          "name": "Fungicides",
+          "icon": "🛡️",
+          "color": "#FF5722",
+          "sortOrder": 3,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440055",
+              "name": "Acomil",
+              "description": "FRAC 40 - dimethomorph",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440056",
+              "name": "Alliete",
+              "description": "FRAC 33 - Phytophthora, downy mildew, canker",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440057",
+              "name": "Alvarion",
+              "description": "FRAC 7 - systemic fungicide, Botrytis",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440058",
+              "name": "Bellis",
+              "description": "FRAC 11 + 7",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440059",
+              "name": "Blight Cure",
+              "description": "",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440060",
+              "name": "Chlorothalonil",
+              "description": "FRAC MO5 - non-systemic",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440061",
+              "name": "Copper oxychloride",
+              "description": "FRAC M1 - Scab, Anthracnose, Downy mildew, Early blight, and Late blight",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440062",
+              "name": "Fosetyl",
+              "description": "FRAC 33 - systemic long term Phytophthora, Pythium and Plasmopara",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 8
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440063",
+              "name": "Mancozeb (curethane/dithane)",
+              "description": "FRAC M - broad spectrum",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 9
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440064",
+              "name": "Metalaxyl",
+              "description": "FRAC 4 - possibly ineffective - Pythium",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 10
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440065",
+              "name": "Pyraclostrobin",
+              "description": "FRAC 11",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 11
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440066",
+              "name": "Warrior",
+              "description": "FRAC 4+M - Metalaxyl + Mancozeb",
+              "icon": "🛡️",
+              "color": "#FF5722",
+              "sortOrder": 12
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440015",
+          "name": "Hormones",
+          "icon": "🧬",
+          "color": "#E91E63",
+          "sortOrder": 4,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440067",
+              "name": "Etherphone",
+              "description": "drops nuts",
+              "icon": "🧬",
+              "color": "#E91E63",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440068",
+              "name": "Gibberellic acid",
+              "description": "Hormone for root growth",
+              "icon": "🧬",
+              "color": "#E91E63",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440069",
+              "name": "Seradix",
+              "description": "Rooting compound",
+              "icon": "🧬",
+              "color": "#E91E63",
+              "sortOrder": 3
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440016",
+          "name": "Insecticides",
+          "icon": "🦟",
+          "color": "#9C27B0",
+          "sortOrder": 5,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440070",
+              "name": "Acephate",
+              "description": "IRAC 1B - aphids, leaf miners, caterpillars, sawflies, thrips",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440071",
+              "name": "Acetacure",
+              "description": "IRAC 4A - thrips, whiteflies and aphids",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440072",
+              "name": "Acol Lambda",
+              "description": "IRAC 3 - stink bug - not more often than 82 days",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440073",
+              "name": "Actellic Gold Dust",
+              "description": "IRAC 4A - Used to treat grain before bagging",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440074",
+              "name": "Benzoprid",
+              "description": "Benzpyrimoxan",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440075",
+              "name": "Carbaryl",
+              "description": "IRAC 1A",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440076",
+              "name": "Carbofuran",
+              "description": "IRAC 1A - green leafhoppers, brown plant hoppers, stem borers and whorl maggots",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440077",
+              "name": "Chlorpyrifos",
+              "description": "IRAC 1B - control of foliage and soil-born insects",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 8
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440078",
+              "name": "Cyhalothrin",
+              "description": "IRAC 3",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 9
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440079",
+              "name": "Diazimone (Diazinon)",
+              "description": "IRAC 1B - broad spectrum - Potato blight; Leaf spot; Scab; Rust",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 10
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440080",
+              "name": "Dichlorvos",
+              "description": "IRAC 1B - indoor use mushroom flies, aphids, spider mites, caterpillars, thrips, and whiteflies",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 11
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440081",
+              "name": "Dynamo",
+              "description": "IRAC 28",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 12
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440082",
+              "name": "Fastac",
+              "description": "IRAC 3A",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 13
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440083",
+              "name": "Fencure (Fenvarelate)",
+              "description": "IRAC 3 - Insecticide (toxic to bees)",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 14
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440084",
+              "name": "Imidacloorid",
+              "description": "IRAC 4A",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 15
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440085",
+              "name": "Lambda Cyhalothrin",
+              "description": "IRAC 3A - aphids, Colorado beetle, and thrips",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 16
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440086",
+              "name": "Lamdex",
+              "description": "IRAC 3",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 17
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440087",
+              "name": "Malathion",
+              "description": "IRAC 1B - mosquitoes, aphids, whiteflies, mealybugs, red spider mites and scales",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 18
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440088",
+              "name": "Methomyl",
+              "description": "IRAC 1A - Broad spectrum",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 19
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440089",
+              "name": "Savage",
+              "description": "IRAC 13 - Thrips",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 20
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440090",
+              "name": "Thunder",
+              "description": "IRAC 2A - use for Thrips (insect)",
+              "icon": "🦟",
+              "color": "#9C27B0",
+              "sortOrder": 21
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440017",
+          "name": "Weed Killers",
+          "icon": "🌿",
+          "color": "#795548",
+          "sortOrder": 6,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440091",
+              "name": "Glyphosate",
+              "description": "",
+              "icon": "🌿",
+              "color": "#795548",
+              "sortOrder": 1
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440018",
+          "name": "Agents",
+          "icon": "💧",
+          "color": "#607D8B",
+          "sortOrder": 7,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440092",
+              "name": "Wetter",
+              "description": "Agent",
+              "icon": "💧",
+              "color": "#607D8B",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440093",
+              "name": "Agriwett",
+              "description": "non-ionic wetter, makes spraying easier",
+              "icon": "💧",
+              "color": "#607D8B",
+              "sortOrder": 2
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440019",
+          "name": "Cleaners",
+          "icon": "🧽",
+          "color": "#9E9E9E",
+          "sortOrder": 8,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440094",
+              "name": "Hydrochloric Acid",
+              "description": "Cleaner",
+              "icon": "🧽",
+              "color": "#9E9E9E",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440095",
+              "name": "Sulphuric Acid",
+              "description": "Cleaner",
+              "icon": "🧽",
+              "color": "#9E9E9E",
+              "sortOrder": 2
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440020",
+          "name": "Other",
+          "icon": "❓",
+          "color": "#9E9E9E",
+          "sortOrder": 9,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440096",
+              "name": "Falstrobin",
+              "description": "",
+              "icon": "❓",
+              "color": "#9E9E9E",
+              "sortOrder": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
