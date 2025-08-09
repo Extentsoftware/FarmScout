@@ -9,11 +9,14 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IFarmScoutDatabase _database;
     private readonly INavigationService _navigationService;
 
-    public SettingsViewModel(IFarmScoutDatabase database, INavigationService navigationService)
+    public SettingsViewModel(IFarmScoutDatabase database, INavigationService navigationService, IDatabaseResetService resetService)
     {
         _database = database;
         _navigationService = navigationService;
+        _resetService = resetService;
     }
+
+    private readonly IDatabaseResetService _resetService;
 
     [ObservableProperty]
     private bool _isLoading = false;
@@ -85,24 +88,14 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (IsLoading) return;
 
-        var confirmed = await MauiProgram.DisplayAlertAsync(
-            "Reset Database", 
-            "This will delete all data and reset the database to its initial state. This action cannot be undone. Are you sure?",
-            "Yes, Reset",
-            "Cancel");
-
-        if (!confirmed) return;
-
         try
         {
             IsLoading = true;
-            
-            // TODO: Implement database reset functionality
-            await MauiProgram.DisplayAlertAsync("Info", "Database reset functionality will be implemented in a future update.", "OK");
+            await _navigationService.NavigateToAsync("DatabaseResetPage");
         }
         catch (Exception ex)
         {
-            await MauiProgram.DisplayAlertAsync("Error", $"Failed to reset database: {ex.Message}", "OK");
+            await MauiProgram.DisplayAlertAsync("Error", $"Failed to navigate to database reset page: {ex.Message}", "OK");
         }
         finally
         {

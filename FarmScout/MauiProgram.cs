@@ -28,6 +28,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<FarmLocationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<MarkdownReportService>();
+        builder.Services.AddSingleton<IDatabaseResetService, DatabaseResetService>();
 
         // Register ViewModels
         builder.Services.AddTransient<DashboardViewModel>();
@@ -41,6 +42,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ObservationTypeEditViewModel>();
         builder.Services.AddTransient<DataPointEditViewModel>();
         builder.Services.AddTransient<ReportViewViewModel>();
+        builder.Services.AddTransient<DatabaseResetViewModel>();
         builder.Services.AddSingleton<ILookupPageFactory, LookupPageFactory>();
 
         // Register pages
@@ -55,6 +57,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ObservationTypeEditPage>();
         builder.Services.AddTransient<DataPointEditPage>();
         builder.Services.AddTransient<ReportViewPage>();
+        builder.Services.AddTransient<DatabaseResetPage>();
 
 		// Register converters
 		builder.Services.AddSingleton<Converters.BoolToColorConverter>();

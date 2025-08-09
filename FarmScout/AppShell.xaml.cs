@@ -23,6 +23,7 @@ public partial class AppShell : Shell
             Routing.RegisterRoute("ObservationTypesPage", typeof(Views.ObservationTypesPage));
             Routing.RegisterRoute("ObservationTypeEditPage", typeof(Views.ObservationTypeEditPage));
             Routing.RegisterRoute("ReportView", typeof(Views.ReportViewPage));
+            Routing.RegisterRoute("DatabaseResetPage", typeof(Views.DatabaseResetPage));
             
 
             // Set the binding context for menu commands

@@ -106,5 +106,10 @@ namespace FarmScout.Services
         Task<List<ReportGroup>> GetReportGroupsAsync();
         Task<ReportGroup?> GetReportGroupByIdAsync(Guid id);
         Task<ReportGroup?> GetReportGroupByNameAsync(string name);
+
+        // Database Reset
+        Task<bool> ResetDatabaseAsync();
+        Task<bool> ResetDatabaseWithSeedingAsync();
+        Task<DatabaseResetInfo> GetDatabaseInfoAsync();
     }
 }

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="FarmScout.Views.DatabaseResetPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Database Reset"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            
+            <!-- Database Information Section -->
+            <Frame BorderColor="{StaticResource Primary}" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Database Information" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Primary}"/>
+                    
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <Label Text="Database Path:" Grid.Row="0" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label Text="{Binding DatabaseInfo.DatabasePath}" Grid.Row="0" Grid.Column="1" TextColor="{StaticResource Gray500}"/>
+                        
+                        <Label Text="Database Size:" Grid.Row="1" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label Text="{Binding DatabaseInfo.DatabaseSizeFormatted}" Grid.Row="1" Grid.Column="1" TextColor="{StaticResource Gray500}"/>
+                        
+                        <Label Text="Last Modified:" Grid.Row="2" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label Text="{Binding DatabaseInfo.LastModifiedFormatted}" Grid.Row="2" Grid.Column="1" TextColor="{StaticResource Gray500}"/>
+                        
+                        <Label Text="Total Records:" Grid.Row="3" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label Text="{Binding DatabaseInfo.TotalRecordCount}" Grid.Row="3" Grid.Column="1" TextColor="{StaticResource Gray500}"/>
+                        
+                        <Label Text="Status:" Grid.Row="4" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label Text="{Binding DatabaseInfo.IsReady, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Ready|Not Ready'}" 
+                               Grid.Row="4" Grid.Column="1" 
+                               TextColor="{Binding DatabaseInfo.IsReady, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Red'}"/>
+                    </Grid>
+                    
+                    <Button Text="Refresh Database Info" 
+                            Command="{Binding LoadDatabaseInfoCommand}"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource BoolInverterConverter}}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Reset Actions Section -->
+            <Frame BorderColor="{StaticResource Danger}" Padding="15">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Database Reset Actions" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Danger}"/>
+                    
+                    <Label Text="⚠️ Warning: These actions will permanently delete data!" 
+                           TextColor="{StaticResource Danger}" 
+                           FontAttributes="Bold"/>
+                    
+                    <Button Text="Reset Database (Clear All Data)" 
+                            Command="{Binding ShowResetConfirmationCommand}"
+                            IsEnabled="{Binding IsResetInProgress, Converter={StaticResource BoolInverterConverter}}"
+                            BackgroundColor="{StaticResource Danger}"
+                            TextColor="White"/>
+                    
+                    <Button Text="Reset Database with Default Data" 
+                            Command="{Binding ShowResetWithSeedingConfirmationCommand}"
+                            IsEnabled="{Binding IsResetInProgress, Converter={StaticResource BoolInverterConverter}}"
+                            BackgroundColor="{StaticResource Warning}"
+                            TextColor="White"/>
+                    
+                    <ActivityIndicator IsVisible="{Binding IsResetInProgress}" 
+                                      IsRunning="{Binding IsResetInProgress}"
+                                      Color="{StaticResource Primary}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Backup & Restore Section -->
+            <Frame BorderColor="{StaticResource Info}" Padding="15">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Backup & Restore" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Info}"/>
+                    
+                    <Button Text="Create Database Backup" 
+                            Command="{Binding BackupDatabaseCommand}"
+                            IsEnabled="{Binding IsBackupInProgress, Converter={StaticResource BoolInverterConverter}}"
+                            BackgroundColor="{StaticResource Info}"
+                            TextColor="White"/>
+                    
+                    <ActivityIndicator IsVisible="{Binding IsBackupInProgress}" 
+                                      IsRunning="{Binding IsBackupInProgress}"
+                                      Color="{StaticResource Primary}"/>
+                    
+                    <!-- Backup Files List -->
+                    <Label Text="Available Backups:" FontAttributes="Bold"/>
+                    <CollectionView ItemsSource="{Binding BackupFiles}" HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Padding="10,5">
+                                    <Label Text="{Binding .}" Grid.Column="0" VerticalOptions="Center"/>
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                                        <Button Text="Restore" 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RestoreDatabaseCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="{StaticResource Success}"
+                                                TextColor="White"
+                                                Padding="10,5"
+                                                FontSize="12"/>
+                                        <Button Text="Delete" 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBackupCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="{StaticResource Danger}"
+                                                TextColor="White"
+                                                Padding="10,5"
+                                                FontSize="12"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    
+                    <Button Text="Refresh Backup List" 
+                            Command="{Binding RefreshBackupFilesCommand}"
+                            BackgroundColor="{StaticResource Secondary}"
+                            TextColor="White"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Status Section -->
+            <Frame BorderColor="{StaticResource Gray300}" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Status" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Gray700}"/>
+                    
+                    <Label Text="{Binding StatusMessage}" 
+                           TextColor="{StaticResource Gray600}"
+                           LineBreakMode="WordWrap"/>
+                    
+                    <ActivityIndicator IsVisible="{Binding IsLoading}" 
+                                      IsRunning="{Binding IsLoading}"
+                                      Color="{StaticResource Primary}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+    <!-- Confirmation Dialog -->
+    <Grid IsVisible="{Binding ShowConfirmationDialog}" 
+          BackgroundColor="Black" 
+          Opacity="0.7"
+          InputTransparent="False">
+        <Frame BackgroundColor="White" 
+               Padding="20" 
+               Margin="20"
+               VerticalOptions="Center"
+               HorizontalOptions="Center">
+            <VerticalStackLayout Spacing="15">
+                <Label Text="⚠️ Confirmation Required" 
+                       FontSize="18" 
+                       FontAttributes="Bold" 
+                       TextColor="{StaticResource Danger}"
+                       HorizontalOptions="Center"/>
+                
+                <Label Text="{Binding ConfirmationMessage}" 
+                       TextColor="{StaticResource Gray700}"
+                       LineBreakMode="WordWrap"
+                       HorizontalOptions="Center"/>
+                
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Button Text="Cancel" 
+                            Command="{Binding HideConfirmationDialogCommand}"
+                            BackgroundColor="{StaticResource Gray300}"
+                            TextColor="{StaticResource Gray700}"
+                            Padding="20,10"/>
+                    
+                    <Button Text="Confirm" 
+                            Command="{Binding ConfirmResetCommand}"
+                            BackgroundColor="{StaticResource Danger}"
+                            TextColor="White"
+                            Padding="20,10"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+
+</ContentPage> 

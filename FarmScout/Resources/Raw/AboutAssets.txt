@@ -1,15 +1,48 @@
-﻿Any raw assets you want to be deployed with your application can be placed in
-this directory (and child directories). Deployment of the asset to your application
-is automatically handled by the following `MauiAsset` Build Action within your `.csproj`.
+﻿scout.csv
 
-	<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+Tree
+Irrigation
+	drippers	
+	microjets
+	soil moisture	
+	pipes	
+	tank
+	valves
 
-These files will be deployed with your package and will be accessible using Essentials:
+Orchard	
+	Inrows
+	Basin
+	Tractor Rows
+	Fireguard
+	Contours
+	Inaccessibles	
+basin formation	
+basin weeds	
+destumping	
 
-	async Task LoadMauiAsset()
-	{
-		using var stream = await FileSystem.OpenAppPackageFileAsync("AboutAssets.txt");
-		using var reader = new StreamReader(stream);
+inrows	
+contours	
+mowing	
+staking
+fire guard	
 
-		var contents = reader.ReadToEnd();
-	}
+
+
+
+
+dead plants	
+diseases	
+flowering	
+health status	
+Insect pests	
+leaf colour	
+
+nutdrop	
+nutsetting	
+bud break	
+
+pests	
+plant growth	
+pruning	
+remaining nuts	
+soil nutrients	
