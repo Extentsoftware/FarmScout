@@ -17,27 +17,67 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440001",
-              "name": "Powdery Mildew",
-              "description": "White powdery coating on leaves",
+              "name": "Anthracnose",
+              "description": "Dark lesions on leaves, nuts, and husks causing premature nut drop",
               "icon": "🍄",
-              "color": "#FFEB3B",
+              "color": "#8D6E63",
               "sortOrder": 1
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440002",
-              "name": "Rust",
-              "description": "Orange-brown spots on leaves",
-              "icon": "🦠",
-              "color": "#FF5722",
+              "name": "Husk Spot",
+              "description": "Small dark spots on husks leading to premature splitting",
+              "icon": "⚫",
+              "color": "#424242",
               "sortOrder": 2
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440003",
-              "name": "Blight",
-              "description": "Dark spots spreading on foliage",
-              "icon": "💀",
-              "color": "#424242",
+              "name": "Phytophthora Root Rot",
+              "description": "Root and trunk rot causing tree decline and death",
+              "icon": "🦠",
+              "color": "#D32F2F",
               "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440097",
+              "name": "Botryosphaeria Canker",
+              "description": "Branch cankers causing dieback and reduced yields",
+              "icon": "🍄",
+              "color": "#795548",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440098",
+              "name": "Macadamia Quick Decline",
+              "description": "Rapid tree decline associated with trunk cankers",
+              "icon": "💀",
+              "color": "#F44336",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440099",
+              "name": "Powdery Mildew",
+              "description": "White powdery coating on young leaves and shoots",
+              "icon": "🍄",
+              "color": "#FFEB3B",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440100",
+              "name": "Sooty Mold",
+              "description": "Black fungal growth on leaves from honeydew deposits",
+              "icon": "⚫",
+              "color": "#212121",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440101",
+              "name": "Leaf Spot",
+              "description": "Circular brown spots on leaves causing defoliation",
+              "icon": "🍂",
+              "color": "#8D6E63",
+              "sortOrder": 8
             }
           ]
         },
@@ -50,19 +90,27 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440004",
-              "name": "Fire Blight",
-              "description": "Blackened branches and leaves",
-              "icon": "🔥",
-              "color": "#D32F2F",
+              "name": "Bacterial Blight",
+              "description": "Water-soaked lesions on leaves and shoots",
+              "icon": "🦠",
+              "color": "#795548",
               "sortOrder": 1
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440005",
               "name": "Crown Gall",
-              "description": "Tumor-like growths on roots",
+              "description": "Tumor-like growths on roots and lower trunk",
               "icon": "🎭",
               "color": "#8BC34A",
               "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440102",
+              "name": "Bacterial Canker",
+              "description": "Sunken cankers on branches with bacterial ooze",
+              "icon": "🦠",
+              "color": "#FF5722",
+              "sortOrder": 3
             }
           ]
         },
@@ -75,11 +123,19 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440006",
-              "name": "Mosaic Virus",
-              "description": "Mottled yellow patterns on leaves",
+              "name": "Macadamia Mosaic Virus",
+              "description": "Mottled yellow patterns and leaf distortion",
               "icon": "🌿",
               "color": "#4CAF50",
               "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440103",
+              "name": "Ringspot Virus",
+              "description": "Circular rings and chlorotic spots on leaves",
+              "icon": "🔬",
+              "color": "#607D8B",
+              "sortOrder": 2
             }
           ]
         }
@@ -102,35 +158,99 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440007",
-              "name": "Aphids",
-              "description": "Small green insects on stems",
-              "icon": "🐛",
-              "color": "#4CAF50",
+              "name": "Macadamia Felted Coccid",
+              "description": "White waxy scale insect on branches and nuts",
+              "icon": "🦗",
+              "color": "#FFEB3B",
               "sortOrder": 1
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440008",
-              "name": "Caterpillars",
-              "description": "Leaf-eating larvae",
+              "name": "Green Vegetable Bug",
+              "description": "Shield-shaped bug causing nut drop and kernel damage",
               "icon": "🐛",
-              "color": "#8BC34A",
+              "color": "#4CAF50",
               "sortOrder": 2
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440009",
-              "name": "Spider Mites",
-              "description": "Tiny red/yellow mites",
-              "icon": "🕷️",
-              "color": "#F44336",
+              "name": "Macadamia Lace Bug",
+              "description": "Small bug causing leaf stippling and yellowing",
+              "icon": "🦗",
+              "color": "#FF9800",
               "sortOrder": 3
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440010",
               "name": "Thrips",
-              "description": "Small flying insects",
+              "description": "Small insects causing leaf silvering and scarring",
               "icon": "🦟",
               "color": "#9C27B0",
               "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440104",
+              "name": "Macadamia Nut Borer",
+              "description": "Larvae boring into developing nuts",
+              "icon": "🐛",
+              "color": "#8D6E63",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440105",
+              "name": "Stink Bugs",
+              "description": "Shield bugs causing kernel damage and nut drop",
+              "icon": "🐛",
+              "color": "#795548",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440106",
+              "name": "Scale Insects",
+              "description": "Various scale species on branches and leaves",
+              "icon": "🦗",
+              "color": "#FF5722",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440107",
+              "name": "Aphids",
+              "description": "Small insects causing leaf curling and sooty mold",
+              "icon": "🐛",
+              "color": "#4CAF50",
+              "sortOrder": 8
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440108",
+              "name": "Spider Mites",
+              "description": "Tiny mites causing leaf bronzing and webbing",
+              "icon": "🕷️",
+              "color": "#F44336",
+              "sortOrder": 9
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440109",
+              "name": "Leaf Miners",
+              "description": "Larvae creating tunnels in leaves",
+              "icon": "🐛",
+              "color": "#8BC34A",
+              "sortOrder": 10
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440110",
+              "name": "Macadamia Cup Moth",
+              "description": "Caterpillars with stinging spines defoliating trees",
+              "icon": "🦋",
+              "color": "#E91E63",
+              "sortOrder": 11
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440111",
+              "name": "Fruit Spotting Bug",
+              "description": "Bug causing corky spots on nuts and fruit drop",
+              "icon": "🐛",
+              "color": "#FF9800",
+              "sortOrder": 12
             }
           ]
         },
@@ -143,19 +263,51 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440011",
-              "name": "Rabbits",
-              "description": "Vegetation damage from rabbits",
-              "icon": "🐰",
-              "color": "#CDDC39",
+              "name": "Vervet Monkeys",
+              "description": "Primates damaging nuts and young shoots",
+              "icon": "🐒",
+              "color": "#8D6E63",
               "sortOrder": 1
             },
             {
               "id": "950e8400-e29b-41d4-a716-446655440012",
-              "name": "Deer",
-              "description": "Browsing damage from deer",
-              "icon": "🦌",
-              "color": "#8D6E63",
+              "name": "Baboons",
+              "description": "Large primates causing significant crop damage",
+              "icon": "🦍",
+              "color": "#795548",
               "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440112",
+              "name": "Bush Pigs",
+              "description": "Wild pigs damaging roots and fallen nuts",
+              "icon": "🐗",
+              "color": "#8D6E63",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440113",
+              "name": "Elephants",
+              "description": "Large mammals breaking branches and damaging trees",
+              "icon": "🐘",
+              "color": "#607D8B",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440114",
+              "name": "Rodents",
+              "description": "Rats and mice eating nuts and bark",
+              "icon": "🐭",
+              "color": "#795548",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440115",
+              "name": "Antelope",
+              "description": "Various antelope species browsing on young trees",
+              "icon": "🦌",
+              "color": "#8BC34A",
+              "sortOrder": 6
             }
           ]
         },
@@ -169,10 +321,42 @@
             {
               "id": "950e8400-e29b-41d4-a716-446655440013",
               "name": "Crows",
-              "description": "Seed and fruit damage",
+              "description": "Large black birds eating mature nuts",
               "icon": "🐦",
               "color": "#424242",
               "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440116",
+              "name": "Parrots",
+              "description": "Colorful birds damaging developing nuts",
+              "icon": "🦜",
+              "color": "#4CAF50",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440117",
+              "name": "Hornbills",
+              "description": "Large-billed birds eating nuts and damaging branches",
+              "icon": "🐦",
+              "color": "#FF9800",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440118",
+              "name": "Louries",
+              "description": "Turaco birds eating young shoots and buds",
+              "icon": "🐦",
+              "color": "#E91E63",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440119",
+              "name": "Francolin",
+              "description": "Ground birds eating fallen nuts and seeds",
+              "icon": "🐦",
+              "color": "#8D6E63",
+              "sortOrder": 5
             }
           ]
         }
@@ -297,6 +481,39 @@
               "description": "Strawberries and blueberries",
               "icon": "🫐",
               "color": "#3F51B5",
+              "sortOrder": 3
+            }
+          ]
+        },
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440021",
+          "name": "Nuts",
+          "icon": "🌰",
+          "color": "#8D6E63",
+          "sortOrder": 4,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440120",
+              "name": "Macadamia integrifolia",
+              "description": "Smooth shell macadamia variety - premium quality nuts",
+              "icon": "🌰",
+              "color": "#8D6E63",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440121",
+              "name": "Macadamia tetraphylla",
+              "description": "Rough shell macadamia variety - cold tolerant",
+              "icon": "🌰",
+              "color": "#A1887F",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440122",
+              "name": "Hybrid Macadamias",
+              "description": "Cross-bred varieties combining best traits",
+              "icon": "🌰",
+              "color": "#6D4C41",
               "sortOrder": 3
             }
           ]

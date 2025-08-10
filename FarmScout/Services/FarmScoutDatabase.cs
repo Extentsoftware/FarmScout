@@ -96,7 +96,7 @@ namespace FarmScout.Services
                 // Create markdown reports table
                 await _database.CreateTableAsync<MarkdownReport>();
                 App.Log("MarkdownReport table created successfully");
-
+        
                 // Seed all data using the DatabaseSeeder
                 var seeder = new DatabaseSeeder(_database);
                 await seeder.SeedAllDataAsync();
@@ -1217,9 +1217,9 @@ namespace FarmScout.Services
                 App.Log("Database reset completed successfully");
                 IsReady = true;
                 return true;
-            }
-            catch (Exception ex)
-            {
+                    }
+                    catch (Exception ex)
+                    {
                 App.Log($"Error during database reset: {ex.Message}");
                 IsReady = false;
                 return false;
