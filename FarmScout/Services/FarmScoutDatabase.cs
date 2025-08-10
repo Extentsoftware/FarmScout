@@ -145,7 +145,7 @@ namespace FarmScout.Services
                 // Log details of each observation
                 foreach (var obs in observations)
                 {
-                    App.Log($"Observation: ID={obs.Id}, Timestamp={obs.Timestamp}, Severity={obs.Severity}");
+                    App.Log($"Observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
                 }
 
                 return observations;
@@ -201,9 +201,7 @@ namespace FarmScout.Services
                 {
                     var searchText = filterParams.SearchText.ToLower();
                     query = query.Where(o =>
-                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
-                        o.Summary.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
-                        o.Severity.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
+                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
                 }
 
                 if (filterParams.FieldId.HasValue)
@@ -237,12 +235,6 @@ namespace FarmScout.Services
                     "timestamp" => filterParams.SortAscending 
                         ? query.OrderBy(o => o.Timestamp)
                         : query.OrderByDescending(o => o.Timestamp),
-                    "severity" => filterParams.SortAscending 
-                        ? query.OrderBy(o => o.Severity)
-                        : query.OrderByDescending(o => o.Severity),
-                    "summary" => filterParams.SortAscending 
-                        ? query.OrderBy(o => o.Summary)
-                        : query.OrderByDescending(o => o.Summary),
                     _ => filterParams.SortAscending 
                         ? query.OrderBy(o => o.Timestamp)
                         : query.OrderByDescending(o => o.Timestamp)
@@ -302,9 +294,7 @@ namespace FarmScout.Services
                 {
                     var searchText = filterParams.SearchText.ToLower();
                     query = query.Where(o =>
-                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
-                        o.Summary.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
-                        o.Severity.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
+                        o.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
                 }
 
                 if (filterParams.FieldId.HasValue)

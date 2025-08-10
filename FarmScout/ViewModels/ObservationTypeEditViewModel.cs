@@ -119,7 +119,7 @@ public partial class ObservationTypeEditViewModel(IFarmScoutDatabase database, I
         try
         {
             IsLoading = true;
-            await navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
+            await navigationService.NavigateToAsync("DataPointEditPage", new Dictionary<string, object>
             {
                 { "ObservationTypeId", ObservationTypeId }
             });
@@ -142,7 +142,7 @@ public partial class ObservationTypeEditViewModel(IFarmScoutDatabase database, I
         try
         {
             IsLoading = true;
-            await navigationService.NavigateToAsync("//DataPointEditPage", new Dictionary<string, object>
+            await navigationService.NavigateToAsync("DataPointEditPage", new Dictionary<string, object>
             {
                 { "DataPointId", dataPoint.Id }
             });

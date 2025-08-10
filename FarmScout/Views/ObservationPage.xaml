@@ -56,35 +56,6 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="20" Padding="20">
 
-                <!-- Severity -->
-                <Border BackgroundColor="#F5F5F5" Padding="15">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="⚠️ Severity" 
-                            FontSize="18" 
-                            FontAttributes="Bold"
-                            TextColor="#2E7D32"/>
-
-                        <!-- Edit/Add Mode -->
-                        <Button Text="{Binding SeverityDisplay}"
-                            Command="{Binding ShowSeverityPopupCommand}"
-                            BackgroundColor="{Binding SeverityColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HorizontalOptions="Fill"
-                            IsVisible="{Binding IsEditable}"/>
-
-                        <!-- View Mode -->
-                        <Label Text="{Binding SeverityDisplay}" 
-                            FontSize="16" 
-                            TextColor="{Binding SeverityColor}"
-                            FontAttributes="Bold"
-                            IsVisible="{Binding IsViewMode}"/>
-                    </VerticalStackLayout>
-                </Border>
-
                 <!-- Observation Types -->
                 <Border BackgroundColor="#F5F5F5" Padding="15">
                     <Border.StrokeShape>

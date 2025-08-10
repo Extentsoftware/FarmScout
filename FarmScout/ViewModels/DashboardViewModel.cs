@@ -5,7 +5,7 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class DashboardViewModel(IFarmScoutDatabase database, INavigationService navigationService, FarmLocationService shapefileService, MarkdownReportService reportService) : ObservableObject
+public partial class DashboardViewModel(IFarmScoutDatabase database, INavigationService navigationService, MarkdownReportService reportService) : ObservableObject
 {
     [ObservableProperty]
     public partial bool IsBusy { get; set; }

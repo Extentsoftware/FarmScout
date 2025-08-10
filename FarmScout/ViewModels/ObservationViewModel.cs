@@ -28,9 +28,6 @@ public partial class ObservationViewModel : ObservableObject
         this.shapefileService = shapefileService;
         this.navigationService = navigationService;
 
-        // Initialize severity display
-        SeverityDisplay = "Select Severity";
-
         LoadFarmLocationsAsync().GetAwaiter().GetResult();
         
     }
@@ -82,15 +79,6 @@ public partial class ObservationViewModel : ObservableObject
     public partial string NewTaskDescription { get; set; } = "";
 
     [ObservableProperty]
-    public partial string SelectedSeverity { get; set; } = "";
-
-    [ObservableProperty]
-    public partial string SeverityDisplay { get; set; }
-
-    [ObservableProperty]
-    public partial string SeverityColor { get; set; } = "#2196F3";
-
-    [ObservableProperty]
     public partial FarmLocation? SelectedFarmLocation { get; set; }
 
     [ObservableProperty]
@@ -120,13 +108,6 @@ public partial class ObservationViewModel : ObservableObject
     partial void OnSelectedFarmLocationChanged(FarmLocation? value)
     {
         SelectedFarmLocationText = value?.Name ?? "";
-    }
-
-    partial void OnSelectedSeverityChanged(string value)
-    {
-        // Update severity display
-        SeverityDisplay = string.IsNullOrWhiteSpace(value) ? "Select Severity" : $"{SeverityLevels.GetSeverityIcon(value)} {value}";
-        SeverityColor = SeverityLevels.GetSeverityColor(value);
     }
 
     [RelayCommand]
@@ -319,23 +300,6 @@ public partial class ObservationViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ShowSeverityPopup()
-    {
-        if (IsBusy) return;
-
-        var action = await Shell.Current.DisplayActionSheet(
-            "Select Severity",
-            "Cancel",
-            null,
-            SeverityLevels.AvailableSeverities);
-
-        if (action != null && action != "Cancel")
-        {
-            SelectedSeverity = action;
-        }
-    }
-
-    [RelayCommand]
     private async Task SelectFarmLocation(FarmLocation? farmLocation)
     {
         if (IsBusy) return;
@@ -393,12 +357,6 @@ public partial class ObservationViewModel : ObservableObject
             if (SelectedObservationTypes.Count == 0)
             {
                 await MauiProgram.DisplayAlertAsync("Validation Error", "Please select at least one observation type", "OK");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(SelectedSeverity))
-            {
-                await MauiProgram.DisplayAlertAsync("Validation Error", "Please select a severity level", "OK");
                 return;
             }
 
@@ -533,9 +491,6 @@ public partial class ObservationViewModel : ObservableObject
     private void ClearForm()
     {
         Notes = "";
-        SelectedSeverity = "";
-        SeverityDisplay = "Select Severity";
-        SeverityColor = "#2196F3";
         SelectedFarmLocation = null;
         SelectedFarmLocationText = "";
         NewTaskDescription = "";
@@ -554,17 +509,11 @@ public partial class ObservationViewModel : ObservableObject
         var observation = new Observation
         {
             Notes = Notes,
-            Severity = SelectedSeverity,
             FarmLocationId = SelectedFarmLocation?.Id,
             Timestamp = DateTime.Now,
             Latitude = Locations.FirstOrDefault()?.Latitude ?? 0,
             Longitude = Locations.FirstOrDefault()?.Longitude ?? 0
         };
-
-        if (SelectedFarmLocation != null)
-            observation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
-        else
-            observation.Summary = $"{SelectedTypesDisplay}";
 
         await database.AddObservationAsync(observation);
 
@@ -607,15 +556,7 @@ public partial class ObservationViewModel : ObservableObject
     {
         if (_originalObservation == null) return;
 
-        // Update the original observation with new values
-
-        if (SelectedFarmLocation != null)
-            _originalObservation.Summary = $"{SelectedTypesDisplay} on {SelectedFarmLocation.Name}";
-        else
-            _originalObservation.Summary = $"{SelectedTypesDisplay}";
-
         _originalObservation.Notes = Notes;
-        _originalObservation.Severity = SelectedSeverity;
         _originalObservation.FarmLocationId = SelectedFarmLocation?.Id;
         _originalObservation.Timestamp = DateTime.Now; // Update timestamp to reflect edit
 
@@ -708,7 +649,6 @@ public partial class ObservationViewModel : ObservableObject
 
         // Load basic properties
         Notes = observation.Notes ?? string.Empty;
-        SelectedSeverity = observation.Severity;
 
         // Load observation types and metadata
         var metadata = await database.GetMetadataForObservationAsync(observation.Id);

@@ -43,6 +43,15 @@
           "lookupGroupName": null,
           "isRequired": false,
           "sortOrder": 4
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440024",
+          "code": "severity",
+          "label": "Severity",
+          "dataType": "Lookup",
+          "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 5
         }
       ]
     },
@@ -98,6 +107,15 @@
           "lookupGroupName": null,
           "isRequired": false,
           "sortOrder": 4
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440025",
+          "code": "severity",
+          "label": "Severity",
+          "dataType": "Lookup",
+          "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 5
         }
       ]
     },
@@ -108,7 +126,44 @@
       "icon": "💥",
       "color": "#795548",
       "sortOrder": 4,
-      "dataPoints": []
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440020",
+          "code": "damage_type",
+          "label": "Damage Type",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440021",
+          "code": "severity",
+          "label": "Severity",
+          "dataType": "Lookup",
+          "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 2
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440022",
+          "code": "area_affected",
+          "label": "Area Affected",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 3
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440023",
+          "code": "cause",
+          "label": "Cause",
+          "dataType": "String",
+          "lookupGroupName": null,
+          "isRequired": false,
+          "sortOrder": 4
+        }
+      ]
     },
     {
       "id": "550e8400-e29b-41d4-a716-446655440005",

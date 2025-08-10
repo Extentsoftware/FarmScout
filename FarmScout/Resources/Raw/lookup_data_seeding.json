@@ -1214,6 +1214,49 @@
           ]
         }
       ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440002",
+      "name": "Severity",
+      "description": "Severity levels for observations",
+      "icon": "⚠️",
+      "color": "#FF9800",
+      "sortOrder": 2,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440021",
+          "name": "Levels",
+          "icon": "📊",
+          "color": "#FF9800",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440097",
+              "name": "Information",
+              "description": "Informational observation with no immediate action required",
+              "icon": "ℹ️",
+              "color": "#2196F3",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440098",
+              "name": "Warning",
+              "description": "Warning observation requiring attention and monitoring",
+              "icon": "⚠️",
+              "color": "#FF9800",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440099",
+              "name": "Fail",
+              "description": "Critical observation requiring immediate action",
+              "icon": "❌",
+              "color": "#F44336",
+              "sortOrder": 3
+            }
+          ]
+        }
+      ]
     }
   ]
 }

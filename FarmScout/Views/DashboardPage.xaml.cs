@@ -12,9 +12,9 @@ public partial class DashboardPage : ContentPage
 
     protected override async void OnAppearing()
     {
-        base.OnAppearing();
-        if (BindingContext is DashboardViewModel viewModel)
-        {            
+            base.OnAppearing();
+            if (BindingContext is DashboardViewModel viewModel)
+            {            
             await viewModel.LoadDashboardData();
         }
     }

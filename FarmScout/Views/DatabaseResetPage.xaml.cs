@@ -1,22 +1,21 @@
 using FarmScout.ViewModels;
 
-namespace FarmScout.Views
+namespace FarmScout.Views;
+
+public partial class DatabaseResetPage : ContentPage
 {
-    public partial class DatabaseResetPage : ContentPage
+    public DatabaseResetPage(DatabaseResetViewModel viewModel)
     {
-        private readonly DatabaseResetViewModel _viewModel;
+        InitializeComponent();
+        BindingContext = viewModel;
+    }
 
-        public DatabaseResetPage(DatabaseResetViewModel viewModel)
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is DatabaseResetViewModel viewModel)
         {
-            InitializeComponent();
-            _viewModel = viewModel;
-            BindingContext = _viewModel;
-        }
-
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            await _viewModel.InitializeAsync();
+            await viewModel.InitializeAsync();
         }
     }
-} 
+}

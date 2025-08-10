@@ -9,16 +9,16 @@ namespace FarmScout.ViewModels;
 public partial class ReportViewViewModel(INavigationService navigationService) : ObservableObject
 {
     [ObservableProperty]
-    private string reportTitle = string.Empty;
+    public partial string ReportTitle { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private DateTime reportDate = DateTime.Now;
+    public partial DateTime ReportDate { get; set; } = DateTime.Now;
 
     [ObservableProperty]
-    private string formattedContent = string.Empty;
+    public partial string FormattedContent { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private MarkdownReport? report;
+    public partial MarkdownReport? Report { get; set; }
 
     [RelayCommand]
     private async Task Close()
@@ -34,7 +34,7 @@ public partial class ReportViewViewModel(INavigationService navigationService) :
         FormattedContent = ConvertMarkdownToHtml(markdownReport.ReportMarkdown);
     }
 
-    private string ConvertMarkdownToHtml(string markdown)
+    private static string ConvertMarkdownToHtml(string markdown)
     {
         if (string.IsNullOrEmpty(markdown))
             return "<p>No content available</p>";

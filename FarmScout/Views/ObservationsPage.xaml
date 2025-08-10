@@ -190,10 +190,6 @@
                                     <Label Text="{Binding Summary}" 
                                            FontAttributes="Bold" 
                                            FontSize="16"/>
-                                    <Label Text="{Binding SeverityText}" 
-                                           FontSize="14" 
-                                           TextColor="{Binding SeverityColor}"
-                                           FontAttributes="Bold"/>
                                     <Label Text="{Binding Notes}" 
                                            FontSize="14" 
                                            TextColor="#666"/>
