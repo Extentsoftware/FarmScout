@@ -22,34 +22,34 @@ public partial class DataPointEditViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private bool _isLoading = false;
+    public partial bool IsLoading { get; set; } = false;
 
     [ObservableProperty]
-    private bool _isNew = true;
+    public partial bool IsNew { get; set; } = true;
 
     [ObservableProperty]
-    private string _code = string.Empty;
+    public partial string Code { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _label = string.Empty;
+    public partial string Label { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _selectedDataType = DataTypes.String;
+    public partial string SelectedDataType { get; set; } = DataTypes.String;
 
     [ObservableProperty]
-    private string _selectedLookupGroup = string.Empty;
+    public partial string SelectedLookupGroup { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _description = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private int _sortOrder = 0;
+    public partial int SortOrder { get; set; } = 0;
 
     [ObservableProperty]
-    private bool _isRequired = false;
+    public partial bool IsRequired { get; set; } = false;
 
     [ObservableProperty]
-    private bool _isActive = true;
+    public partial bool IsActive { get; set; } = true;
 
     public ObservableCollection<string> AvailableDataTypes { get; }
     public ObservableCollection<string> AvailableLookupGroups { get; }

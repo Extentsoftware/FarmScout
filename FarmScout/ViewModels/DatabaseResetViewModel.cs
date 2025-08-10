@@ -11,28 +11,28 @@ namespace FarmScout.ViewModels
         private readonly IDatabaseResetService _resetService;
 
         [ObservableProperty]
-        private bool _isLoading;
+        public partial bool IsLoading { get; set; }
 
         [ObservableProperty]
-        private string _statusMessage = string.Empty;
+        public partial string StatusMessage { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private DatabaseResetInfo? _databaseInfo;
+        public partial DatabaseResetInfo? DatabaseInfo { get; set; }
 
         [ObservableProperty]
-        private bool _showConfirmationDialog;
+        public partial bool ShowConfirmationDialog { get; set; }
 
         [ObservableProperty]
-        private string _confirmationMessage = string.Empty;
+        public partial string ConfirmationMessage { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private bool _isResetInProgress;
+        public partial bool IsResetInProgress { get; set; }
 
         [ObservableProperty]
-        private bool _isBackupInProgress;
+        public partial bool IsBackupInProgress { get; set; }
 
         [ObservableProperty]
-        private bool _isRestoreInProgress;
+        public partial bool IsRestoreInProgress { get; set; }
 
         public ObservableCollection<string> BackupFiles { get; } = new();
 
@@ -235,13 +235,6 @@ namespace FarmScout.ViewModels
         }
 
         [RelayCommand]
-        private void ShowResetWithSeedingConfirmation()
-        {
-            ConfirmationMessage = "Are you sure you want to reset the database and re-seed with default data? This will delete ALL current data.";
-            ShowConfirmationDialog = true;
-        }
-
-        [RelayCommand]
         private void HideConfirmationDialog()
         {
             ShowConfirmationDialog = false;
@@ -250,13 +243,6 @@ namespace FarmScout.ViewModels
 
         [RelayCommand]
         private async Task ConfirmResetAsync()
-        {
-            HideConfirmationDialog();
-            await ResetDatabaseAsync();
-        }
-
-        [RelayCommand]
-        private async Task ConfirmResetWithSeedingAsync()
         {
             HideConfirmationDialog();
             await ResetDatabaseWithSeedingAsync();

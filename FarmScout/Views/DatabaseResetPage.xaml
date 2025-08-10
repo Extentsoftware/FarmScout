@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FarmScout.Views.DatabaseResetPage"
+             xmlns:converters="clr-namespace:FarmScout.Converters"
+             x:DataType="viewmodels:DatabaseResetViewModel"
+             x:Class="FarmScout.Views.DatabaseResetPage"             
+             xmlns:viewmodels="clr-namespace:FarmScout.ViewModels"
              Title="Database Reset"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:BoolInverterConverter x:Key="BoolInverterConverter" />
+            <converters:NotNullConverter x:Key="NotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="20" Padding="20">
@@ -56,16 +66,10 @@
                                TextColor="{StaticResource Danger}" 
                                FontAttributes="Bold"/>
                     
-                        <Button Text="Reset Database (Clear All Data)" 
+                        <Button Text="Reset Database" 
                                 Command="{Binding ShowResetConfirmationCommand}"
                                 IsEnabled="{Binding IsResetInProgress, Converter={StaticResource BoolInverterConverter}}"
                                 BackgroundColor="{StaticResource Danger}"
-                                TextColor="White"/>
-                    
-                        <Button Text="Reset Database with Default Data" 
-                                Command="{Binding ShowResetWithSeedingConfirmationCommand}"
-                                IsEnabled="{Binding IsResetInProgress, Converter={StaticResource BoolInverterConverter}}"
-                                BackgroundColor="{StaticResource Warning}"
                                 TextColor="White"/>
                     
                         <ActivityIndicator IsVisible="{Binding IsResetInProgress}" 
@@ -176,12 +180,13 @@
                                 BackgroundColor="{StaticResource Gray300}"
                                 TextColor="{StaticResource Gray700}"
                                 Padding="20,10"/>
-                    
+
                         <Button Text="Confirm" 
                                 Command="{Binding ConfirmResetCommand}"
                                 BackgroundColor="{StaticResource Danger}"
                                 TextColor="White"
                                 Padding="20,10"/>
+
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>

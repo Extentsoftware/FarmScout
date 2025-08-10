@@ -102,15 +102,13 @@
                                     Command="{Binding ExportDataCommand}"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}"
                                     TextColor="White"
-                                    CornerRadius="8"
-                                    HorizontalOptions="FillAndExpand"/>
+                                    CornerRadius="8"/>
                             
                             <Button Text="Reset Database"
                                     Command="{Binding ResetDatabaseCommand}"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Red500}, Dark={StaticResource Red600}}"
                                     TextColor="White"
-                                    CornerRadius="8"
-                                    HorizontalOptions="FillAndExpand"/>
+                                    CornerRadius="8"/>
                         </StackLayout>
                     </StackLayout>
                 </Frame>

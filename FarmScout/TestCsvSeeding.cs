@@ -28,8 +28,7 @@ namespace FarmScout.Tests
                 if (observations.Count > 0)
                 {
                     App.Log("CSV seeding appears to be working!");
-                    App.Log($"Sample observation: {observations[0].Summary} - {observations[0].Timestamp}");
-                }
+                 }
                 else
                 {
                     App.Log("No observations found - CSV seeding may not have worked");

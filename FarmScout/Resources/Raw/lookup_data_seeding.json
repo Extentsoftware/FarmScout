@@ -263,7 +263,7 @@
           "items": [
             {
               "id": "950e8400-e29b-41d4-a716-446655440011",
-              "name": "Vervet Monkeys",
+              "name": "Monkeys",
               "description": "Primates damaging nuts and young shoots",
               "icon": "🐒",
               "color": "#8D6E63",
@@ -308,6 +308,14 @@
               "icon": "🦌",
               "color": "#8BC34A",
               "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440116",
+              "name": "Cows",
+              "description": "Various cows",
+              "icon": "🦌",
+              "color": "#8BC34A",
+              "sortOrder": 7
             }
           ]
         },
