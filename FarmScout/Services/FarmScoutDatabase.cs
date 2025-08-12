@@ -61,10 +61,6 @@ namespace FarmScout.Services
                 await _database.CreateTableAsync<ObservationLocation>();
                 App.Log("ObservationLocation table created successfully");
 
-                App.Log("Creating FarmLocation table...");
-                await _database.CreateTableAsync<FarmLocation>();
-                App.Log("FarmLocation table created successfully");
-
                 App.Log("Creating LookupGroup table...");
                 await _database.CreateTableAsync<LookupGroup>();
                 App.Log("LookupGroup table created successfully");
@@ -356,103 +352,6 @@ namespace FarmScout.Services
             _database.Table<ObservationLocation>().Where(l => l.ObservationId == observationId).ToListAsync();
         public Task<int> UpdateLocationAsync(ObservationLocation location) => _database.UpdateAsync(location);
         public Task<int> DeleteLocationAsync(ObservationLocation location) => _database.DeleteAsync(location);
-
-        // FarmLocation CRUD
-        public async Task<int> AddFarmLocationAsync(FarmLocation farmLocation)
-        {
-            try
-            {
-                farmLocation.LastUpdated = DateTime.Now;
-                var result = await _database.InsertAsync(farmLocation);
-                App.Log($"FarmLocation added with ID: {farmLocation.Id}");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error adding farm location: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<List<FarmLocation>> GetFarmLocationsAsync()
-        {
-            try
-            {
-                var locations = await _database.Table<FarmLocation>()
-                    .OrderBy(l => l.Name)
-                    .ToListAsync();
-                App.Log($"Retrieved {locations.Count} farm locations from database");
-                return locations;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error retrieving farm locations: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<FarmLocation?> GetFarmLocationByIdAsync(Guid id)
-        {
-            try
-            {
-                var location = await _database.Table<FarmLocation>()
-                    .Where(l => l.Id == id)
-                    .FirstOrDefaultAsync();
-                return location;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error retrieving farm location by ID: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<FarmLocation?> GetFarmLocationByNameAsync(string name)
-        {
-            try
-            {
-                var location = await _database.Table<FarmLocation>()
-                    .Where(l => l.Name == name)
-                    .FirstOrDefaultAsync();
-                return location;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error retrieving farm location by name: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<int> UpdateFarmLocationAsync(FarmLocation farmLocation)
-        {
-            try
-            {
-                farmLocation.LastUpdated = DateTime.Now;
-                var result = await _database.UpdateAsync(farmLocation);
-                App.Log($"FarmLocation updated with ID: {farmLocation.Id}");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error updating farm location: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<int> DeleteFarmLocationAsync(FarmLocation farmLocation)
-        {
-            try
-            {
-                var result = await _database.DeleteAsync(farmLocation);
-                App.Log($"FarmLocation deleted with ID: {farmLocation.Id}");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                App.Log($"Error deleting farm location: {ex.Message}");
-                throw;
-            }
-        }
 
         // LookupItem CRUD
         public async Task<int> AddLookupItemAsync(LookupItem item)
@@ -1198,7 +1097,6 @@ namespace FarmScout.Services
                 await _database.DeleteAllAsync<LookupItem>();
                 await _database.DeleteAllAsync<LookupSubGroup>();
                 await _database.DeleteAllAsync<LookupGroup>();
-                await _database.DeleteAllAsync<FarmLocation>();
                 await _database.DeleteAllAsync<ObservationLocation>();
                 await _database.DeleteAllAsync<ObservationPhoto>();
                 await _database.DeleteAllAsync<TaskItem>();
@@ -1271,7 +1169,6 @@ namespace FarmScout.Services
                 info.TaskCount = await _database.Table<TaskItem>().CountAsync();
                 info.PhotoCount = await _database.Table<ObservationPhoto>().CountAsync();
                 info.LocationCount = await _database.Table<ObservationLocation>().CountAsync();
-                info.FarmLocationCount = await _database.Table<FarmLocation>().CountAsync();
                 info.LookupGroupCount = await _database.Table<LookupGroup>().CountAsync();
                 info.LookupSubGroupCount = await _database.Table<LookupSubGroup>().CountAsync();
                 info.LookupItemCount = await _database.Table<LookupItem>().CountAsync();

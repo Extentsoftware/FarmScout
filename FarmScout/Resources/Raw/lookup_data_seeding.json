@@ -40,7 +40,7 @@
               "sortOrder": 3
             },
             {
-              "id": "950e8400-e29b-41d4-a716-446655440097",
+              "id": "951e8400-e29b-41d4-a716-446655440097",
               "name": "Botryosphaeria Canker",
               "description": "Branch cankers causing dieback and reduced yields",
               "icon": "🍄",
@@ -48,7 +48,7 @@
               "sortOrder": 4
             },
             {
-              "id": "950e8400-e29b-41d4-a716-446655440098",
+              "id": "951e8400-e29b-41d4-a716-446655440098",
               "name": "Macadamia Quick Decline",
               "description": "Rapid tree decline associated with trunk cankers",
               "icon": "💀",
@@ -142,7 +142,7 @@
       ]
     },
     {
-      "id": "750e8400-e29b-41d4-a716-446655440002",
+      "id": "751e8400-e29b-41d4-a716-446655440002",
       "name": "Pests",
       "description": "Insect and animal pests",
       "icon": "🐛",
@@ -310,7 +310,7 @@
               "sortOrder": 6
             },
             {
-              "id": "950e8400-e29b-41d4-a716-446655440116",
+              "id": "951e8400-e29b-41d4-a716-446655440116",
               "name": "Cows",
               "description": "Various cows",
               "icon": "🦌",
@@ -494,7 +494,7 @@
           ]
         },
         {
-          "id": "850e8400-e29b-41d4-a716-446655440021",
+          "id": "851e8400-e29b-41d4-a716-446655440021",
           "name": "Nuts",
           "icon": "🌰",
           "color": "#8D6E63",
@@ -1255,7 +1255,7 @@
               "sortOrder": 2
             },
             {
-              "id": "950e8400-e29b-41d4-a716-446655440099",
+              "id": "951e8400-e29b-41d4-a716-446655440099",
               "name": "Fail",
               "description": "Critical observation requiring immediate action",
               "icon": "❌",

@@ -6,7 +6,10 @@ using System.Collections.ObjectModel;
 
 namespace FarmScout.ViewModels;
 
-public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigationService navigationService) : ObservableObject
+public partial class ObservationsViewModel(
+    IFarmScoutDatabase database, 
+    INavigationService navigationService,
+    FarmLocationService shapefileService) : ObservableObject
 {
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -136,8 +139,8 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
     {
         try
         {
-            // Load available fields
-            var fields = await database.GetFarmLocationsAsync();
+            // Load available fields            
+            var fields = shapefileService.GetFarmLocations();
             App.Log($"Loaded {fields.Count} farm locations from database");
             AvailableFields.Clear();
             AvailableFields.Add(new FarmLocation { Id = Guid.Empty, Name = "All Fields" });
@@ -201,7 +204,7 @@ public partial class ObservationsViewModel(IFarmScoutDatabase database, INavigat
             foreach (var obs in observations)
             {
                 App.Log($"Processing observation: ID={obs.Id}, Timestamp={obs.Timestamp}");
-                Observations.Add(new SimpleObservationViewModel(obs, database));
+                Observations.Add(new SimpleObservationViewModel(obs, database, shapefileService));
             }
             
             _currentPage++;

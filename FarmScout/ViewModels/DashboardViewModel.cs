@@ -5,7 +5,11 @@ using FarmScout.Services;
 
 namespace FarmScout.ViewModels;
 
-public partial class DashboardViewModel(IFarmScoutDatabase database, INavigationService navigationService, MarkdownReportService reportService) : ObservableObject
+public partial class DashboardViewModel(
+    IFarmScoutDatabase database, 
+    INavigationService navigationService, 
+    MarkdownReportService reportService,
+    FarmLocationService shapefileService) : ObservableObject
 {
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -86,7 +90,7 @@ public partial class DashboardViewModel(IFarmScoutDatabase database, INavigation
             RecentObservations.Clear();
             foreach (var obs in recentObservations)
             {
-                RecentObservations.Add(new SimpleObservationViewModel(obs, database));
+                RecentObservations.Add(new SimpleObservationViewModel(obs, database, shapefileService));
             }
             App.Log($"DashboardViewModel: Added {RecentObservations.Count} recent observations to UI");
             

@@ -39,9 +39,9 @@ namespace FarmScout.Models
     
     public static class DataTypes
     {
-        public const string Long = "long";
-        public const string String = "string";
-        public const string Lookup = "lookup";
+        public const string Long = "Long";
+        public const string String = "String";
+        public const string Lookup = "Lookup";
         
         public static readonly string[] AvailableTypes = [Long, String, Lookup];
         
