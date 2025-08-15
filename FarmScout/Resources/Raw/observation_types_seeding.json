@@ -9,13 +9,22 @@
       "sortOrder": 1,
       "dataPoints": [
         {
+          "id": "650e8400-e29b-41d4-a716-446655440024",
+          "code": "severity",
+          "label": "Severity",
+          "dataType": "Lookup",
+          "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
           "id": "650e8400-e29b-41d4-a716-446655440001",
           "code": "disease_name",
           "label": "Disease Name",
           "dataType": "Lookup",
           "lookupGroupName": "Diseases",
           "isRequired": true,
-          "sortOrder": 1
+          "sortOrder": 2
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440002",
@@ -24,7 +33,7 @@
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
-          "sortOrder": 2
+          "sortOrder": 3
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440003",
@@ -33,7 +42,7 @@
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
-          "sortOrder": 3
+          "sortOrder": 4
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440004",
@@ -41,15 +50,6 @@
           "label": "Symptoms",
           "dataType": "String",
           "lookupGroupName": null,
-          "isRequired": false,
-          "sortOrder": 4
-        },
-        {
-          "id": "650e8400-e29b-41d4-a716-446655440024",
-          "code": "severity",
-          "label": "Severity",
-          "dataType": "Lookup",
-          "lookupGroupName": "Severity",
           "isRequired": false,
           "sortOrder": 5
         }
@@ -73,13 +73,22 @@
       "sortOrder": 3,
       "dataPoints": [
         {
+          "id": "650e8400-e29b-41d4-a716-446655440025",
+          "code": "severity",
+          "label": "Severity",
+          "dataType": "Lookup",
+          "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
           "id": "650e8400-e29b-41d4-a716-446655440005",
           "code": "pest_name",
           "label": "Pest Name",
           "dataType": "Lookup",
           "lookupGroupName": "Pests",
           "isRequired": true,
-          "sortOrder": 1
+          "sortOrder": 2
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440006",
@@ -88,7 +97,7 @@
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
-          "sortOrder": 2
+          "sortOrder": 3
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440007",
@@ -97,7 +106,7 @@
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
-          "sortOrder": 3
+          "sortOrder": 4
         },
         {
           "id": "650e8400-e29b-41d4-a716-446655440008",
@@ -105,15 +114,6 @@
           "label": "Infestation Area",
           "dataType": "String",
           "lookupGroupName": null,
-          "isRequired": false,
-          "sortOrder": 4
-        },
-        {
-          "id": "650e8400-e29b-41d4-a716-446655440025",
-          "code": "severity",
-          "label": "Severity",
-          "dataType": "Lookup",
-          "lookupGroupName": "Severity",
           "isRequired": false,
           "sortOrder": 5
         }
@@ -128,20 +128,20 @@
       "sortOrder": 4,
       "dataPoints": [
         {
-          "id": "650e8400-e29b-41d4-a716-446655440020",
-          "code": "damage_type",
-          "label": "Damage Type",
-          "dataType": "String",
-          "lookupGroupName": null,
-          "isRequired": false,
-          "sortOrder": 1
-        },
-        {
           "id": "650e8400-e29b-41d4-a716-446655440021",
           "code": "severity",
           "label": "Severity",
           "dataType": "Lookup",
           "lookupGroupName": "Severity",
+          "isRequired": false,
+          "sortOrder": 1
+        },
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440020",
+          "code": "damage_type",
+          "label": "Damage Type",
+          "dataType": "String",
+          "lookupGroupName": null,
           "isRequired": false,
           "sortOrder": 2
         },
@@ -167,12 +167,22 @@
     },
     {
       "id": "550e8400-e29b-41d4-a716-446655440005",
-      "name": "Growth",
-      "description": "Plant growth observations",
+      "name": "Phenology",
+      "description": "Plant phenology stage observations",
       "icon": "🌱",
       "color": "#4CAF50",
       "sortOrder": 5,
-      "dataPoints": []
+      "dataPoints": [
+        {
+          "id": "650e8400-e29b-41d4-a716-446655440026",
+          "code": "phenology_stage",
+          "label": "Phenology Stage",
+          "dataType": "Lookup",
+          "lookupGroupName": "Macadamia Phenology Stages",
+          "isRequired": true,
+          "sortOrder": 1
+        }
+      ]
     },
     {
       "id": "550e8400-e29b-41d4-a716-446655440006",

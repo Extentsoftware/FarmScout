@@ -1265,6 +1265,105 @@
           ]
         }
       ]
+    },
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440003",
+      "name": "Macadamia Phenology Stages",
+      "description": "Growth and development stages of macadamia trees",
+      "icon": "🌱",
+      "color": "#4CAF50",
+      "sortOrder": 3,
+      "subGroups": [
+        {
+          "id": "850e8400-e29b-41d4-a716-446655440022",
+          "name": "Stages",
+          "icon": "📈",
+          "color": "#4CAF50",
+          "sortOrder": 1,
+          "items": [
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440100",
+              "name": "Dormant",
+              "description": "Tree is in winter dormancy with no active growth",
+              "icon": "🌳",
+              "color": "#8D6E63",
+              "sortOrder": 1
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440101",
+              "name": "Bud Break",
+              "description": "New vegetative buds begin to swell and open",
+              "icon": "🌿",
+              "color": "#8BC34A",
+              "sortOrder": 2
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440102",
+              "name": "Vegetative Growth",
+              "description": "Active shoot and leaf development",
+              "icon": "🌱",
+              "color": "#4CAF50",
+              "sortOrder": 3
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440103",
+              "name": "Flower Initiation",
+              "description": "Flower buds begin to form and develop",
+              "icon": "🌸",
+              "color": "#E91E63",
+              "sortOrder": 4
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440104",
+              "name": "Flowering",
+              "description": "Full bloom with open flowers and active pollination",
+              "icon": "🌺",
+              "color": "#9C27B0",
+              "sortOrder": 5
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440105",
+              "name": "Fruit Set",
+              "description": "Successful pollination and initial fruit development",
+              "icon": "🍃",
+              "color": "#8BC34A",
+              "sortOrder": 6
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440106",
+              "name": "Fruit Development",
+              "description": "Nuts grow and mature on the tree",
+              "icon": "🥜",
+              "color": "#FF9800",
+              "sortOrder": 7
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440107",
+              "name": "Maturity",
+              "description": "Nuts reach full size and begin to ripen",
+              "icon": "🌰",
+              "color": "#795548",
+              "sortOrder": 8
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440108",
+              "name": "Harvest Ready",
+              "description": "Nuts are ready for harvest and collection",
+              "icon": "🌾",
+              "color": "#FFC107",
+              "sortOrder": 9
+            },
+            {
+              "id": "950e8400-e29b-41d4-a716-446655440109",
+              "name": "Post-Harvest",
+              "description": "Tree enters recovery phase after harvest",
+              "icon": "🍂",
+              "color": "#8D6E63",
+              "sortOrder": 10
+            }
+          ]
+        }
+      ]
     }
   ]
 }
