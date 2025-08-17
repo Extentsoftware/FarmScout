@@ -1,4 +1,6 @@
 {
+  "_comment": "https://docs.google.com/spreadsheets/d/1i3DciDb9EwPtnAKqeDun-zk8loWUawg5X5gqy2oUhHM/edit?gid=328555854#gid=328555854",
+  "_comment2": "allow comment for each data point and find way to present generic dashboard?.. add (storeman) vehicle service/damage, fuel usage, stock usage"
   "observationTypes": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440001",
@@ -204,7 +206,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440010",
           "code": "weight_kg",
-          "label": "Weight (kg)",
+          "label": "⚖ Weight (kg)",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -241,7 +243,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440013",
           "code": "temperature",
-          "label": "Temperature (°C)",
+          "label": "🌡 Temperature (°C)",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -259,7 +261,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440015",
           "code": "wind_speed",
-          "label": "Wind Speed",
+          "label": "༄ Wind Speed",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -268,7 +270,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440016",
           "code": "precipitation",
-          "label": "Precipitation",
+          "label": "🌧 Precipitation",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -296,7 +298,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440018",
           "code": "moisture",
-          "label": "Moisture %",
+          "label": "💧 Moisture %",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -305,7 +307,7 @@
         {
           "id": "650e8400-e29b-41d4-a716-446655440019",
           "code": "temperature",
-          "label": "Temperature (°C)",
+          "label": "🌡Temperature (°C)",
           "dataType": "Long",
           "lookupGroupName": null,
           "isRequired": false,
@@ -324,11 +326,22 @@
     },
     {
       "id": "550e8400-e29b-41d4-a716-446655440009",
-      "name": "Soil Moisture",
-      "description": "Soil moisture observations",
+      "name": "Orchard Floor",
+      "description": "Orchard floor observations",
       "icon": "💧",
       "color": "#00BCD4",
       "sortOrder": 9,
+      "_coments": "",
+      "dataPoints": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440009",
+      "name": "Irrigation System",
+      "description": "Irrigation system observations",
+      "icon": "💧",
+      "color": "#00BCD4",
+      "sortOrder": 9,
+      "_coments": "drippers status,microjet status,pipe status, pump house ",
       "dataPoints": []
     }
   ]
