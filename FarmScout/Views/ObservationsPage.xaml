@@ -146,7 +146,6 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:SimpleObservationViewModel">
                         <Border Margin="5,5" 
-                               BackgroundColor="White" 
                                Padding="5">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10" />
@@ -188,24 +187,21 @@
                                 <!-- Details -->
                                 <VerticalStackLayout Grid.Column="1" Spacing="5">
                                     <Label Text="{Binding Summary}" 
-                                           FontAttributes="Bold" 
+                                           FontAttributes="Bold"
                                            FontSize="16"/>
                                     <Label Text="{Binding Notes}" 
-                                           FontSize="14" 
-                                           TextColor="#666"/>
+                                           FontSize="14" />
                                     <Label Text="{Binding TimestampText}" 
-                                           FontSize="12" 
-                                           TextColor="#999"/>
+                                           FontSize="12" />
                                     <Label Text="{Binding LocationText}" 
-                                           FontSize="12" 
-                                           TextColor="#999"/>
+                                           FontSize="12" />
                                 </VerticalStackLayout>
                                 
                                 <!-- Actions -->
                                 <VerticalStackLayout Grid.Column="2" Spacing="5">
-                                    
-                                    <Button Text="👁️" 
-                                            BackgroundColor="#1976D2" 
+
+                                    <Button Text="👁" 
+                                            BackgroundColor="Black" 
                                             TextColor="White"
                                             CornerRadius="15"
                                             WidthRequest="30"
@@ -213,8 +209,8 @@
                                             Command="{Binding x:DataType=viewmodels:ObservationsViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:ObservationsViewModel}}, Path=ViewDetailsCommand}"
                                             CommandParameter="{Binding .}"  
                                             />
-                                    <Button Text="❌" 
-                                            BackgroundColor="Red" 
+                                    <Button Text="🗑" 
+                                            BackgroundColor="Black" 
                                             TextColor="White"
                                             CornerRadius="15"
                                             WidthRequest="30"
