@@ -1,0 +1,70 @@
+====================================================================================================
+SOIL MOISTURE DASHBOARD REPORT
+====================================================================================================
+Report Generated: 20/08/2025 17:13:49
+Data Range: 20/11/2024 to 20/08/2025
+Total Moisture Observations: 191
+
+EXECUTIVE SUMMARY:
+--------------------------------------------------
+• Total Sections Monitored: 14
+• Good Moisture Conditions: 7 sections (50.0%)
+• Fair Moisture Conditions: 3 sections (21.4%)
+• Poor Moisture Conditions: 4 sections (28.6%)
+
+SECTION MOISTURE RANKINGS:
+--------------------------------------------------
+ 1. B2S1B: 3.0 🟢 GOOD
+ 2. B2S1A: 3.0 🟢 GOOD
+ 3. B2S2: 3.0 🟢 GOOD
+ 4. B2S7: 3.0 🟢 GOOD
+ 5. B2S6: 3.0 🟢 GOOD
+ 6. B2S4: 3.0 🟢 GOOD
+ 7. b2s1a: 3.0 🟢 GOOD
+ 8. b2s1b: 2.0 🟡 FAIR
+ 9. B1S1: 2.0 🟡 FAIR
+10. b1s2: 2.0 🟡 FAIR
+11. B2S3: 1.0 🔴 POOR
+12. B1S2: 1.0 🔴 POOR
+13. B2S5: 1.0 🔴 POOR
+14. B2S8: 1.0 🔴 POOR
+
+CRITICAL ISSUES REQUIRING ATTENTION:
+--------------------------------------------------
+🔴 B1S2: Fail (Score: 1.0)
+   Last Updated: 25/07/2025
+
+🔴 B2S3: Fail (Score: 1.0)
+   Last Updated: 19/08/2025
+
+🔴 B2S5: Fail (Score: 1.0)
+   Last Updated: 18/08/2025
+
+🔴 B2S8: Fail (Score: 1.0)
+   Last Updated: 20/08/2025
+
+
+RECOMMENDATIONS:
+--------------------------------------------------
+🔴 IMMEDIATE ACTIONS NEEDED:
+• Investigate and address moisture issues in sections with 'fail' status
+• Consider irrigation or drainage improvements for affected areas
+• Increase monitoring frequency for critical sections
+
+🟡 MONITORING RECOMMENDATIONS:
+• Closely monitor sections with 'partial' moisture status
+• Implement preventive measures to avoid deterioration
+• Consider targeted irrigation for borderline sections
+
+🟢 MAINTENANCE RECOMMENDATIONS:
+• Continue current moisture management practices for good sections
+• Maintain regular monitoring schedule
+• Document successful practices for knowledge sharing
+
+TREND ANALYSIS:
+--------------------------------------------------
+• Recent observations (last 30 days): 28
+• Average moisture score: 2.00
+• Trend: Declining moisture conditions
+
+====================================================================================================

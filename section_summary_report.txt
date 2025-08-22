@@ -1,0 +1,61 @@
+================================================================================
+SECTION HEALTH SUMMARY REPORT (Last 200 Lines)
+================================================================================
+Report Generated: 2025-08-20 17:16:28
+Data Range: 2025-08-13 to 2025-08-20
+Total Observations Analyzed: 200
+
+SUMMARY STATISTICS:
+----------------------------------------
+Total Sections Monitored: 8
+Total Metrics Tracked: 2
+Date Range: 2025-08-13 to 2025-08-20
+
+SECTION HEALTH RANKINGS:
+----------------------------------------
+ 1. B1S1: 3.00 🟢 GOOD
+ 2. B2S2: 3.00 🟢 GOOD
+ 3. B2S3: 3.00 🟢 GOOD
+ 4. B2S4: 3.00 🟢 GOOD
+ 5. B2S5: 3.00 🟢 GOOD
+ 6. B2S6: 3.00 🟢 GOOD
+ 7. B2S7: 3.00 🟢 GOOD
+ 8. B2S8: 2.00 🟡 FAIR
+
+METRIC PERFORMANCE:
+----------------------------------------
+• Insect pests: 3.00 🟢 GOOD
+• insect pests: 2.83 🟢 GOOD
+
+WARNING NOTES AND CRITICAL ISSUES:
+----------------------------------------
+✅ No warning notes found in recent data.
+
+DETAILED SECTION ANALYSIS:
+----------------------------------------
+
+B1S1: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: Pass
+
+B2S2: 🟢 GOOD (Score: 3.00)
+  🟢 Insect pests: Pass
+
+B2S3: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: Pass
+
+B2S4: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: Pass
+
+B2S5: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: Pass
+
+B2S6: 🟢 GOOD (Score: 3.00)
+  🟢 insect pests: Pass
+
+B2S7: 🟢 GOOD (Score: 3.00)
+  🟢 Insect pests: Pass
+
+B2S8: 🟡 FAIR (Score: 2.00)
+  🟡 insect pests: Partial
+
+================================================================================

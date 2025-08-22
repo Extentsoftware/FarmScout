@@ -83,8 +83,15 @@ def create_moisture_dashboard():
     # Read the CSV file
     df = pd.read_csv('scout.csv')
     
-    # Rename the last column to 'notes' for easier access
-    df.columns = list(df.columns[:-1]) + ['notes']
+    # Rename columns to match expected names
+    df = df.rename(columns={
+        'Date': 'date',
+        'Section': 'section', 
+        'Observation Type': 'metric',
+        'Pass/Fail': 'condition',
+        'Scout': 'scout',
+        'Notes': 'notes'
+    })
     
     # Parse dates
     df['date'] = df['date'].apply(parse_date)
